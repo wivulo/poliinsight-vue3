@@ -1,0 +1,201 @@
+@import './navs.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+  --primary: 218, 85, 81;
+  
+  --primary-50: 236 236 236;
+  --primary-100: 209 209 209;
+  --primary-200: 167 167 167;
+  --primary-300: 110 110 110;
+  --primary-400: 52 211 153; 
+  --primary-500: 218, 85, 81; 
+  --primary-600: 206, 106, 102;
+  --primary-700: 120 120 120;
+  --primary-800: 95 95 95;
+  --primary-900: 78 78 78;
+  --primary-950: 44 44 44;
+  --surface-0: 255 255 255;
+  --surface-50: 248 250 252;
+  --surface-100: 241 245 249;
+  --surface-200: 226 232 240;
+  --surface-300: 203 213 225;
+  --surface-400: 148 163 184;
+  --surface-500: 100 116 139;
+  --surface-600: 71 85 105;
+  --surface-700: 45 55 72;
+  --surface-800: 30 41 59;
+  --surface-900: 15 23 42;
+  --surface-950: 3 6 23;
+
+  --color-base: rgb(65, 60, 60);
+  --color-soft: rgb(163, 163, 163);
+}
+
+
+.customized-primary {
+  &:not(.dark){
+      --primary: var(--primary-950);
+      --primary-inverse: var(--surface-0);
+      --primary-hover: var(--primary-800);
+      --primary-active-color: var(--primary-900);
+
+      --primary-highlight-opacity: 1;
+      --primary-highlight-inverse: var(--surface-0);
+      --primary-highlight-hover-opacity: 0.8;
+  }
+  &.dark{
+      --primary: var(--primary-50);
+      --primary-inverse: var(--surface-950);
+      --primary-hover: var(--primary-100);
+      --primary-active-color: var(--primary-100);
+
+      --primary-highlight-opacity: 0.1;
+      --primary-highlight-inverse: var(--surface-0);
+      --primary-highlight-hover-opacity: 0.2;
+
+  }
+}
+
+
+@font-face {
+  font-family: "poppins medium";
+  src: url(fonts/poppins/Poppins-Medium.ttf);
+}
+
+@font-face {
+  font-family: "poppins regular";
+  src: url(fonts/poppins/Poppins-Regular.ttf);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #app {
+  width: 100vw;
+  font-family: "poppins regular", sans-serif;;
+  font-size: 16px;
+  /* overflow-x: hidden; */
+}
+
+p{
+  margin-bottom: 0;
+}
+
+a{
+  text-decoration: none;
+  text-decoration: none;
+  outline: none;
+  color: #444; 
+}
+
+.text-soft{
+  color: var(--color-soft)
+}
+
+* { list-style: none; }
+
+img {
+  max-width: 100%; 
+}
+
+a:hover {
+  color: #444; 
+}
+
+a:hover,
+a:focus,
+input,
+textarea {
+  text-decoration: none;
+  outline: none; 
+}
+
+.vh-95{
+  height: 95vh;
+}
+
+.vh-90{
+  height: 90vh;
+}
+
+.vh-85{
+  height: 85vh;
+}
+
+.vh-80{
+  height: 80vh;
+}
+
+.vh-75{
+  height: 75vh;
+}
+
+.vh-70{
+  height: 70vh;
+}
+
+.vh-60{
+  height: 60vh;
+}
+
+.vh-50{
+  height: 50vh;
+}
+
+.vh-40{
+  height: 40vh;
+}
+
+.vh-30{
+  height: 30vh;
+}
+
+.vh-20{
+  height: 20vh;
+}
+
+.vh-10{
+  height: 10vh;
+}
+
+.soft-hover:hover{
+  background-color: rgba(65, 60, 60, .05);
+  transition: background-color .3s linear;
+}
+
+.no-border{
+  border: none;
+  outline: none;
+}
+
+.no-border:active{
+  border: none;
+  outline: none;
+}
+
+.float-label label{
+  position: absolute;
+  top: 6px;
+  left: 12px;
+  font-size: 1rem;
+  z-index: 1;
+  display: inline-block;
+transition: all 0.2s ease-in;
+}
+
+.float-label input:focus + label,
+.float-label input:valid + label,
+.float-label input.fill + label,
+.stay-floating{
+  top: -22px;
+  left: 0px;
+  font-size: 0.8rem;
+  transition: all 0.2s ease-out;
+}
