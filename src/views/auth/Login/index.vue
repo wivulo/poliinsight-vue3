@@ -9,12 +9,14 @@ import FloatLabel from 'primevue/floatlabel';
 import Checkbox from 'primevue/checkbox';
 import Card from 'primevue/card';
 import { setDocumentTitleMixin } from "@/config/document.title.js"
+import AppLogo from "@/components/AppLogo.vue";
 
 export default{
     name: 'Login',
     mixins: [setDocumentTitleMixin],
     components: {
-        Button, Image, InputText, Password, FloatLabel, Checkbox, Card,
+      AppLogo,
+      Button, Image, InputText, Password, FloatLabel, Checkbox, Card,
     },
     data() {
         return {
@@ -82,10 +84,10 @@ export default{
     <div class="flex w-[800px] h-[400px] justify-center items-center relative">
       <Card class="h-full flex justify-center items-center">
         <template #content>
-          <div class="absolute top-0 left-0 w-[400px] h-[400px] z-40 bg-red-300"></div>
+          <div class="absolute top-0 left-0 w-[400px] h-[400px] z-40 bg-red-500"></div>
 
           <div class="flex gap-2 w-full justify-center items-center z-50 relative">
-            <div class="flex flex-col basis-1/2 px-4 text-white/80">
+            <div class="flex flex-col basis-1/2 px-4 text-slate-50">
                 <!-- <Image :src="loginBanner" alt="login banner" class="img-fluid object-cover" /> -->
                 <p class="text-xl font-semibold mb-2 tracking-wider">Poliinsight</p>
                 <p class="text-justify text-sm">
@@ -97,14 +99,18 @@ export default{
             </div>
 
             <div class="flex flex-col gap-3 px-4 basis-1/2">
-              <p class="text-xl text-center text-red-500 font-bold relative uppercase tracking-widest" style="left: -5px">
+              <div class="w-full h-auto flex justify-center items-center">
+                <AppLogo :textIsVisible="false" :width="60" :height="60" />
+              </div>
+
+              <p class="text-sm text-center text-red-500 font-bold relative tracking-wide -top-4">
                   Poliinsights
               </p>
 
               <form @submit.prevent="login" class="flex gap-2 flex-col">
 
                 <FloatLabel class="my-3">
-                  <InputText id="email" v-model="user.email" class="w-full border-zinc-300 h-9 hover:border-zinc-400 focus:outline-zinc-400" :required="true"/>
+                  <InputText id="email" v-model="user.email" class="w-full border-zinc-300 h-9" :required="true"/>
                   <label for="email">
                     <i class="fas fa-envelope me-1 "></i> <small> Ex:. exemplo@poliinsight.ao </small>
                   </label>
@@ -112,7 +118,7 @@ export default{
 
 
                 <div class="my-3">
-                  <Password toggleMask id="password" v-model="user.password" class="w-full border-zinc-300 h-9 hover:border-zinc-400 focus:outline-zinc-400" :required="true"
+                  <Password toggleMask id="password" v-model="user.password" class="w-full border-zinc-300 h-9" :required="true"
                     placeholder="Ex.: Exemplo12$" :feedback="false" />
                 </div>
 
@@ -123,8 +129,7 @@ export default{
                 <div class="flex gap-2 justify-center ">
                     <Button 
                         type="submit" size="small"
-                        class="h-8 w-full flex justify-center items-center text-base" 
-                        :disabled="isDisabled">
+                        class="h-8 w-full flex justify-center items-center text-base">
                         <i class="fas fa-spinner animate-spin mr-1" v-if="onLogin" />
                         <span>Login</span>
                     </Button>
