@@ -59,7 +59,7 @@ export default{
       goBack(){
           if(window.history.length > 0)
             this.$router.go(-1);
-      }
+      },
     },
     computed: {
       isDisabled() {
@@ -109,17 +109,29 @@ export default{
 
               <form @submit.prevent="login" class="flex gap-2 flex-col">
 
-                <FloatLabel class="my-3">
+                <FloatLabel class="my-2">
                   <InputText id="email" v-model="user.email" class="w-full border-zinc-300 h-9" :required="true"/>
                   <label for="email">
                     <i class="fas fa-envelope me-1 "></i> <small> Ex:. exemplo@poliinsight.ao </small>
                   </label>
                 </FloatLabel>
 
+                <div class="flex justify-end">
+                  <p class="text-xs">
+                    <router-link :to="{name: 'forgot.password'}">
+                      Esqueceu a senha?
+                    </router-link>
+                  </p>
+                </div>
 
-                <div class="my-3">
+
+                <div class="my-2 float-label relative">
                   <Password toggleMask id="password" v-model="user.password" class="w-full border-zinc-300 h-9" :required="true"
-                    placeholder="Ex.: Exemplo12$" :feedback="false" />
+                    :feedback="false" />
+
+                    <label for="password" class="text-zinc-500" >
+                      <i class="fa fa-lock mr-1" /> <small>Ex.: Exemplo12$</small>
+                    </label>
                 </div>
 
                 <div class="my-2">

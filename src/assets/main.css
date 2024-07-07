@@ -182,20 +182,19 @@ textarea {
 
 .float-label label{
   position: absolute;
-  top: 6px;
-  left: 12px;
+  top: 8px;
+  left: 13px;
   font-size: 1rem;
   z-index: 1;
   display: inline-block;
-transition: all 0.2s ease-in;
+  transition: all 0.2s ease-in;
 }
 
-.float-label input:focus + label,
-.float-label input:valid + label,
-.float-label input.fill + label,
+.float-label:has(input:focus) label,
+.float-label:has(input:valid) label,
+.float-label:has(input.fill) label,
 .stay-floating{
-  top: -22px;
-  left: 0px;
-  font-size: 0.8rem;
+  top: -19px;
+  font-size: .8rem;
   transition: all 0.2s ease-out;
 }
