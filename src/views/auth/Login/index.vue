@@ -119,7 +119,7 @@ export default{
                 <div class="flex justify-end">
                   <p class="text-xs">
                     <router-link :to="{name: 'forgot.password'}">
-                      Esqueceu a senha?
+                      Esqueci minha senha.
                     </router-link>
                   </p>
                 </div>

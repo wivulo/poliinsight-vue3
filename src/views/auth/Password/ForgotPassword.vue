@@ -1,13 +1,17 @@
 <script>
 import { setDocumentTitleMixin } from "@/config/document.title.js"
 import PasswordServices from "@/services/PasswordServices.js"
+import Button from 'primevue/button';
 
 export default {
     name: "ForgotPassword",
     mixins: [setDocumentTitleMixin],
+    components: {
+        Button
+    },
     data() {
         return {
-          title: 'Login',
+          title: 'Recuperar senha',
           busy: false,
           email: null
         }
@@ -33,7 +37,7 @@ export default {
                     <h1 class="block text-2xl font-bold text-gray-800 dark:text-white">Esqueceu a senha?</h1>
                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
                         Lembras a senha?
-                        <router-link to="/login" class="text-blue-600 decoration-2 hover:underline font-medium">
+                        <router-link to="/login" class="text-primary decoration-2 hover:underline font-medium">
                             faça Login aqui
                         </router-link>
                     </p>
@@ -57,13 +61,20 @@ export default {
                                 <p class="hidden text-xs text-red-600 mt-2" id="email-error">E-mail inválido</p>
                             </div>
 
-                            <button 
+                            <!-- <button 
                                 type="submit" 
                                 class="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
                             >
                                 <i class="fas fa-spinner animate-spin mr-1" v-if="busy" />
                                 Redefinir senha
-                            </button>
+                            </button> -->
+
+                            <Button 
+                                type="submit" size="small"
+                                class="py-3 w-full flex justify-center items-center text-base">
+                                <i class="fas fa-spinner animate-spin mr-1" v-if="busy" />
+                                <span>Redefinir senha</span>
+                            </Button>
                         </div>
                     </form>
                 </div>

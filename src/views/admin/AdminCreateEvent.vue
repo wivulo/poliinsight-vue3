@@ -1,4 +1,5 @@
 <script>
+import EventServices from '@/services/EventServices';
 import { mapGetters } from 'vuex';
 import noImagemAvailable from '@/assets/no-picture-available-icon-9.jpg'
 import Button from 'primevue/button';
@@ -44,24 +45,27 @@ export default {
         }),
     },
     methods: {
-        handleCreateEvent(){ 
-            // console.log(this.event)      
-            this.busy = true    
-            this.$store.dispatch('event/createEvent', {...this.event, organizerId: this.user?.id ?? 1})
-            .then(result => {
-                if(result.error){
-                    this.$toast.add({
-                        severity: 'danger',
-                        summary: 'Error', 
-                        detail: 'Erro ao criar o evento', 
-                        life: 2000
-                    })
-                }
-
-                this.$toast.add({severity: 'success', summary: 'Success', detail: 'Evento criado com sucesso', life: 2000})
-
-                this.busy = false
+        handleErrorMessage(){
+            this.$toast.add({
+                    severity: 'error',
+                    summary: 'Error', 
+                    detail: 'Erro ao criar o evento', 
+                    life: 2000
             })
+        },
+        async handleCreateEvent(){ 
+            // console.log(this.event)      
+            this.busy = true
+            const response = await EventServices.createEvent({...this.event, organizerId: this.user?.id ?? 1})
+            .finally(() => this.busy = false)
+            .catch(() => this.handleErrorMessage())
+            
+            if(response.error){
+                this.handleErrorMessage()
+                return
+            }
+            
+            this.$toast.add({severity: 'success', summary: 'Success', detail: 'Evento criado com sucesso', life: 2000})
         },
         
         handleUploadedFile(file){
