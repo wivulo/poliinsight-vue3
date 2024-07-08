@@ -107,7 +107,7 @@ export default{
                   Poliinsights
               </p>
 
-              <form @submit.prevent="login" class="flex gap-2 flex-col">
+              <form @submit.prevent="login" class="flex gap-2 flex-col px-3">
 
                 <FloatLabel class="my-3">
                   <InputText id="email" v-model="user.email" class="w-full border-zinc-300 h-9" :required="true"/>
@@ -136,7 +136,7 @@ export default{
                 </div>
               </form>
 
-              <div class="flex justify-content-center">
+              <div class="flex justify-content-center px-3">
                   <p>
                       Não tens uma conta ? <router-link to="/signup" class=" text-blue-500">Criar conta</router-link>
                   </p>

@@ -111,7 +111,9 @@ export default {
                                     <Step_1_PersonalData :user="user" />
 
                                     <div class="flex pt-4 justify-end">
-                                        <Button label="Próximo" size="small" class="h-8 text-base"  @click="nextCallback" />
+                                        <Button size="small" class="h-8 text-base"  @click="nextCallback">
+                                            <span>Próximo</span>
+                                        </Button>
                                     </div>
                                 </template>
                             </StepperPanel>
@@ -121,11 +123,15 @@ export default {
                                     <Step_2_academicData :user="user" />
 
                                     <div class="flex pt-4 justify-end gap-2">
-                                        <Button label="Anterior" size="small" class="h-8 text-base" 
-                                            severity="secondary" @click="prevCallback" />
+                                        <Button size="small" class="h-8 text-base" 
+                                            severity="secondary" @click="prevCallback">
+                                            <span>Anterior</span>
+                                        </Button>
 
-                                        <Button label="Próximo" size="small" class="h-8 text-base" 
-                                            @click="nextCallback" />
+                                        <Button size="small" class="h-8 text-base" 
+                                            @click="nextCallback">
+                                            <span>Próximo</span>
+                                        </Button>
                                     </div>
                                 </template>
                             </StepperPanel>
@@ -135,9 +141,13 @@ export default {
                                     <Step_3_finish :user="user" />
 
                                     <div class="flex pt-4 justify-end gap-2">
-                                        <Button label="Anterior" size="small" class="h-8 text-base" severity="secondary" @click="prevCallback" />
+                                        <Button size="small" class="h-8 text-base" severity="secondary" @click="prevCallback">
+                                            <span>Anterior</span>
+                                        </Button>
 
-                                        <Button label="Criar conta" :loading="busy" size="small" class="h-8 text-base" @click="signup" />
+                                        <Button :loading="busy" size="small" class="h-8 text-base" @click="signup">
+                                            <span>Criar conta</span>
+                                        </Button>
                                     </div>
                                 </template>
                             </StepperPanel>
