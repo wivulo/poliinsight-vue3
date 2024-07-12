@@ -46,7 +46,31 @@ export default {
                         this.selectionModeIsVisible = !this.selectionModeIsVisible;
                     }
                 },
-            ]
+            ],
+
+            optionsActions: [
+                {
+                    label: 'Visualizar',
+                    icon: 'fa fa-eye',
+                    command: this.handleViewEvent
+                },
+                {
+                    label: 'Ver estátisticas',
+                    icon: 'fa fa-chart',
+                    command: this.handleViewEstatisticEvent
+                },
+                {
+                    label: 'Editar',
+                    icon: 'fa fa-pencil',
+                    command: this.handleVEditEvent
+                },
+                {
+                    label: 'Eliminar',
+                    icon: 'fa fa-trash',
+                    command: this.handleDeleteEvent
+                },
+            ],
+            
         }
     },
     created(){
@@ -94,7 +118,15 @@ export default {
         handleHideSelectionMode(){
             this.selectionModeIsVisible = false;
             this.selectedEvents = [];
-        }
+        },
+
+        handleViewEvent(){},
+
+        handleViewEstatisticEvent(){},
+
+        handleVEditEvent(){},
+
+        handleDeleteEvent(){},
     },
     filters: {
         maxLengthFilter(value){
@@ -224,7 +256,7 @@ export default {
 
                     <Column field="actions" header="Ações">
                         <template #body="props">
-                            <Button size="small" text @click="handleEdit(props)"  title="Editar">
+                            <!-- <Button size="small" text @click="handleEdit(props)"  title="Editar">
                                 <i class="fa fa-pencil text-surface-700"></i>
                             </Button>
 
@@ -234,7 +266,10 @@ export default {
 
                             <Button size="small" text @click="handleViewer(props)" title="Visualizar">
                                 <i class="fa fa-eye text-surface-700"></i>
-                            </Button>
+                            </Button> -->
+
+                            <SplitButton :model="optionsActions" severity="secondary" size="small" />
+
                         </template>
                     </Column>
                 </DataTable>

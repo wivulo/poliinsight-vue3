@@ -1,7 +1,6 @@
 <script>
 import EventServices from '@/services/EventServices';
 import { mapGetters } from 'vuex';
-import noImagemAvailable from '@/assets/no-picture-available-icon-9.jpg'
 import Button from 'primevue/button';
 import ProgressBar from 'primevue/progressbar';
 import Badge from 'primevue/badge';
@@ -40,7 +39,6 @@ export default {
     },
     computed: {
         ...mapGetters({
-            hasBenCreated: 'event/hasBenCreated',
             user: 'auth/user'
         }),
     },
@@ -53,6 +51,7 @@ export default {
                     life: 2000
             })
         },
+        
         async handleCreateEvent(){ 
             // console.log(this.event)      
             this.busy = true
@@ -66,24 +65,18 @@ export default {
             }
             
             this.$toast.add({severity: 'success', summary: 'Success', detail: 'Evento criado com sucesso', life: 2000})
+            this.$router.push({
+                    name: 'event.statistic',
+                    params: {
+                        id: response.data.id
+                    }
+                })
         },
         
         handleUploadedFile(file){
             this.event.flayer = file
         }
     },
-    watch: {
-        hasBenCreated(value){
-            if(value){
-                this.$router.push({
-                    name: 'event.home', 
-                    params: {
-                        id: this.$store.getters['event/createdEventId']
-                    }
-                })
-            }
-        }
-    }
 }
 </script>
 
@@ -96,7 +89,7 @@ export default {
         <div class="flex flex-col gap-3">
             <div class="flex gap-3 flex-grow">
 
-                <div class="flex flex-grow">
+                <div class="flex flex-grow max-w-[439px] max-h-[326px]">
                     <FileUploader @uploaded="handleUploadedFile"/>
                 </div>
 
@@ -108,7 +101,7 @@ export default {
                         </label>
                     </FloatLabel>
 
-                    <Textarea v-model="event.description" rows="5" cols="30" placeholder="Descrição do evento"/>
+                    <Textarea v-model="event.description" rows="5" cols="30" placeholder="Descrição do evento" class="hover:border-zinc-400"/>
 
                     <FloatLabel class="mt-2">
                         <InputText id="localization" v-model="event.localization" class="w-full border-zinc-300 h-9 " :required="true"/>
@@ -144,9 +137,9 @@ export default {
             </div>
 
             <div class="w-full flex justify-end">
-                <Button @click="handleCreateEvent" class="bg-surface-500 border-none text-black hover:bg-surface-600" size="small" :disabled="busy">
+                <Button @click="handleCreateEvent" class=" text-black" size="small" :disabled="busy">
                     <i class="fas fa-spinner animate-spin mr-1" v-if="busy" />
-                    Criar evento
+                   {{ busy ? 'Criando o evento...' : ' Criar evento' }}
                 </Button>
             </div>
         </div>
