@@ -1,9 +1,10 @@
 <script>
+import AuthServices from "@/services/AuthServices"
+
 import loginBanner from "@/assets/login/images/login-banner.png"
 import Step_1_PersonalData from "./components/Step_1_PersonalData.vue"
 import Step_2_academicData from './components/Step_2_academicData.vue'
 import Step_3_finish from './components/Step_3_finish.vue'
-import { databaseURL } from "@/config"
 import { setDocumentTitleMixin } from "@/config/document.title.js"
 import Button from 'primevue/button';
 import Image from 'primevue/image'
@@ -11,8 +12,6 @@ import Steps from 'primevue/steps';
 import Card from 'primevue/card';
 import Stepper from 'primevue/stepper';
 import StepperPanel from 'primevue/stepperpanel';
-import { emailValidator, minLength } from "@/helpers/validations"
-import axios from "axios"
 
 export default {
     name: 'SignUp',
@@ -56,33 +55,27 @@ export default {
     },
     methods: {
         async signup() {
-            try {
                 this.busy = true
 
-                if(!emailValidator(this.user.email)){
-                    throw new Error('E-mail inválido!')
-                }
-
                 if(this.user.password != this.user.confirmPassword) {
-                    throw new Error('A confirmação da password não conscide!')
+                    this.toastMessage('error', 'A confirmação de senha não corresponde!', 'Erro')
+                    return
                 }
 
-                const { data } = await axios.post(`${databaseURL}/signup`, this.user)
+                const response = await AuthServices.signup(this.user)
+                .catch(() => this.toastMessage('error', 'Erro ao criar conta!', 'Erro'))
+                .finally(() => this.busy = false)
 
-                if(data.error) {
-                    throw new Error(data.error)
+                if(response.status == 200) {
+                    this.toastMessage()
+                    setTimeout(() => this.$router.push({name: "login"}), 1000)
                 }
-
-                this.$toast.add({severity:'success', summary: 'Success', detail: 'Conta criada com sucesso!', life: 2000});
-
-                this.busy = false
-
-                setTimeout(() => this.$router.push({name: "login"}), 1000)
-            } catch (error) {
-                this.$swal.fire('', error.message , 'error')
-                this.busy = false
-            }
         },
+
+        toastMessage(type = 'success', message = 'Conta criada com sucesso!', summary = 'Successo') {
+            this.$toast.add({severity: type, summary: summary, detail: message, life: 2000});
+        },
+
         goBack(){
             if(window.history.length > 0)
                 this.$router.go(-1);
@@ -146,6 +139,7 @@ export default {
                                         </Button>
 
                                         <Button :loading="busy" size="small" class="h-8 text-base" @click="signup">
+                                            <i class="fas fa-spinner animate-spin mr-1" v-if="busy" />
                                             <span>Criar conta</span>
                                         </Button>
                                     </div>

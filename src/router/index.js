@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import Login from '@/views/auth/Login/index.vue'
 import Signup from '@/views/auth/Signup/index.vue'
 import ForgotPassword from '@/views/auth/Password/ForgotPassword.vue'
+import ResetPasswordEmail from '@/views/auth/Password/ResetPasswordEmail.vue'
 
 import Dashboard from "@/views/admin/Dashboard.vue";
 import Overview from "@/views/admin/AdminOverview.vue";
@@ -36,6 +37,11 @@ const router = createRouter({
       path: "/forgot",
       name: "forgot.password",
       component: ForgotPassword
+    },
+    {
+      path: "/resetpasswordEmail/:token",
+      name: "reset.password",
+      component: ResetPasswordEmail
     },
 
     //////////////////////////////////////////////////////////////////////////////

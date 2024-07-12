@@ -3,7 +3,7 @@ import { databaseURL } from "@/config"
 
 export default {
     forgotPassword(email){
-        return axios.post(`${databaseURL}/forgotpassword`, {email})
+        return axios.post(`${databaseURL}/forgotpassword`, {email: email})
     },
 
     resetPasswordEmail(data){

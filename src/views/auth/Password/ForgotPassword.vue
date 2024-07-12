@@ -18,11 +18,14 @@ export default {
     },
     methods: {
         async handleResetPassword(){
-            if(!email) return
+            if(!this.email) return
             
             this.busy = true
-            const response = await PasswordServices.forgotPassword(email)
-            console.log(response)
+            const response = await PasswordServices.forgotPassword(this.email)
+            .catch(() => {
+                this.$toast.add({ severity: 'error', summary: 'Erro', detail: 'Ocorreu um erro ao enviar o e-mail de recuperação de senha' });
+            })
+
             this.busy = false
         }
     }

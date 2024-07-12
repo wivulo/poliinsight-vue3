@@ -1,20 +1,16 @@
 import axios from "axios"
 import { databaseURL } from "@/config"
-import { emailValidator, minLength } from "@/helpers/validations"
+import { emailValidator } from "@/helpers/validations"
 
 
 export default {
-    login(){},
+    login(user){
+        return axios.post(`${databaseURL}/login`, user)
+    },
 
     signup(user){
-        if(!emailValidator(user.email)){
-            throw new Error('E-mail inválido!')
-        }
+        const validation = emailValidator(user.email)
 
-        if(user.password != user.confirmPassword) {
-            throw new Error('A confirmação da password não conscide!')
-        }
-
-        return axios(`${databaseURL}/signup`, user)
+        return validation ? axios(`${databaseURL}/signup`, user) : Promise.reject({error: true, message: "Invalid email"})
     },
 }

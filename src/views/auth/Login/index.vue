@@ -1,6 +1,6 @@
 <script>
-import loginBanner from "@/assets/login/images/login-banner.png"
-import { mapGetters } from 'vuex';
+import AuthServices from "@/services/AuthServices"
+
 import Button from 'primevue/button';
 import Image from 'primevue/image'
 import InputText from 'primevue/inputtext';
@@ -21,12 +21,12 @@ export default{
     data() {
         return {
           title: 'Login',
+          busy: false,
           user: {
             email: '',
             password: '',
           },
           remember: false,
-          loginBanner: loginBanner
         };
     },
     methods: {
@@ -41,19 +41,19 @@ export default{
       },
 
       async login() {
-          this.$store.dispatch('auth/login', this.user)
-          .then(res => {
-              if(res?.user){
-                this.$toast.add({severity:'success', summary: 'Success', detail: 'Login successful', life: 2000});
+        this.busy = true
+        const response = await AuthServices.login(this.user)
+        .catch(() => this.$toast.add({severity:'error', summary: 'Error', detail: 'Erro ao entrar no sistema', life: 2000}))
+        .finally(() => this.busy = false)
+        
+        if(response.status === 200){
+          this.$toast.add({severity:'success', summary: 'Success', detail: 'Login successful', life: 2000});
+          this.$store.dispatch("auth/fetchUser", response.data.user.id)
+          this.redirectOnLogin(response.data.user)
+          return
+        }
 
-                this.$store.dispatch("auth/fetchUser", res?.user.id)
-                
-                this.redirectOnLogin(res?.user)
-              }else{
-                this.$toast.add({severity:'error', summary: 'Error', detail: 'Login error', life: 2000});
-              }
-          })
-          .catch(err => console.log(err));
+        this.$toast.add({severity:'error', summary: 'Error', detail: 'Erro ao entrar no sistema', life: 2000})
       },
 
       goBack(){
@@ -61,14 +61,6 @@ export default{
             this.$router.go(-1);
       },
     },
-    computed: {
-      isDisabled() {
-            return !this.user.email || !this.user.password;
-      },
-      onLogin() {
-          return this.$store.getters['auth/onLogin'];
-      }
-    }
 }
 </script>
 
@@ -88,7 +80,6 @@ export default{
 
           <div class="flex gap-2 w-full justify-center items-center z-50 relative">
             <div class="flex flex-col basis-1/2 px-4 text-slate-50">
-                <!-- <Image :src="loginBanner" alt="login banner" class="img-fluid object-cover" /> -->
                 <p class="text-xl font-semibold mb-2 tracking-wider">Poliinsight</p>
                 <p class="text-justify text-sm">
                   O Poliinsight é um software de gestão de eventos integrada 
@@ -139,10 +130,11 @@ export default{
                 </div>
               
                 <div class="flex gap-2 justify-center ">
-                    <Button 
+                    <Button
+                        :loading="busy"
                         type="submit" size="small"
                         class="h-8 w-full flex justify-center items-center text-base">
-                        <i class="fas fa-spinner animate-spin mr-1" v-if="onLogin" />
+                        <i class="fas fa-spinner animate-spin mr-1" v-if="busy" />
                         <span>Login</span>
                     </Button>
                 </div>
