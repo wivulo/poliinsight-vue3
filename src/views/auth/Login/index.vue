@@ -49,6 +49,7 @@ export default{
         if(response.status === 200){
           this.$toast.add({severity:'success', summary: 'Success', detail: 'Login successful', life: 2000});
           this.$store.dispatch("auth/fetchUser", response.data.user.id)
+          this.$store.dispatch("auth/saveToken", { token: response.data.token, remember: false })
           this.redirectOnLogin(response.data.user)
           return
         }

@@ -16,10 +16,24 @@ export default {
             busy: false,
             senha: null,
             cSenha: null,
+            tokenIsValid: true,
         };
     },
+    created() {
+        this.checkToken()
+    },
     methods: {
-        handleResetPassword(){
+        async checkToken(){
+            const response = await PasswordServices.checkToken({ token: this.$route.params.token })
+            .catch(e => {
+                this.$toast.add({ severity: 'error', summary: 'Erro', detail: 'Ocorreu um erro ao verificar o token', life: 2000})
+                this.tokenIsValid = false
+            })
+
+            this.tokenIsValid = response.data.error ? false : true
+        },
+
+        async handleResetPassword(){
             if(!this.senha || !this.cSenha) return
 
             if(this.senha !== this.cSenha){
@@ -28,25 +42,34 @@ export default {
             }
 
             this.busy = true
-            PasswordServices.resetPasswordEmail({ senha: this.senha, token: this.$route.query.token})
-            .then(() => {
+            const response = await PasswordServices.resetPasswordEmail({email: this.$route.query.email, senha: this.senha, token: this.$route.params.token})
+            .catch(e => this.$toast.add({ severity: 'error', summary: 'Erro', detail: 'Ocorreu um erro ao redefinir a senha' }))
+            .finally(() => this.busy = false )
+
+            if(response.status === 200) {
                 this.$toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Senha redefinida com sucesso' });
                 this.$router.push({ name: 'login' })
-            })
-            .catch(() => {
-                this.$toast.add({ severity: 'error', summary: 'Erro', detail: 'Ocorreu um erro ao redefinir a senha' });
-            })
-            .finally(() => {
-                this.busy = false
-            })
+                return
+            }
+
+            this.$toast.add({ severity: 'error', summary: 'Erro', detail: 'Ocorreu um erro ao redefinir a senha' });
         }
     },
 };
 </script>
 
 <template>
-     <main id="content" role="main" class="w-full  max-w-md mx-auto p-6">
-        <div class="mt-7 bg-white  rounded-xl shadow-lg dark:bg-gray-800 dark:border-gray-700 border-2">
+     <main id="content" role="main" class="w-full  max-w-lg mx-auto p-6">
+        <template v-if="!tokenIsValid">
+            <div class="w-full h-full flex flex-col justify-center items-center">
+                <p class="text-base">
+                    Token inválido! Por favor, solicite um novo link de redefinição de senha.
+                </p>
+                <router-link :to="{name: 'forgot.password'}" class="text-red-500 ml-1">Clique aqui</router-link>
+            </div>
+        </template>
+        
+        <div v-else class="mt-7 bg-white  rounded-xl shadow-lg dark:bg-gray-800 dark:border-gray-700 border-2">
             <div class="p-4 sm:p-7">
 
                 <div class="text-center mb-2">
@@ -62,10 +85,13 @@ export default {
                         </label>
 
                         <div class="relative">
-                            <input
-                                    v-model="senha"
-                                    type="password" id="password" name="password" 
-                                    class="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm shadow-sm" required>
+                            <Password
+                                v-model="senha"
+                                feedback
+                                toggleMask
+                                class="text-sm w-full"
+                                required
+                            />
                         </div>
                     </div>
 
@@ -75,10 +101,13 @@ export default {
                         </label>
 
                         <div class="relative">
-                            <input
-                                    v-model="cSenha"
-                                    type="password" id="password" name="password" 
-                                    class="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm shadow-sm" required>
+                            <Password
+                                v-model="cSenha"
+                                feedback
+                                toggleMask
+                                class="text-sm w-full"
+                                required
+                            />
                         </div>
                     </div>
 
