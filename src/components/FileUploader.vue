@@ -56,7 +56,7 @@ export default {
 </script>
 
 <template>
-<div class="flex items-center w-full">
+<div class="flex items-center w-full max-w-[439px] max-h-[326px]">
     <label v-if="!file" for="dropzone-file" class="flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600" @dragover.prevent @drop="onDrop">
         <div class="flex flex-col items-center justify-center pt-5 pb-6">
             <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
@@ -68,23 +68,24 @@ export default {
         <input id="dropzone-file" type="file" class="hidden" @change="handleOnChange" />
     </label>
 
-    <div  v-else class="flex border-2 border-gray-300 border-dashed rounded-lg h-full w-full items-center relative">
-        <div class="flex gap-2 w-full px-3 items-center">
-            <div class="w-32 h-28">
-                <img :alt="file.name" :src="file.objectURL" class="object-fill object-center h-28" />
-            </div>
-    
-            <div class="flex flex-col gap-2 flex-grow">
-                <p>
-                    <span class="font-semibold">{{ file.name }}</span><br />
-                    <span>{{ formatBytes(file.size) }}</span>
-                </p>
-                <Badge value="Pedding" class="px-2 inline-block w-32" severity="warning" />
-            </div>
-    
-            <Button icon="fa fa-times" rounded  severity="danger" text class="absolute right-1 w-14 h-14"
-                @click="handleRemove"/>
+    <div  v-else class="flex flex-col border border-zinc-300 border-solid h-full w-full relative">
+        <div class="w-full flex justify-center">
+            <img :alt="file.name" :src="file.objectURL" class="object-fill object-center max-h-[325px]" />
         </div>
+
+        <div class="w-full bg-red-500 text-white p-2">
+            <p class="text-sm">{{ file.name }}</p>
+            <p class="text-sm">{{ formatBytes(file.size) }}</p>
+        </div>
+
+        <Button 
+            icon="fa fa-times" 
+            rounded  severity="danger" text
+            size="small"
+            class="top-0 right-1 w-14 h-14"
+            style="position: absolute;"
+            @click="handleRemove" 
+        />
     </div>
 
     <p v-if="error" class="text-red-500">{{ error }}</p>
