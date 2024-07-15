@@ -15,15 +15,6 @@ export default {
     components: {
         InputText, FloatLabel, Dropdown, Checkbox
     },
-    data(){
-        return {
-            selected: null,
-            options: [
-                "Masculino",
-                "Feminino",
-            ],
-        }
-    },
 }
 </script>
 
@@ -52,15 +43,13 @@ export default {
             </label>
         </FloatLabel>
 
-        <FloatLabel class="mb-3">
+        <FloatLabel>
             <InputText id="department" v-model="user.department" class="w-full border-zinc-300 h-9 " :required="true" />
 
             <label for="department">
                 <i class="fas fa-book me-1 "></i> <small> Departamento </small>
             </label>
         </FloatLabel>
-
-        <Dropdown v-model="user.gender" :options="options" placeholder="Selecione um genero" class="h-9"  />
         
     </div>
 </template>

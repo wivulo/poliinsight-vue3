@@ -45,7 +45,6 @@ export default {
                 documentProving: "N/D"
             },
             busy: false,
-            loginBanner: loginBanner,
             items: [
                 { label: 'Dados Pessoais', icon: 'pi pi-user' },
                 { label: 'Dados Acadêmicos', icon: 'pi pi-book' },
@@ -55,25 +54,41 @@ export default {
     },
     methods: {
         async signup() {
-                this.busy = true
-
                 if(this.user.password != this.user.confirmPassword) {
                     this.toastMessage('error', 'A confirmação de senha não corresponde!', 'Erro')
                     return
                 }
 
+                this.busy = true
                 const response = await AuthServices.signup(this.user)
                 .catch(() => this.toastMessage('error', 'Erro ao criar conta!', 'Erro'))
                 .finally(() => this.busy = false)
 
-                if(response.status == 200) {
+                if(response?.status == 200) {
                     this.toastMessage()
                     setTimeout(() => this.$router.push({name: "login"}), 1000)
                 }
         },
 
+        async handleSubmit(){
+            const result = await this.$swal.fire({
+                title: 'Tem certeza?',
+                text: "Deseja criar a conta com os dados fornecidos?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sim, criar conta!',
+                cancelButtonText: 'Cancelar'
+            })
+
+            if(result.isConfirmed) {
+                this.signup()
+            }
+        },
+
         toastMessage(type = 'success', message = 'Conta criada com sucesso!', summary = 'Successo') {
-            this.$toast.add({severity: type, summary: summary, detail: message, life: 2000});
+            this.$toast.add({severity: type, summary: summary, detail: message, life: 3000});
         },
 
         goBack(){
@@ -103,7 +118,7 @@ export default {
                                 <template #content="{ nextCallback }">
                                     <Step_1_PersonalData :user="user" />
 
-                                    <div class="flex pt-4 justify-end">
+                                    <div class="flex pt-2 justify-end">
                                         <Button size="small" class="h-8 text-base"  @click="nextCallback">
                                             <span>Próximo</span>
                                         </Button>
@@ -138,7 +153,7 @@ export default {
                                             <span>Anterior</span>
                                         </Button>
 
-                                        <Button :loading="busy" size="small" class="h-8 text-base" @click="signup">
+                                        <Button :loading="busy" size="small" class="h-8 text-base" @click="handleSubmit">
                                             <i class="fas fa-spinner animate-spin mr-1" v-if="busy" />
                                             <span>Criar conta</span>
                                         </Button>

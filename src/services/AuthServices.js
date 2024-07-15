@@ -11,6 +11,6 @@ export default {
     signup(user){
         const validation = emailValidator(user.email)
 
-        return validation ? axios(`${databaseURL}/signup`, user) : Promise.reject({error: true, message: "Invalid email"})
+        return validation ? axios.post(`${databaseURL}/signup`, user) : Promise.reject({error: true, message: "Invalid email"})
     },
 }

@@ -34,7 +34,7 @@ export default {
         class: [
             //Font
             'font-sans',
-            'leading-none',
+            // 'leading-none',
 
             // Display
             'block',
@@ -43,12 +43,12 @@ export default {
             // Color and Background
             'bg-transparent',
             'border-0',
-            { 'text-surface-800 dark:text-white/80': props.modelValue != undefined, 'text-surface-400 dark:text-surface-500': props.modelValue == undefined },
-            'placeholder:text-surface-400 dark:placeholder:text-surface-500',
+            { 'text-zinc-400 dark:text-white/80': props.modelValue != undefined, 'text-zinc-600 dark:text-zinc-500': props.modelValue == undefined },
+            'placeholder:text-zinc-300 dark:placeholder:text-zinc-500',
 
             // Sizing and Spacing
             'w-[1%]',
-            'p-1',
+            'p-1 px-3',
             { 'pr-7': props.showClear },
 
             //Shape

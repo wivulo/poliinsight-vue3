@@ -2,6 +2,7 @@
 import InputText from 'primevue/inputtext';
 import FloatLabel from 'primevue/floatlabel';
 import Calendar from 'primevue/calendar';
+import Dropdown from 'primevue/dropdown';
 
 export default {
     name: "Step_1_PersonalData",
@@ -12,7 +13,16 @@ export default {
         }
     },
     components: {
-        InputText, FloatLabel, Calendar
+        InputText, FloatLabel, Calendar, Dropdown
+    },
+    data(){
+        return {
+            selected: null,
+            options: [
+                "Masculino",
+                "Feminino",
+            ],
+        }
     }
 }
 </script>
@@ -50,12 +60,19 @@ export default {
             </label>
         </FloatLabel>
 
-        <div class="flex gap-2 items-center">
+        <div class="flex gap-2 items-center mb-3">
             <label for="birthDate" class="flex-grow pl-3">
-                <i class="fas fa-calendar me-1 text-zinc-500"></i> <small> Data de nascimento </small>
+                <i class="fas fa-calendar me-1 text-zinc-500" /> <small> Data de nascimento </small>
             </label>
             <Calendar id="birthDate" v-model="user.birthDate" class="flex-grow border-zinc-300 h-9 focus:outline-zinc-400" inputClass="hover:border-zinc-400" placeholder="ex.: 10/12/1998" />
         </div>
         
+        <div class="flex gap-2 items-center mb-3">
+            <label for="gender" class="flex-grow pl-3">
+                <i class="fas fa-user me-1 text-zinc-500" /> <small> Gênero </small>
+            </label>
+            <Dropdown id="gender" v-model="user.gender" :options="options" placeholder="Selecione um genero" class="h-9 flex-grow w-[125px]"  />
+        </div>
+
     </div>
 </template>
