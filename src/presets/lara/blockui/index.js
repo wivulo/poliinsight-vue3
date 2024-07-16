@@ -3,6 +3,6 @@ export default {
         class: 'relative'
     },
     mask: {
-        class: 'bg-black/40'
+        class: 'bg-black/50 opacity-10'
     }
 };

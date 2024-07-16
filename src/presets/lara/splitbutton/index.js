@@ -388,6 +388,7 @@ export default {
                 // Size
                 'min-w-[12rem]',
                 'py-3',
+                'text-sm',
 
                 // Colors
                 'bg-surface-0 dark:bg-surface-700',

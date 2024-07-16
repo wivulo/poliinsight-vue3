@@ -1,5 +1,7 @@
 <script>
+import EventServices from '@/services/EventServices';
 import { mapGetters } from 'vuex';
+import { dateFormatter } from "@/utils/dateFormatter"
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import DataTable from 'primevue/datatable';
@@ -10,29 +12,26 @@ import Calendar from 'primevue/calendar';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import SplitButton  from 'primevue/splitbutton';
-
-import { dateFormatter } from "@/utils/dateFormatter"
+import EventFilters from "@/components/EventFilters.vue"
+import ModalEditEvent from "@/views/event/components/ModalEditEvent.vue"
+import ModalDeleteEvent from "@/views/event/components/ModalDeleteEvent.vue"
 
 export default {
     name: "Admin.ListEvent",
     components: {
         Button, InputText, DataTable, Column,
         InputGroup, InputGroupAddon, Calendar,
-        IconField, InputIcon, SplitButton
+        IconField, InputIcon, SplitButton, EventFilters,
+        ModalEditEvent, ModalDeleteEvent
     },
     data(){
         return {
+            busy: false,
+            events: [],
             isItemSelected: false,
             itemSelected: null,
             filter: null,
-            filters: {
-                organizer: null,
-                name: null,
-                creationDate: null,
-                startDate: null,
-                status: null,
-                participants: null
-            },
+            
             selectedEvents: [],
             showFilters: false,
 
@@ -47,52 +46,38 @@ export default {
                     }
                 },
             ],
-
-            optionsActions: [
-                {
-                    label: 'Visualizar',
-                    icon: 'fa fa-eye',
-                    command: this.handleViewEvent
-                },
-                {
-                    label: 'Ver estátisticas',
-                    icon: 'fa fa-chart',
-                    command: this.handleViewEstatisticEvent
-                },
-                {
-                    label: 'Editar',
-                    icon: 'fa fa-pencil',
-                    command: this.handleVEditEvent
-                },
-                {
-                    label: 'Eliminar',
-                    icon: 'fa fa-trash',
-                    command: this.handleDeleteEvent
-                },
-            ],
             
         }
     },
     created(){
-        this.$store.dispatch("admin/fetchEvents")
+        this.fetchEvents()
     },
     computed: {
         ...mapGetters({
-            events: 'admin/events',
             user: 'auth/user'
         }),
-
-        events_formatter(){
-            return this.events.map((eve, i) => {
-                return {...eve, int_id: i + 1 }
-            })
-        },
 
         date_formatter(){
             return dateFormatter
         }
     },
     methods: {
+        async fetchEvents(){
+            this.busy = true
+            const response = await EventServices.fetchEvents()
+            .catch(() => this.$toast.add({severity:'error', summary: 'Error', detail: 'Erro ao buscar os eventos', life: 3000}))
+            .finally(() => this.busy = false )
+
+            if(response.status == 200){
+                this.events = response.data.map((eve, i) => {
+                return {...eve, int_id: i + 1 }
+            })
+                return
+            }
+
+            this.$toast.add({severity:'error', summary: 'Error', detail: 'Erro ao buscar os eventos', life: 3000})
+        },
+
         onRowSelected(item){
             this.selectedEvents.push(item.data);
             this.isItemSelected = true;
@@ -105,28 +90,26 @@ export default {
             }
         },
 
-        handleViewer(event){
-            this.$router.push({name: 'event.home', params: {id: event.data.id}})
-        },
-
-        handleStatistic(event){
-            this.$router.push({name: 'admin.reports', params: {eventId: event.data.id}})
-        },
-
-        handleEdit(event){},
-
         handleHideSelectionMode(){
             this.selectionModeIsVisible = false;
             this.selectedEvents = [];
         },
 
-        handleViewEvent(){},
+        handleViewEvent(event){
+            this.$router.push({name: 'event.home', params: {id: event.id}})
+        },
 
-        handleViewEstatisticEvent(){},
+        handleViewEstatisticEvent(event){
+            this.$router.push({name: 'event.statistic', params: {eventId: event.id}})
+        },
 
-        handleVEditEvent(){},
+        handleEditEvent(event){
+            this.$refs.ModalEditEvent.show(event.id)
+        },
 
-        handleDeleteEvent(){},
+        handleDeleteEvent(event){
+            this.$refs.ModalDeleteEvent.show(event.id)
+        },
     },
     filters: {
         maxLengthFilter(value){
@@ -138,6 +121,9 @@ export default {
 
 <template>
     <div class="p-4 px-5 w-full">
+        <ModalEditEvent ref="ModalEditEvent" />
+        <ModalDeleteEvent ref="ModalDeleteEvent" @event-deleted="fetchEvents" />
+
         <div>
             <div class="flex gap-2 justify-end ">
                 <template v-if="isItemSelected">
@@ -173,56 +159,7 @@ export default {
         </div>
 
         <div class="my-3" v-show="showFilters">
-            <div>
-                <h6>Filtrar por</h6>
-            </div>
-            <div class="w-100"></div>
-            <div>
-                <div>
-                    <select name="filter-organizar" v-model="filters.organizer" class="form-select form-select-sm">
-                        <option value="none" selected>__selecione um organizador</option>
-                        <option v-for="(op, i) in [1, 2, 4, 5, 6]" :value="op" :key="i">
-                            {{ op }}
-                        </option>
-                    </select>
-                </div>
-            </div>
-
-            <div>
-                <div label-class="text-md">
-                    <InputText v-model="filters.organizer" type="text" placeholder="Nome..."></InputText>
-                </div>
-            </div>
-
-            <div>
-                <select name="filter-organizar" v-model="filters.status" class="form-select form-select-sm">
-                    <option value="none" selected>__selecione um status</option>
-                    <option v-for="(op, i) in ['brevemente','ocorrendo','terminado', 'cancelado']" :value="op" :key="i">
-                        {{ op }}
-                    </option>
-                </select>
-            </div>
-
-            <div>
-                <div label="criados em" label-class="text-md">
-                    <Calendar v-model="filters.creationDate" placeholder="Data de criação..."></Calendar>
-                </div>
-
-                <div label="criados em" label-class="text-md">
-                    <Calendar v-model="filters.startDate" placeholder="Data de início..."></Calendar>
-                </div>
-            </div>
-
-            <div>
-                <div>
-                    <select name="filter-organizar" v-model="filters.participants" class="form-select form-select-sm">
-                        <option value="none" selected>__selecione o nª de participantes</option>
-                        <option v-for="(op, i) in [1, 2, 4, 5, 6]" :value="op" :key="i">
-                            {{ op }}
-                        </option>
-                    </select>
-                </div>
-            </div>
+           <EventFilters />
         </div>
 
         <div>
@@ -234,9 +171,11 @@ export default {
             </div>
 
             <div>
-                <DataTable :value="events_formatter" size="small" showGridlines paginator :rows="7"
+                <DataTable :value="events" size="small" showGridlines paginator :rows="7"
                     v-model:selection="itemSelected" dataKey="id" scrollable scrollHeight="380px"
-                    @row-select="onRowSelected" @row-unselect="onRowUnselected">
+                    @row-select="onRowSelected" @row-unselect="onRowUnselected"
+                    :loading="busy" lazy
+                >
                 
                     <Column selectionMode="multiple" v-if="selectionModeIsVisible" headerStyle="width: 3rem"></Column>
                     
@@ -256,20 +195,35 @@ export default {
 
                     <Column field="actions" header="Ações">
                         <template #body="props">
-                            <!-- <Button size="small" text @click="handleEdit(props)"  title="Editar">
-                                <i class="fa fa-pencil text-surface-700"></i>
-                            </Button>
-
-                            <Button size="small" text @click="handleStatistic(props)" title="Ver Estátiscas">
-                                <i class="fa fa-chart-line text-surface-700"></i>
-                            </Button>
-
-                            <Button size="small" text @click="handleViewer(props)" title="Visualizar">
-                                <i class="fa fa-eye text-surface-700"></i>
-                            </Button> -->
-
-                            <SplitButton :model="optionsActions" severity="secondary" size="small" />
-
+                            <SplitButton 
+                                :model="[
+                                    {
+                                        label: 'Visualizar',
+                                        icon: 'fa fa-eye',
+                                        command: () => this.handleViewEvent(props.data)
+                                    },
+                                    {
+                                        label: 'Ver estátisticas',
+                                        icon: 'fa fa-chart-line',
+                                        command: () => this.handleViewEstatisticEvent(props.data)
+                                    },
+                                    {
+                                        label: 'Editar',
+                                        icon: 'fa fa-pencil',
+                                        command: () => this.handleEditEvent(props.data)
+                                    },
+                                    {
+                                        label: 'Eliminar',
+                                        icon: 'fa fa-trash',
+                                        command: () => this.handleDeleteEvent(props.data)
+                                    },
+                                ]" 
+                                severity="secondary" size="small" class="text-sm"
+                            >
+                                <div  class="px-2 py-1">
+                                    <i class="fa fa-cog mr-1" /> opções
+                                </div>
+                            </SplitButton>
                         </template>
                     </Column>
                 </DataTable>

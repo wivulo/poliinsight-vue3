@@ -2,6 +2,10 @@ import { databaseURL } from "@/config"
 import axios from 'axios'
 
 export default {
+    fetchEvents() {
+        return axios.get(`${databaseURL}/events`)
+    },
+
     createEvent(event){
         const formData = new FormData();
 
@@ -14,4 +18,12 @@ export default {
 
         return axios.post(`${databaseURL}/events`, formData);
     },
+
+    show(id){
+        return axios.get(`${databaseURL}/events/${id}`);
+    },
+
+    delete(id){
+        return axios.delete(`${databaseURL}/events/${id}`);
+    }
 }
