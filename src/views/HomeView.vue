@@ -25,8 +25,8 @@ export default {
 </script>
 
 <template>
-  <main class="flex flex-col">
-    <AppGuestHeader />
+  <main class="flex flex-col w-full">
+    <!-- <AppGuestHeader /> -->
 
     <div class="flex flex-col justify-center h-48 mb-4">
       <div class="px-4">

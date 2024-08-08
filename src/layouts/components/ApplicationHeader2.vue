@@ -5,12 +5,14 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import Avatar from 'primevue/avatar';
-import Skeleton from 'primevue/skeleton';
+
+import logo from '@/assets/logo_without_bg.png'
 
 export default {
     name: 'AppGuestHeader',
     data() {
         return {
+            logo: logo,
             search: '',
             links: ['perfil', 'sair']
         }
@@ -18,12 +20,11 @@ export default {
     components: {
         AppLogo,
         InputText, Avatar,
-        Button, Dropdown, Skeleton
+        Button, Dropdown
     },
     computed: {
         ...mapGetters({
-            user: 'auth/user',
-            busy: "auth/busy"
+            user: 'auth/user'
         })
     },
     methods: {
@@ -43,58 +44,44 @@ export default {
 
 <template>
     <header class="border-b border-surface-100 w-full">
-        <div class="app-container flex justify-between  py-2 px-4 pl-5">
-            <div class="py-1 flex items-center">
-                <span class="relative">
-                    <i class="fa fa-search absolute top-2/4 -mt-2 left-3 text-surface-400 dark:text-surface-600" />
-                    <InputText v-model="search" placeholder="Search" size="small" class="pl-10" />
-                </span>
-            </div>
+        <div class="app-container flex justify-between  p-2 px-3">
+            <AppLogo />
 
-            <div class="flex">
-                <nav class="app-navbar">
-                     <ul class="flex items-center self-center mb-0">
+            <div class="flex gap-4">
+                <div class="py-1 flex items-center">
+                    <span class="relative">
+                        <i class="fa fa-search absolute top-2/4 -mt-2 left-3 text-surface-400 dark:text-surface-600" />
+                        <InputText v-model="search" placeholder="Search" size="small" class="pl-10" />
+                    </span>
+                </div>
+    
+                <nav class="app-navbar flex items-center">
+                    <ul class="flex items-center self-center mb-0">
                         <li>
                             <Button text class="soft-hover text-surface-500">
                                 <i class="fa fa-moon"/>
                             </Button>
                         </li>
-
-                        <li>
-                            <Button text class="soft-hover text-surface-500">
-                                <i class="fa fa-bell"/>
-                            </Button>
-                        </li>
-
-                        <li v-if="busy" class="flex gap-2">
-                            <div class="flex items-center">
-                                <Skeleton shape="circle" size="2rem"></Skeleton>
-                            </div>
-                            <div class="flex flex-col gap-2">
-                                <Skeleton width="6rem" />
-                                <Skeleton width="6rem" />
-                            </div>
-                        </li>
                         
-                        <li v-else-if="user" class="flex border-x border-slate-200 px-1">
+                        <li v-if="user" class="flex border-x border-slate-200 me-3 px-1 pe-2">
 
-                            <Dropdown :options="links" class="p-0">
+                            <Dropdown :options="links">
                                 <template #value>
                                     <div class="flex gap-1">
                                         <div class="h-2">
-                                            <Avatar :label="user.name.charAt(0).toUpperCase()" class="mr-2 h-2" shape="circle"  />
+                                            <Avatar label="V" class="mr-2 h-2" shape="circle"  />
                                         </div>
                                         <div class="flex flex-col">
-                                            <p class="text-md">{{ user.name }}</p>
+                                            <p class="text-md">Nome do usuario</p>
                                             <p class="text-sm">
-                                                {{ user.email }}
+                                                Email do usuario
                                             </p>
                                         </div>
                                     </div>
                                 </template>
 
                                 <template #option="{ option }">
-                                    <Button class="h-2 text-md text-zinc-500 hover:text-blue-600" :label="option" link @click="handleUserMenuClick(option)" />
+                                    <Button class="h-2 text-md text-zinc-500 hover:text-blue-600" :label="option" link @click="handleUserMenuClick(option)"/>
                                 </template>
                             </Dropdown>
                         </li>

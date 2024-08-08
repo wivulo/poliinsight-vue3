@@ -1,33 +1,34 @@
 <script>
+import { defineComponent, computed } from 'vue';
 import Toast from 'primevue/toast';
-import { mapGetters } from 'vuex';
+import { useRouter } from 'vue-router';
 
-export default {
+export default defineComponent({
   name: "App",
   components: {
     Toast,
   },
-  computed: {
-    ...mapGetters({
-      user: "auth/user",
-      token: "auth/token",
-      userId: 'auth/userId'
-    })
-  },
-  created() {
-    if(this.userId){
-      this.$store.dispatch("auth/fetchUser", this.userId)
-      .then(res => {
-        if(res?.error == 'Unauthenticated') this.$router.push({name: 'login'})
-      })
-    }
-  },
-}
+  setup() {
+    const router = useRouter();
+    const defaultLayout = 'default-layout';
+
+    const layout = computed(() => {
+      return router.currentRoute.value.meta.layout || defaultLayout;
+    });
+
+    return {
+      layout,
+    };
+  }
+});
 </script>
 
 <template>
   <div class="h-screen overflow-y-auto">
     <Toast />
-    <RouterView />
+    <!-- <RouterView /> -->
+    <transition name="page" mode="out-in">
+      <component :is="layout" v-if="layout" :key="layout" />
+    </transition>
   </div>
 </template>

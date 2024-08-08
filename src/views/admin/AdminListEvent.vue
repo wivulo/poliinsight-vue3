@@ -133,7 +133,7 @@ export default {
                 </template>
 
                 <Button size="small" class="actions-button">
-                    <router-link :to="{name: 'admin.create_event'}" class="text-white hover:text-primary">
+                    <router-link :to="{name: 'gestao-eventos.create'}" class="text-white hover:text-primary">
                         <i class="fa fa-plus mr-2"></i> Criar evento
                     </router-link>
                 </Button>

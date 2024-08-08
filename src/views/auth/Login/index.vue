@@ -31,12 +31,10 @@ export default{
     },
     methods: {
       redirectOnLogin(user){
-        if(user.groupId === 1){
-          this.$router.push({ name: 'admin.overview', params: {id: user.id} });
-        }else if(user.groupId === 3){
-          this.$router.push({ name: 'organizer.overview', params: {id: user.id} });
-        }else{
+        if(user.groupId === 2){
           this.$router.push({ name: 'home.user', params: {id: user.id}});
+        }else{
+          this.$router.push({ name: 'dashboard.overview', params: {id: user.id} });
         }
       },
 
@@ -50,6 +48,7 @@ export default{
           this.$toast.add({severity:'success', summary: 'Success', detail: 'Login successful', life: 2000});
           this.$store.dispatch("auth/fetchUser", response.data.user.id)
           this.$store.dispatch("auth/saveToken", { token: response.data.token, remember: false })
+          this.$store.dispatch("auth/fetchNavAndRoles", response.data.user.id)
           this.redirectOnLogin(response.data.user)
           return
         }

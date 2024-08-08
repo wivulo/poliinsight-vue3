@@ -2,6 +2,9 @@ import Cookies from 'js-cookie'
 import { databaseURL } from "../../config"
 import axios from 'axios'
 import * as types from '../mutation-types'
+import { getLocalStorage, setLocalStorage, removeLocalStorage } from '@/helpers/localStorage'
+import { prepareonlyRoles, prepareRolesAndPath, perparenavAndRoles} from '@/helpers/rules'
+
 
 export const auth = { 
     namespaced: true,   
@@ -11,16 +14,23 @@ export const auth = {
         onLogin: false,
         token: Cookies.get('token'),
         userId: Cookies.get('userId'),
-        busy: false
+        busy: false,
+        navAndRoles: getLocalStorage('AUTH_NAV_AND_ROLES', []),
+        RolesAndPath: getLocalStorage('AUTH_ROLES_AND_PATH', []),
+        onlyRoles: getLocalStorage('AUTH_ONLY_ROLES', []),
     },
     // getters
     getters: {
+        check: state => state.user !== null,
         user: state => state.user,
         onLogin: state => state.onLogin,
         token: state => state.token,
         check: state => state.user !== null,
         userId: state => state.userId,
-        busy: state => state.busy
+        busy: state => state.busy,
+        navAndRoles: state => state.navAndRoles,
+        RolesAndPath: state => state.RolesAndPath,
+        onlyRoles: state => state.onlyRoles,
     },
   
     // mutations
@@ -49,6 +59,13 @@ export const auth = {
             state.token = null
         
             Cookies.remove('token')
+            Cookies.remove('userId')
+            state.navAndRoles = []
+            state.RolesAndPath = []
+            state.onlyRoles = []
+            setLocalStorage('AUTH_NAV_AND_ROLES', [])
+            setLocalStorage('AUTH_ROLES_AND_PATH', [])
+            setLocalStorage('AUTH_ONLY_ROLES', [])
         },
     
         [types.UPDATE_USER] (state, { user }) {
@@ -61,7 +78,23 @@ export const auth = {
 
         [types.FETCH_USER_BUSY] (state, { busy }) {
             state.busy = busy
-        }
+        },
+        [types.FETCH_NAV_AND_ROLES_SUCCESS] (state,  navAndRoles ) {
+            state.navAndRoles = perparenavAndRoles(navAndRoles)
+            state.RolesAndPath = prepareRolesAndPath(navAndRoles)
+            state.onlyRoles = prepareonlyRoles(navAndRoles)
+            setLocalStorage('AUTH_NAV_AND_ROLES',  state.navAndRoles)
+            setLocalStorage('AUTH_ROLES_AND_PATH',  state.RolesAndPath)
+            setLocalStorage('AUTH_ONLY_ROLES', state.onlyRoles )
+          },
+          [types.FETCH_NAV_AND_ROLES_FAILURE]  (state) {
+            state.navAndRoles = []
+            state.RolesAndPath = []
+            state.onlyRoles = []
+            setLocalStorage('AUTH_NAV_AND_ROLES', [])
+            setLocalStorage('AUTH_ROLES_AND_PATH', [])
+            setLocalStorage('AUTH_ONLY_ROLES', [])
+          },
     },
   
     // actions
@@ -74,7 +107,7 @@ export const auth = {
             try {
                 commit(types.FETCH_USER_BUSY, { busy: true })
 
-                const { data } = await axios.get(`${databaseURL}/user/${id}`)
+                const { data } = await axios.get(`${databaseURL}/users/${id}`)
 
                 if(data.error){
                     commit(types.FETCH_USER_FAILURE)
@@ -89,6 +122,15 @@ export const auth = {
                 commit(types.FETCH_USER_BUSY, { busy: false })
             }
         },
+
+        async fetchNavAndRoles ({ commit }, id) {
+            try {
+              let { data } = await axios.get(`${databaseURL}/rulesForGroup/navAndRules/${id}`)
+              commit(types.FETCH_NAV_AND_ROLES_SUCCESS, data)
+            } catch (e) {
+              commit(types.FETCH_NAV_AND_ROLES_FAILURE, null)
+            }
+          },
     
         updateUser ({ commit }, payload) {
             commit(types.UPDATE_USER, payload)
