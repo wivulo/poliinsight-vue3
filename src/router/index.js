@@ -104,7 +104,7 @@ const router = createRouter({
     //////////////////////////////////////////////////////////////////////////////
     // "gestao-eventos.create",
     {
-      path: '/gestao-de-eventos/criar-evento',
+      path: '/gestao-de-eventos/criar-evento/:id',
       name: 'gestao-eventos.create',
       component: AdminCreateEvent,
       meta: {
@@ -113,7 +113,7 @@ const router = createRouter({
     },
     // "gestao-eventos.list"
     {
-      path: '/gestao-de-eventos/listar-eventos',
+      path: '/gestao-de-eventos/listar-eventos/:id',
       name: 'gestao-eventos.list',
       component: AdminListEvent,
       meta: {
@@ -121,7 +121,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/gestao-de-eventos/meus-eventos',
+      path: '/gestao-de-eventos/meus-eventos/:id',
       name: 'gestao-eventos.my_events',
       component: MyEvents,
       meta: {
@@ -130,7 +130,7 @@ const router = createRouter({
     },
     // "gestao-eventos.calendar",
     {
-      path: '/gestao-de-eventos/calendario',
+      path: '/gestao-de-eventos/calendario/:id',
       name: 'gestao-eventos.calendar',
       component: Calendar,
       meta: {
@@ -139,7 +139,7 @@ const router = createRouter({
     },
     // "gestao-eventos.speakers",
     {
-      path: '/gestao-de-eventos/palestrantes',
+      path: '/gestao-de-eventos/palestrantes/:id',
       name: 'gestao-eventos.speakers',
       component: Speakers,
       meta: {
@@ -148,7 +148,7 @@ const router = createRouter({
     },
     // "gestao-eventos.registrations",
     {
-      path: '/gestao-de-eventos/inscricoes',
+      path: '/gestao-de-eventos/inscricoes/:id',
       name: 'gestao-eventos.registrations',
       component: Registrations,
       meta: {
@@ -157,7 +157,7 @@ const router = createRouter({
     },
 
     {
-      path: '/gestao-de-eventos/tickets',
+      path: '/gestao-de-eventos/tickets/:id',
       name: 'gestao-eventos.tickets',
       component: Tickets,
       meta: {
@@ -166,7 +166,7 @@ const router = createRouter({
     },
     // "analise-relatorios.analitics",
     {
-      path: '/analise-relatorios/analise',
+      path: '/analise-relatorios/analise/:id',
       name: 'analise_relatorios.analitics',
       component: Analitics,
       meta: {
@@ -175,7 +175,7 @@ const router = createRouter({
     },
     // "analise-relatorios.reports",
     {
-      path: '/analise-relatorios/relatorios',
+      path: '/analise-relatorios/relatorios/:id',
       name: 'analise-relatorios.reports',
       component: Reports,
       meta: {
@@ -184,7 +184,7 @@ const router = createRouter({
     },
     // "importacao.import",
     {
-      path: '/importar',
+      path: '/importar/:id',
       name: 'importacao.import',
       component: Import,
       meta: {
@@ -193,7 +193,7 @@ const router = createRouter({
     },
     // "exportacao.export",
     {
-      path: '/exportar',
+      path: '/exportar/:id',
       name: 'exportacao.export',
       component: Export,
       meta: {
@@ -202,7 +202,7 @@ const router = createRouter({
     },
     // "seguranca.users",
     {
-      path: '/seguranca/usuarios',
+      path: '/seguranca/usuarios/:id',
       name: 'seguranca.users',
       component: AdminUserManagment,
       meta: {
@@ -211,7 +211,7 @@ const router = createRouter({
     },
     // "seguranca.permissions",
     {
-      path: '/seguranca/permissoes',
+      path: '/seguranca/permissoes/:id',
       name: 'seguranca.permissions',
       component: Permissions,
       meta: {
@@ -220,7 +220,7 @@ const router = createRouter({
     },
     // "seguranca.groups",
     {
-      path: '/seguranca/grupos',
+      path: '/seguranca/grupos/:id',
       name: 'seguranca.groups',
       component: Groups,
       meta: {
@@ -229,7 +229,7 @@ const router = createRouter({
     },
     // "configuracoes.settings",
     {
-      path: '/configuracoes',
+      path: '/configuracoes/:id',
       name: 'configuracoes.settings',
       component: Settings,
       meta: {
@@ -238,7 +238,7 @@ const router = createRouter({
     },
     // "configuracoes.logs",
     {
-      path: '/configuracoes/logs',
+      path: '/configuracoes/logs/:id',
       name: 'configuracoes.logs',
       component: Logs,
       meta: {
@@ -247,13 +247,13 @@ const router = createRouter({
     },
 
     {
-      path: '/configuracoes/redefinir_minha_senha',
+      path: '/configuracoes/redefinir_minha_senha/:id',
       name: 'configuracoes.reset_my_password',
       component: ResetMyPassword,
     },
     // "profile.geral",
     {
-      path: '/perfil',
+      path: '/perfil/:id',
       name: 'profile.geral',
       component: Profile,
       meta: {

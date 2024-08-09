@@ -30,9 +30,9 @@ export default {
 
 <template>
      <div class="flex flex-col py-3 px-5 gap-3 w-full">
-        <div class="my-3">
-            <p class="text-lg text-surface-400 font-semibold ">Overview</p>
-        </div>
+        <!-- <div class="my-3">
+            <p class="text-lg text-slate-600 font-semibold ">Overview</p>
+        </div> -->
 
         <template v-if="user">
             <div>

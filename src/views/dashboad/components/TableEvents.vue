@@ -1,6 +1,7 @@
 <script>
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import dayjs from 'dayjs'
 
 export default {
     name: "Dashboard.overview.table",
@@ -19,6 +20,11 @@ export default {
         DataTable,
         Column
     },
+    methods: {
+        dateFormater(date) {
+            return dayjs(date).format('DD/MM/YYYY')
+        }
+    },
 }
 </script>
 
@@ -28,14 +34,14 @@ export default {
         class="w-full" tableClass="text-[0.94rem]"
     >                                        
         <Column field="name" header="Nome" />
-                    
-        <Column field="date" header="Data" />
-            <!-- <template #body="props">
-                {{ date_formatter(props.data.date) }}
-            </template>
-        </Column> -->
         
         <Column field="localization" header="Localização" />
+
+        <Column field="date" header="Data">
+            <template #body="props">
+                {{ dateFormater(props.data.date) }}
+            </template>
+        </Column>
         
         <Column field="organizer.name" header="Organizador" />
     </DataTable>

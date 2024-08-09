@@ -15,6 +15,8 @@ import SplitButton  from 'primevue/splitbutton';
 import EventFilters from "@/components/EventFilters.vue"
 import ModalEditEvent from "@/views/event/components/ModalEditEvent.vue"
 import ModalDeleteEvent from "@/views/event/components/ModalDeleteEvent.vue"
+import dayjs from 'dayjs'
+
 
 export default {
     name: "Admin.ListEvent",
@@ -110,6 +112,10 @@ export default {
         handleDeleteEvent(event){
             this.$refs.ModalDeleteEvent.show(event.id)
         },
+
+        dateFormater(date) {
+            return dayjs(date).format('DD/MM/YYYY')
+        }
     },
     filters: {
         maxLengthFilter(value){
@@ -171,7 +177,7 @@ export default {
             </div>
 
             <div>
-                <DataTable :value="events" size="small" showGridlines paginator :rows="7"
+                <DataTable :value="events" size="small" paginator :rows="7"
                     v-model:selection="itemSelected" dataKey="id" scrollable scrollHeight="380px"
                     @row-select="onRowSelected" @row-unselect="onRowUnselected"
                     :loading="busy" lazy
@@ -183,13 +189,13 @@ export default {
                     
                     <Column field="name" header="Nome"></Column>
                     
+                    <Column field="localization" header="Localização" />
+
                     <Column field="date" header="Data">
                         <template #body="props">
-                            {{ date_formatter(props.data.date) }}
+                            {{ dateFormater(props.data.date) }}
                         </template>
                     </Column>
-                    
-                    <Column field="localization" header="Localização" />
                     
                     <Column field="organizer.name" header="Organizador" />
 

@@ -1,6 +1,13 @@
 <script>
+import InputText from "primevue/inputtext";
+import Calendar from 'primevue/calendar';
+
 export default {
     name: "EventFilters",
+    components: {
+        InputText,
+        Calendar
+    },
     data(){
         return {
             filters: {
