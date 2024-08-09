@@ -36,7 +36,7 @@ import Groups from "@/views/seguranca/groups/index.vue"
 
 import Profile from "@/views/profile/index.vue"
 
-
+import InternalServerError from '@/views/error/InternalServerError.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -84,7 +84,16 @@ const router = createRouter({
     },
 
     {
-      path: '/dashboard/overview',
+      path: '/error-500',
+      name: 'error.internal_server',
+      component: InternalServerError,
+      meta: {
+        layout: 'ErrorLayout'
+      }
+    },
+
+    {
+      path: '/dashboard/overview/:id',
       name: 'dashboard.overview',
       component: DashboardGeral,
       meta: {
@@ -149,7 +158,7 @@ const router = createRouter({
 
     {
       path: '/gestao-de-eventos/tickets',
-      name: 'gestao_eventos.tickets',
+      name: 'gestao-eventos.tickets',
       component: Tickets,
       meta: {
         layout: 'default-layout'
@@ -235,6 +244,12 @@ const router = createRouter({
       meta: {
         layout: 'default-layout'
       }
+    },
+
+    {
+      path: '/configuracoes/redefinir_minha_senha',
+      name: 'configuracoes.reset_my_password',
+      component: ResetMyPassword,
     },
     // "profile.geral",
     {

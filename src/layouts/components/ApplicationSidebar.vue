@@ -18,7 +18,6 @@ export default {
         }
     },
     created() {
-        console.log(this.navs)
         this.navs.map(nav => {
             nav.rules.map(rule => {
                 this.mapped_rules[rule.route] = nav
@@ -45,7 +44,7 @@ export default {
         onEnter(el, done){
             anime({
                 targets: el,
-                height: [0, el.scrollHeight],
+                height: [0, el.scrollHeight + 10],
                 paddingTop: 5,
                 easing: 'easeInOutQuad',
                 delay: 0,
@@ -107,11 +106,11 @@ export default {
                                 </span>
 
                                 <small v-if="!nav.show">
-                                    <i class="fa fa-chevron-left text-xs absolute right-3 transform translate-y-1/2" />
+                                    <i class="fa fa-chevron-left text-[0.63rem] absolute right-3 transform translate-y-1/2 opacity-80" />
                                 </small>
 
                                 <small v-else>
-                                    <i class="fa fa-chevron-down text-xs absolute right-3 transform translate-y-1/2" />
+                                    <i class="fa fa-chevron-down text-[0.63rem] absolute right-3 transform translate-y-1/2 opacity-80" />
                                 </small>
                             </p>
 

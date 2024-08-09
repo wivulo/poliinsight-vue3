@@ -2,6 +2,7 @@
 import { defineComponent, computed } from 'vue';
 import Toast from 'primevue/toast';
 import { useRouter } from 'vue-router';
+import { mapGetters } from 'vuex';
 
 export default defineComponent({
   name: "App",
@@ -19,7 +20,20 @@ export default defineComponent({
     return {
       layout,
     };
-  }
+  },
+  computed: {
+        ...mapGetters({
+            user: 'auth/user',
+            token: 'auth/token',
+        }),
+  },
+  watch: {
+    $route(to, from) {
+      if (!this.token && !this.user) {
+        this.$router.push({ name: 'login' });
+      }
+    },
+  },
 });
 </script>
 

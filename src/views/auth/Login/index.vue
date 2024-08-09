@@ -31,8 +31,8 @@ export default{
     },
     methods: {
       redirectOnLogin(user){
-        if(user.groupId === 2){
-          this.$router.push({ name: 'home.user', params: {id: user.id}});
+        if(user.groupId === 3){
+          this.$router.push({ name: 'home', params: {id: user.id}});
         }else{
           this.$router.push({ name: 'dashboard.overview', params: {id: user.id} });
         }
@@ -43,9 +43,14 @@ export default{
         const response = await AuthServices.login(this.user)
         .catch(() => this.$toast.add({severity:'error', summary: 'Error', detail: 'Erro ao entrar no sistema', life: 2000}))
         .finally(() => this.busy = false)
+
+        if(response.status === 200 && response.data.error){
+          this.$toast.add({severity:'error', summary: 'Error', detail: "E-mail ou senha estão incorretos!", life: 3000})
+          return
+        }
         
         if(response.status === 200){
-          this.$toast.add({severity:'success', summary: 'Success', detail: 'Login successful', life: 2000});
+          this.$toast.add({severity:'success', summary: 'Success', detail: 'A entrar....', life: 2000});
           this.$store.dispatch("auth/fetchUser", response.data.user.id)
           this.$store.dispatch("auth/saveToken", { token: response.data.token, remember: false })
           this.$store.dispatch("auth/fetchNavAndRoles", response.data.user.id)
@@ -82,10 +87,8 @@ export default{
             <div class="flex flex-col basis-1/2 px-4 text-slate-50">
                 <p class="text-xl font-semibold mb-2 tracking-wider">Poliinsight</p>
                 <p class="text-justify text-sm">
-                  O Poliinsight é um software de gestão de eventos integrada 
-                  desenvolvido para atender às demandas específicas do Instituto Superior Politécnico
-                  de Benguela. Com ele, é possível gerenciar de forma eficiente diversos processos 
-                  ligados a gestão de eventos e os dados relacionado aos eventos.
+                  O Poliinsight é um software de gestão de eventos integrada, com ele, é possível gerenciar de forma 
+                  eficiente diversos processos ligados a gestão de eventos e os dados relacionado aos eventos.
                 </p>
             </div>
 

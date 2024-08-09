@@ -1,12 +1,15 @@
 <script>
 export default {
-  name: 'ErrorLayout'
+  name: 'ErrorLayout',
 }
 </script>
 
 <template>
-  <div>
-    <h1>{{ $t('error_alert_title') }}</h1>
-    <p>{{ $t('error_alert_text') }}</p>
+  <div class="flex flex-col items-center justify-center h-screen">
+    <router-view v-slot="{ Component }">
+        <transition>
+          <component :is="Component" />
+        </transition>
+    </router-view>
   </div>
 </template>

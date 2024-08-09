@@ -10,10 +10,9 @@ export const auth = {
     namespaced: true,   
     // state
     state: {
-        user: null,
+        user: getLocalStorage('AUTH_USER', null),
         onLogin: false,
         token: Cookies.get('token'),
-        userId: Cookies.get('userId'),
         busy: false,
         navAndRoles: getLocalStorage('AUTH_NAV_AND_ROLES', []),
         RolesAndPath: getLocalStorage('AUTH_ROLES_AND_PATH', []),
@@ -25,8 +24,7 @@ export const auth = {
         user: state => state.user,
         onLogin: state => state.onLogin,
         token: state => state.token,
-        check: state => state.user !== null,
-        userId: state => state.userId,
+        check: state => state.userId !== null,
         busy: state => state.busy,
         navAndRoles: state => state.navAndRoles,
         RolesAndPath: state => state.RolesAndPath,
@@ -42,16 +40,20 @@ export const auth = {
     
         [types.FETCH_USER_SUCCESS] (state, { user }) {
             state.user = user
-        },
-
-        [types.SAVE_USER] (state, { userId }){
-            Cookies.set('userId', userId)
+            setLocalStorage('AUTH_USER', user)
         },
     
         [types.FETCH_USER_FAILURE] (state) {
             state.token = null
             Cookies.remove('token')
-            Cookies.remove('userId')
+            state.user = null
+            state.navAndRoles = []
+            state.RolesAndPath = []
+            state.onlyRoles = []
+            setLocalStorage('AUTH_USER', null)
+            setLocalStorage('AUTH_NAV_AND_ROLES', [])
+            setLocalStorage('AUTH_ROLES_AND_PATH', [])
+            setLocalStorage('AUTH_ONLY_ROLES', [])
         },
     
         [types.LOGOUT] (state) {
@@ -59,10 +61,10 @@ export const auth = {
             state.token = null
         
             Cookies.remove('token')
-            Cookies.remove('userId')
             state.navAndRoles = []
             state.RolesAndPath = []
             state.onlyRoles = []
+            setLocalStorage('AUTH_USER', null)
             setLocalStorage('AUTH_NAV_AND_ROLES', [])
             setLocalStorage('AUTH_ROLES_AND_PATH', [])
             setLocalStorage('AUTH_ONLY_ROLES', [])
@@ -70,6 +72,7 @@ export const auth = {
     
         [types.UPDATE_USER] (state, { user }) {
             state.user = user
+            setLocalStorage('AUTH_USER', user)
         },
 
         [types.ON_LOGIN] (state, { onLogin }) {
@@ -99,7 +102,7 @@ export const auth = {
   
     // actions
     actions: {
-        saveToken ({ commit, dispatch }, payload) {
+        saveToken ({ commit }, payload) {
             commit(types.SAVE_TOKEN, payload)
         },
     
@@ -114,7 +117,6 @@ export const auth = {
                     return { error: 'Unauthenticated' }
                 }
         
-                commit(types.SAVE_USER, { userId: data?.id })
                 commit(types.FETCH_USER_SUCCESS, { user: data })
                 commit(types.FETCH_USER_BUSY, { busy: false })
             } catch (e) {
@@ -138,28 +140,6 @@ export const auth = {
     
         async logout ({ commit }) {        
             commit(types.LOGOUT)
-        },
-    
-        async login ({ commit }, user) {
-            try{
-
-                commit(types.ON_LOGIN, { onLogin: true })
-                const { data } = await axios.post(`${databaseURL}/login`, user)
-
-                commit(types.ON_LOGIN, { onLogin: false })
-                
-                if(data.error) {
-                   //error with sweetalert
-                    return data
-                }else{
-                    commit(types.SAVE_TOKEN, { token: data.token, remember: false })
-                    // redirectOnLogin(data.user)
-                    return data
-                }
-            }catch(err){
-                commit(types.ON_LOGIN, { onLogin: false })
-                //TODO: notificação de erro
-            }
         },
     }
 }
