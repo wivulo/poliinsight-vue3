@@ -9,7 +9,7 @@ import Avatar from 'primevue/avatar';
 import logo from '@/assets/logo_without_bg.png'
 
 export default {
-    name: 'AppGuestHeader',
+    name: 'ApplicationHeader',
     data() {
         return {
             logo: logo,
@@ -27,10 +27,20 @@ export default {
             user: 'auth/user'
         })
     },
+    mounted() {
+        if(this.user?.groupId != 3){
+            this.links = [
+                'Gestão de eventos',
+                ...this.links
+            ]
+        }
+    },
     methods: {
         handleUserMenuClick(option){
             if(option === 'sair'){
                 this.handleLogout()
+            }else if(option === 'Gestão de eventos'){
+                this.$router.push({name: 'dashboard.overview', params: {id: this.user.id}})
             }
         },
 
@@ -69,19 +79,19 @@ export default {
                                 <template #value>
                                     <div class="flex gap-1">
                                         <div class="h-2">
-                                            <Avatar label="V" class="mr-2 h-2" shape="circle"  />
+                                            <Avatar :label="user.name.charAt(0).toUpperCase()" class="mr-2 h-2" shape="circle"  />
                                         </div>
                                         <div class="flex flex-col">
-                                            <p class="text-md">Nome do usuario</p>
+                                            <p class="text-md">{{ user.name }}</p>
                                             <p class="text-sm">
-                                                Email do usuario
+                                                {{ user.email }}
                                             </p>
                                         </div>
                                     </div>
                                 </template>
 
                                 <template #option="{ option }">
-                                    <Button class="h-2 text-md text-zinc-500 hover:text-blue-600" :label="option" link @click="handleUserMenuClick(option)"/>
+                                    <Button class="h-2 text-md text-zinc-500 hover:text-blue-600" :label="option" link @click="handleUserMenuClick(option)" />
                                 </template>
                             </Dropdown>
                         </li>

@@ -2,8 +2,8 @@
 import DashboadServices from "@/services/DashboadServices"
 import Card from "./OverviewCard/index.js"
 import TableEvents from "./TableEvents.vue"
-import { mapGetters } from 'vuex';
 import Chart from 'primevue/chart';
+import dayjs from 'dayjs'
 
 export default {
     name: "OrganizerOverviewInfo",
@@ -22,6 +22,7 @@ export default {
                 last_five_events: [],
                 popular: null,
                 total_participants: 0,
+                last_event: {}
             },
             genderDistribuition: null,
             genderDistribuitionChartOptions: null,
@@ -45,7 +46,7 @@ export default {
             .catch(() => this.errorMessages())
             .finally(() => this.busy = false)
 
-            if(response.status === 200 && response.data.error){
+            if(response?.status === 200 && response.data.error){
                 this.errorMessages()
                 return
             }
@@ -60,6 +61,10 @@ export default {
 
         errorMessages(){
             this.$toast.add({severity:'error', summary: 'Error', detail: 'Erro ao buscar os dados', life: 2000})
+        },
+
+        dateFormater(date) {
+            return dayjs(date).format('DD/MM/YYYY')
         },
 
         setgenderDistribuition() {
@@ -183,13 +188,16 @@ export default {
                 <CardHeader icon="fa-chart-line text-red-600">
                     <p>Evento Popular</p>
                 </CardHeader>
-                <CardValue class="text-sm py-1">
+                <CardValue class="text-sm py-1" v-if="data.popular">
                     <template v-if="data.popular?.name.length > 16">
                         {{ data.popular?.name.substr(0, 18) +'... - Nº '+ data.popular?.registrations?.length ?? 'Nenhum evento popular' }}
                     </template>
                    <template v-else>
                     {{ data.popular?.name +' - Nº '+ data.popular?.registrations?.length ?? 'Nenhum evento popular' }}
                    </template>
+                </CardValue>
+                <CardValue class="text-sm py-1" v-else>
+                    Nenhum evento popular
                 </CardValue>
                 <CardInformation>
                     <p>0% - na ultima semana</p>
@@ -210,31 +218,26 @@ export default {
             </CardRoot>
         </div>
 
-        <div class="flex flex-col gap-5 w-full mt-7">
+        <div class="flex flex-col gap-5 w-full mt-7" v-if="data.last_event">
             <div class="mt-3">
                 <p class="text-[0.9rem] text-surface-600 font-semibold ">Estatísticas do evento mais recente </p>
             </div>
 
             <div class="flex flex-wrap gap-14">
                 <div class="card w-1/4 flex flex-col gap-4 text-base text-surface-600 font-medium mr-10">
-                    <!-- <p class="font-medium">Nome do evento aqui</p>
-                    <p>Localização do evento aqui</p>
-                    <p>Data do evento aqui</p>
-                    <p>Tipo do evento aqui</p>
-                    <p>Departamento aqui</p> -->
 
                     <CardRoot class="h-[220px] flex flex-col">
                         <CardHeader>
-                            <p>Nome do evento aqui</p>
+                            <p>{{ data.last_event?.name }}</p>
                         </CardHeader>
                         <CardValue>
                            
                         </CardValue>
                         <CardInformation class="mt-5 flex flex-col gap-1">
-                            <p>Localização do evento aqui</p>
-                            <p>Data do evento aqui</p>
-                            <p>Tipo do evento aqui</p>
-                            <p>Departamento aqui</p>
+                            <p>{{ data.last_event?.localization }}</p>
+                            <p>{{ dateFormater(data.last_event?.date) }}</p>
+                            <p>{{ data.last_event?.type?.name }}</p>
+                            <p>{{ data.last_event?.departament }}</p>
 
                             <RouterLink :to="{name: 'analise_relatorios.analitics'}" class="mt-2 text-red-600">
                                 Ver mais

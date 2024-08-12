@@ -1,5 +1,4 @@
 <script>
-import AppGuestHeader from '@/components/AppGuestHeader.vue'
 import CarouselView from '@/components/Carousel/CarouselView.vue'
 import Card from 'primevue/card';
 import Button from 'primevue/button';
@@ -10,7 +9,7 @@ import logo from "@/assets/logo_without_bg.png"
 export default {
   name: "Home",
   components: {
-    AppGuestHeader, Image,
+    Image,
     CarouselView, Card, Button
   },
   data(){

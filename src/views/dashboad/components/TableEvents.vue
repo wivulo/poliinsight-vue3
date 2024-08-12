@@ -2,6 +2,7 @@
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import dayjs from 'dayjs'
+import EventStatus from './OverviewCard/EventStatus.vue';
 
 export default {
     name: "Dashboard.overview.table",
@@ -18,7 +19,7 @@ export default {
     },
     components: {
         DataTable,
-        Column
+        Column, EventStatus
     },
     methods: {
         dateFormater(date) {
@@ -40,6 +41,18 @@ export default {
         <Column field="date" header="Data">
             <template #body="props">
                 {{ dateFormater(props.data.date) }}
+            </template>
+        </Column>
+
+        <Column field="type" header="Tipo de evento" >
+            <template #body="props">
+                {{ props.data.type?.name }}
+            </template>
+        </Column>
+
+        <Column field="status" header="Estado" >
+            <template #body="props">
+               <EventStatus :status="props.data.status" />
             </template>
         </Column>
         
