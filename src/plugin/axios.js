@@ -26,7 +26,7 @@ axios.interceptors.response.use(async function (response) {
     // Do something with response error
     if(error.response.data.error && error.response.data.error === 'Invalid token'){
       await Swal.fire({
-        title: 'Erro!',
+        title: 'SESSÃO EXPIRADA!',
         text: 'A tua sessão expirou, por favor faça o login novamente.',
         icon: 'error',
       })

@@ -36,6 +36,8 @@ import Groups from "@/views/seguranca/groups/index.vue"
 
 import Profile from "@/views/profile/index.vue"
 
+import EventViewer from "@/views/event/show.vue"
+
 import InternalServerError from '@/views/error/InternalServerError.vue'
 
 const router = createRouter({
@@ -93,7 +95,7 @@ const router = createRouter({
     },
 
     {
-      path: '/dashboard/overview/:id',
+      path: '/dashboard/overview',
       name: 'dashboard.overview',
       component: DashboardGeral,
       meta: {
@@ -104,7 +106,7 @@ const router = createRouter({
     //////////////////////////////////////////////////////////////////////////////
     // "gestao-eventos.create",
     {
-      path: '/gestao-de-eventos/criar-evento/:id',
+      path: '/gestao-de-eventos/criar-evento',
       name: 'gestao-eventos.create',
       component: AdminCreateEvent,
       meta: {
@@ -113,7 +115,7 @@ const router = createRouter({
     },
     // "gestao-eventos.list"
     {
-      path: '/gestao-de-eventos/listar-eventos/:id',
+      path: '/gestao-de-eventos/listar-eventos',
       name: 'gestao-eventos.list',
       component: AdminListEvent,
       meta: {
@@ -121,7 +123,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/gestao-de-eventos/meus-eventos/:id',
+      path: '/gestao-de-eventos/meus-eventos',
       name: 'gestao-eventos.my_events',
       component: MyEvents,
       meta: {
@@ -130,7 +132,7 @@ const router = createRouter({
     },
     // "gestao-eventos.calendar",
     {
-      path: '/gestao-de-eventos/calendario/:id',
+      path: '/gestao-de-eventos/calendario',
       name: 'gestao-eventos.calendar',
       component: Calendar,
       meta: {
@@ -139,7 +141,7 @@ const router = createRouter({
     },
     // "gestao-eventos.speakers",
     {
-      path: '/gestao-de-eventos/palestrantes/:id',
+      path: '/gestao-de-eventos/palestrantes',
       name: 'gestao-eventos.speakers',
       component: Speakers,
       meta: {
@@ -148,7 +150,7 @@ const router = createRouter({
     },
     // "gestao-eventos.registrations",
     {
-      path: '/gestao-de-eventos/inscricoes/:id',
+      path: '/gestao-de-eventos/inscricoes',
       name: 'gestao-eventos.registrations',
       component: Registrations,
       meta: {
@@ -157,7 +159,7 @@ const router = createRouter({
     },
 
     {
-      path: '/gestao-de-eventos/tickets/:id',
+      path: '/gestao-de-eventos/tickets',
       name: 'gestao-eventos.tickets',
       component: Tickets,
       meta: {
@@ -166,7 +168,7 @@ const router = createRouter({
     },
     // "analise-relatorios.analitics",
     {
-      path: '/analise-relatorios/analise/:id',
+      path: '/analise-relatorios/analise',
       name: 'analise_relatorios.analitics',
       component: Analitics,
       meta: {
@@ -175,7 +177,7 @@ const router = createRouter({
     },
     // "analise-relatorios.reports",
     {
-      path: '/analise-relatorios/relatorios/:id',
+      path: '/analise-relatorios/relatorios',
       name: 'analise-relatorios.reports',
       component: Reports,
       meta: {
@@ -184,7 +186,7 @@ const router = createRouter({
     },
     // "importacao.import",
     {
-      path: '/importar/:id',
+      path: '/importar',
       name: 'importacao.import',
       component: Import,
       meta: {
@@ -193,7 +195,7 @@ const router = createRouter({
     },
     // "exportacao.export",
     {
-      path: '/exportar/:id',
+      path: '/exportar',
       name: 'exportacao.export',
       component: Export,
       meta: {
@@ -202,7 +204,7 @@ const router = createRouter({
     },
     // "seguranca.users",
     {
-      path: '/seguranca/usuarios/:id',
+      path: '/seguranca/usuarios',
       name: 'seguranca.users',
       component: AdminUserManagment,
       meta: {
@@ -211,7 +213,7 @@ const router = createRouter({
     },
     // "seguranca.permissions",
     {
-      path: '/seguranca/permissoes/:id',
+      path: '/seguranca/permissoes',
       name: 'seguranca.permissions',
       component: Permissions,
       meta: {
@@ -220,7 +222,7 @@ const router = createRouter({
     },
     // "seguranca.groups",
     {
-      path: '/seguranca/grupos/:id',
+      path: '/seguranca/grupos',
       name: 'seguranca.groups',
       component: Groups,
       meta: {
@@ -229,7 +231,7 @@ const router = createRouter({
     },
     // "configuracoes.settings",
     {
-      path: '/configuracoes/:id',
+      path: '/configuracoes',
       name: 'configuracoes.settings',
       component: Settings,
       meta: {
@@ -238,7 +240,7 @@ const router = createRouter({
     },
     // "configuracoes.logs",
     {
-      path: '/configuracoes/logs/:id',
+      path: '/configuracoes/logs',
       name: 'configuracoes.logs',
       component: Logs,
       meta: {
@@ -247,13 +249,13 @@ const router = createRouter({
     },
 
     {
-      path: '/configuracoes/redefinir_minha_senha/:id',
+      path: '/configuracoes/redefinir_minha_senha',
       name: 'configuracoes.reset_my_password',
       component: ResetMyPassword,
     },
     // "profile.geral",
     {
-      path: '/perfil/:id',
+      path: '/perfil',
       name: 'profile.geral',
       component: Profile,
       meta: {
@@ -262,12 +264,20 @@ const router = createRouter({
     },
 
     {
-      path: '/event/:id',
+      path: '/event',
       name: 'event.home',
       component: EventHome
     },
     {
-      path: '/event/:id/statistic',
+      path: '/event/:id',
+      name: 'event.show',
+      component: EventViewer,
+      meta: {
+        layout: 'default-layout'
+      }
+    },
+    {
+      path: '/event/statistic',
       name: 'event.statistic',
       component: EventStatisticViewer,
       meta: {

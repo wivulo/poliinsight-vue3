@@ -2,8 +2,10 @@
 import DashboadServices from "@/services/DashboadServices"
 import Card from "./OverviewCard/index.js"
 import TableEvents from "./TableEvents.vue"
-import Chart from 'primevue/chart';
+import PChart from 'primevue/chart';
 import dayjs from 'dayjs'
+import { mapGetters } from "vuex";
+import { emptyDataPlugin } from "@/helpers/chartjs.plugins.js";
 
 export default {
     name: "OrganizerOverviewInfo",
@@ -12,7 +14,7 @@ export default {
         CardHeader: Card.Header,
         CardValue: Card.Value,
         CardInformation: Card.Information,
-        TableEvents, Chart,
+        TableEvents, PChart,
     },
     data(){
         return {
@@ -24,25 +26,35 @@ export default {
                 total_participants: 0,
                 last_event: {}
             },
-            genderDistribuition: null,
-            genderDistribuitionChartOptions: null,
+            dataGenderDistribuition: null,
+            dataGenderDistribuitionChartOptions: null,
             ageDistribuition: null,
             ageDistribuitionChartOptions: null,
+            pluginEmptyDataPlugin: emptyDataPlugin
         }
     },
     created() {
         this.getDashboardData()
     },
     mounted() {
-        this.genderDistribuition = this.setgenderDistribuition();
-        this.genderDistribuitionChartOptions = this.setgenderDistribuitionChartOptions();
+        if (this.$refs.chart && this.$refs.chart.chart) {
+            this.$refs.chart.chart.destroy();
+        }
+        
+        this.dataGenderDistribuition = this.setdataGenderDistribuition();
+        this.dataGenderDistribuitionChartOptions = this.setdataGenderDistribuitionChartOptions();
         this.ageDistribuition = this.setageDistribuition();
         this.ageDistribuitionChartOptions = this.setAgeDistribuitionChartOptions();
+    },
+    computed: {
+        ...mapGetters({
+            user: 'auth/user'
+        }),
     },
     methods: {
         async getDashboardData(){
             this.busy = true
-            const response = await DashboadServices.getDashboardOrganizerData(this.$route.params.id)
+            const response = await DashboadServices.getDashboardOrganizerData(this.user?.id)
             .catch(() => this.errorMessages())
             .finally(() => this.busy = false)
 
@@ -67,12 +79,20 @@ export default {
             return dayjs(date).format('DD/MM/YYYY')
         },
 
-        setgenderDistribuition() {
+        setdataGenderDistribuition() {
+            let male = 0;
+            let female = 0;
+
+            if(this.data.last_event?.statistic?.genderDistribution != null){
+                male = this.data.last_event?.statistic.genderDistribution?.male;
+                female = this.data.last_event?.statistic.genderDistribution?.female;
+            }
+
             return {
-                labels: ['Homens', 'Mulheres'],
+                labels: ['Masculino', 'Feminino'],
                 datasets: [
                     {
-                        data: [50, 30],
+                        data: [male, female],
                         backgroundColor: [
                             'rgb(54, 162, 235)',
                             'rgb(255, 99, 132)',
@@ -86,7 +106,7 @@ export default {
             };
         },
 
-        setgenderDistribuitionChartOptions() {
+        setdataGenderDistribuitionChartOptions() {
             const documentStyle = getComputedStyle(document.documentElement);
             const textColor = documentStyle.getPropertyValue('--text-color');
 
@@ -97,18 +117,42 @@ export default {
                             usePointStyle: true,
                             color: textColor
                         }
+                    },
+                    isempty: {
+                        text: "Nenhum dado disponível",
+                        font: '16px Arial',
                     }
                 }
             };
         },
 
         setageDistribuition() {
+            let ages = [0, 0, 0, 0]
+
+            if(this.data.last_event?.statistic?.agesDistribution != null){
+                let objAges = this.data.last_event?.statistic.agesDistribution;
+                for(const age in objAges){
+                    if(+age >= 40 ){
+                        ages[3] = objAges[age]
+                    }
+                    else if(+age >= 30 && +age < 40){
+                        ages[2] = objAges[age]
+                    }
+                    else if(+age >= 25 && +age < 30){
+                        ages[1] = objAges[age]
+                    }
+                    else {
+                        ages[0] = objAges[age]
+                    }
+                }
+            }
+
             return {
-                labels: ['18', '20', '25', '+30'],
+                labels: ['17-24', '25-30', '30-40', '40-75'],
                 datasets: [
                     {
-                        label: 'Idades',
-                        data: [540, 325, 702, 620],
+                        label: 'Faixa etária',
+                        data: ages,
                         backgroundColor: ['rgba(249, 115, 22, 0.2)', 'rgba(6, 182, 212, 0.2)', 'rgb(107, 114, 128, 0.2)', 'rgba(139, 92, 246, 0.2)'],
                         borderColor: ['rgb(249, 115, 22)', 'rgb(6, 182, 212)', 'rgb(107, 114, 128)', 'rgb(139, 92, 246)'],
                         borderWidth: 1
@@ -129,6 +173,10 @@ export default {
                         labels: {
                             color: textColor
                         }
+                    },
+                    isempty: {
+                        text: "Nenhum dado disponível",
+                        font: '16px Arial',
                     }
                 },
                 scales: {
@@ -142,6 +190,7 @@ export default {
                     },
                     y: {
                         beginAtZero: true,
+                        suggestedMax: 1000,
                         ticks: {
                             color: textColorSecondary
                         },
@@ -226,18 +275,18 @@ export default {
             <div class="flex flex-wrap gap-14">
                 <div class="card w-1/4 flex flex-col gap-4 text-base text-surface-600 font-medium mr-10">
 
-                    <CardRoot class="h-[220px] flex flex-col">
+                    <CardRoot class="h-[250px] flex flex-col">
                         <CardHeader>
-                            <p>{{ data.last_event?.name }}</p>
+                            <p>{{ data.last_event?.event?.name }}</p>
                         </CardHeader>
                         <CardValue>
                            
                         </CardValue>
-                        <CardInformation class="mt-5 flex flex-col gap-1">
-                            <p>{{ data.last_event?.localization }}</p>
-                            <p>{{ dateFormater(data.last_event?.date) }}</p>
-                            <p>{{ data.last_event?.type?.name }}</p>
-                            <p>{{ data.last_event?.departament }}</p>
+                        <CardInformation class="mt-2 flex flex-col gap-1">
+                            <p><b>Localização</b>: {{ data.last_event?.event?.localization }}</p>
+                            <p><b>Data</b>: {{ dateFormater(data.last_event?.event?.date) }}</p>
+                            <p><b>Tipo de evento</b>: {{ data.last_event?.event?.type?.name }}</p>
+                            <p><b>Departamento</b>: {{ data.last_event?.event?.departament }}</p>
 
                             <RouterLink :to="{name: 'analise_relatorios.analitics'}" class="mt-2 text-red-600">
                                 Ver mais
@@ -247,11 +296,11 @@ export default {
                 </div>
 
                 <div class="card flex justify-content-center">
-                    <Chart type="pie" :data="genderDistribuition" :options="genderDistribuitionChartOptions" class="w-full md:w-30rem" />
+                    <PChart ref="chart" type="pie" :data="dataGenderDistribuition" :options="dataGenderDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" class="w-full md:w-30rem" />
                 </div>
 
                 <div class="card flex justify-content-center">
-                    <Chart type="bar" :data="ageDistribuition" :options="ageDistribuitionChartOptions" :width="300" :height="300" :canvas-props="{width: 300, height: 300}" />
+                    <PChart ref="chart" type="bar" :data="ageDistribuition" :options="ageDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" :canvas-props="{width: 300, height: 300}" />
                 </div>
             </div>
         </div>

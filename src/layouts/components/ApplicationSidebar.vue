@@ -127,7 +127,7 @@ export default {
                             <Transition :css="false" @enter="onEnter" @leave="onLeave" :duration="{enter: 10, leave: 0}">
                                 <ul class="flex flex-col gap-3 h-0 overflow-hidden" v-if="nav.show"  @click.stop>
                                     <li v-for="rule in nav.rules" :key="rule.code" @click.stop>
-                                        <router-link :to="{name: rule.route, params: {id: $route.params.id}}" class="app-sidebar-nav-link pl-8" @click.stop>
+                                        <router-link :to="{name: rule.route}" class="app-sidebar-nav-link pl-8" @click.stop>
                                             <span class="app-sidebar-nav-link-text hover:text-black hover:font-semibold"
                                                 :class="{'text-zinc-950 font-semibold': rule.route === $route.name}"
                                             >

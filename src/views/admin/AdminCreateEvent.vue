@@ -67,21 +67,22 @@ export default {
             // console.log(this.event)      
             this.busy = true
             const response = await EventServices.createEvent({...this.event, organizerId: this.user?.id ?? 1, typeId: this.event.typeId.id})
-            .finally(() => this.busy = false)
             .catch(() => this.handleErrorMessage())
             
             if(response.error){
                 this.handleErrorMessage()
                 return
             }
+
+            this.busy = false
             
             this.$toast.add({severity: 'success', summary: 'Success', detail: 'Evento criado com sucesso', life: 2000})
             this.$router.push({
-                    name: 'event.statistic',
+                    name: 'event.show',
                     params: {
                         id: response.data.id
                     }
-                })
+            })
         },
         
         handleUploadedFile(file){
