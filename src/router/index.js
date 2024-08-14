@@ -21,6 +21,7 @@ import Tickets from "@/views/event/tickets/index.vue"
 import MyEvents from "@/views/event/my_events/index.vue"
 
 import Analitics from "@/views/statistic_repots/analitics/index.vue"
+import AnaliticsShow from "@/views/statistic_repots/analitics/show.vue"
 import Reports from "@/views/statistic_repots/reports/index.vue"
 
 import Import from "@/views/data/import/index.vue"
@@ -175,6 +176,14 @@ const router = createRouter({
         layout: 'default-layout'
       }
     },
+    {
+      path: '/analise-relatorios/analise/:id',
+      name: 'analise_relatorios.analitics.show',
+      component: AnaliticsShow,
+      meta: {
+        layout: 'default-layout'
+      }
+    },
     // "analise-relatorios.reports",
     {
       path: '/analise-relatorios/relatorios',
@@ -269,21 +278,9 @@ const router = createRouter({
       component: EventHome
     },
     {
-      path: '/event/:id',
-      name: 'event.show',
-      component: EventViewer,
-      meta: {
-        layout: 'default-layout'
-      }
+      path: '/event/:id', name: 'event.show', component: EventViewer,
+      meta: { layout: 'default-layout' }
     },
-    {
-      path: '/event/statistic',
-      name: 'event.statistic',
-      component: EventStatisticViewer,
-      meta: {
-        layout: 'default-layout'
-      }
-    }
   ]
 })
 

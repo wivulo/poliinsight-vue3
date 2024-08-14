@@ -25,5 +25,13 @@ export default {
 
     delete(id){
         return axios.delete(`${databaseURL}/events/${id}`);
+    },
+
+    search(query){
+        return axios.get(`${databaseURL}/events/search`, {
+            params: {
+                query
+            }
+        });
     }
 }

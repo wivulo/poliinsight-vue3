@@ -288,7 +288,7 @@ export default {
                             <p><b>Tipo de evento</b>: {{ data.last_event?.event?.type?.name }}</p>
                             <p><b>Departamento</b>: {{ data.last_event?.event?.departament }}</p>
 
-                            <RouterLink :to="{name: 'analise_relatorios.analitics'}" class="mt-2 text-red-600">
+                            <RouterLink :to="{name: 'analise_relatorios.analitics.show', params: {id: data.last_event?.event?.id ?? 1}}" class="mt-2 text-red-600">
                                 Ver mais
                             </RouterLink>
                         </CardInformation>
