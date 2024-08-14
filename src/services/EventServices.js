@@ -33,5 +33,9 @@ export default {
                 query
             }
         });
+    },
+
+    getStatistic(eventId){
+        return axios.get(`${databaseURL}/statistics/${eventId}`);
     }
 }

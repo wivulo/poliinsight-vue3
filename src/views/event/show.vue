@@ -23,6 +23,14 @@ export default {
                 busy: false,
                 data: []
             },
+            params: {
+                query: null,
+                orderBy: {
+                    field: 'name',
+                    direction: 'asc'
+                },
+                userId: this.$store.getters['auth/user'].id,
+            }
         }
     },
     async created(){
@@ -40,6 +48,15 @@ export default {
             .catch(() => this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar evento'}))
             this.event = responde.data
             this.busy = false
+        },
+
+        async getEvents(query){
+            console.log(query?.query)
+            this.events.busy = true
+            const responde = await EventServices.search(this.params)
+            .catch(() => this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar os eventos'}))
+            this.events.data = responde.data
+            this.events.busy = false
         }
     }
 }
@@ -54,7 +71,13 @@ export default {
                         <Button outlined class="h-9 w-9 border border-r-0 border-surface-300 bg-transparent hover:bg-transparent">
                             <i class="fa fa-search text-surface-700" />
                         </Button>
-                        <AutoComplete v-model="value" :suggestions="items" @complete="search" placeholder="Escreva para pesquisar" class="w-full h-9" inputClass="w-full border-l-0" id="autocomplete-statistic-viewer"/>
+                        <AutoComplete v-model="params.query" :suggestions="events.data" @complete="getEvents" placeholder="Escreva para pesquisar" class="w-full h-9" inputClass="w-full border-l-0" id="autocomplete-statistic-viewer" >
+                            <template #option="slotProps">
+                                <div class="flex items-center">
+                                    <div>{{ slotProps.option.name }}</div>
+                                </div>
+                            </template>
+                        </AutoComplete>
                     </InputGroup>
                 </template>
             </Card>
