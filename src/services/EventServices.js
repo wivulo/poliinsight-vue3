@@ -6,6 +6,10 @@ export default {
         return axios.get(`${databaseURL}/events`)
     },
 
+    fetchEventsOrganizer(organizerId) {
+        return axios.get(`${databaseURL}/events/organizer/${organizerId}`)
+    },
+
     createEvent(event){
         const formData = new FormData();
 

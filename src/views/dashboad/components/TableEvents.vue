@@ -2,7 +2,7 @@
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import dayjs from 'dayjs'
-import EventStatus from './OverviewCard/EventStatus.vue';
+import EventStatus from '@/components/EventStatus.vue';
 
 export default {
     name: "Dashboard.overview.table",
