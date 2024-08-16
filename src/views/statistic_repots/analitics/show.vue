@@ -50,6 +50,10 @@ export default {
     computed: {
         date_formatter(){
             return dateFormatter
+        },
+
+        fullname(name, nickname = null){
+            return `${name} ${nickname ? nickname: ''}`
         }
     },
     methods: {
@@ -161,7 +165,9 @@ export default {
                 plugins: {
                     legend: {
                         labels: {
-                            color: textColor
+                            color: 'rgb(218, 85, 81)',
+                            boxWidth: 0,
+                            boxHeight: 0
                         }
                     },
                     isempty: {
@@ -201,26 +207,46 @@ export default {
     
             <div class="flex flex-col gap-4 w-full" v-if="event">
                <div class="flex justify-between w-full border-b border-zinc-400/20 items-center">
-                    <p class="text-2xl font-bold uppercase">{{ event?.name }}</p>
+                    <p class="text-xl font-bold uppercase">{{ event?.name }}</p>
                     <p class="text-base font-semibold">Mapa do evento</p>
                </div>
 
-               <div class="flex gap-4">
+               <div class="flex gap-7 min-h-[19rem] mb-5">
                     <CardRoot class="h-48">
-                        <CardHeader>
-                            <p>Total de vagas</p>
-                        </CardHeader>
-                        <CardValue>
-                            {{ 0 }}
+                        <CardValue class="flex gap-3 relative h-40">
+                            <p class="font-semibold">Total de vagas</p>
+                            <div class="self-end">
+                                <p class="text-xl">
+                                    {{ event?.vacancies ?? 0 }}
+                                </p>
+                            </div>
                         </CardValue>
                     </CardRoot>
 
                     <CardRoot class="h-48">
                         <CardValue class="flex gap-3 relative">
                             <p class="font-semibold">Total de inscrições</p>
-                            <div class="w-5 h-40 border border-zinc-300 overflow-hidden">
-                                <div class="w-5" :style="{height: statistic?.totalParticipants ?? 10+'px'}"></div>
+                            <div class="self-end">
+                                <p class="text-xl">
+                                    {{ statistic?.totalParticipants ?? 0 }}
+                                </p>
                             </div>
+                            <div class="w-5 h-40 border border-zinc-300 overflow-hidden relative">
+                                <div class="w-5 bg-zinc-600 absolute bottom-0 left-0" :style="{height: statistic?.totalParticipants ?? 0+'px'}"></div>
+                            </div>
+                        </CardValue>
+                    </CardRoot>
+
+                    <CardRoot class="h-48">
+                        <CardValue>
+                            <CardValue class="flex gap-3 relative h-40">
+                            <p class="font-semibold">Vagas Restantes</p>
+                            <div class="self-end">
+                                <p class="text-xl">
+                                    {{ event?.vacancies == null ? 0 : event?.vacancies - statistic?.totalParticipants }}
+                                </p>
+                            </div>
+                            </CardValue>
                         </CardValue>
                     </CardRoot>
 
@@ -228,6 +254,52 @@ export default {
                         <PChart ref="chart" type="pie" :data="dataGenderDistribuition" :options="dataGenderDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" class="w-full md:w-30rem" />
                     </div>
                </div>
+
+               <div class="flex gap-16 min-h-[19rem]">
+                    <div class="flex flex-col gap-10">
+                        <CardRoot class="h-32">
+                            <CardHeader>
+                                <p>Participante Mais velho</p>
+                            </CardHeader>
+                            <CardValue class="mt-5 text-sm" v-if="statistic?.oldestParticipantInfo">
+                                <p><b>Nome:</b> {{ fullname(statistic?.oldestParticipantInfo?.name, statistic?.oldestParticipantInfo?.nickname) }}</p>
+                                <p><b>Idade: </b> {{ statistic?.oldestParticipant }} anos</p>
+                            </CardValue>
+                            <CardInformation v-else class="mt-5">
+                                <p>Nenhum dado disponível</p>
+                            </CardInformation>
+                        </CardRoot>
+
+                        <CardRoot class="h-32">
+                            <CardHeader>
+                                <p>Participante Mais novo</p>
+                            </CardHeader>
+                            <CardValue class="mt-5 text-sm" v-if="statistic?.oldestParticipantInfo">
+                                <p><b>Nome:</b> {{ fullname(statistic?.youngestParticipantInfo?.name, statistic?.youngestParticipantInfo?.nickname) }}</p>
+                                <p><b>Idade: </b> {{ statistic?.youngestParticipant }} anos</p>
+                            </CardValue>
+                            <CardInformation v-else class="mt-5">
+                                <p>Nenhum dado disponível</p>
+                            </CardInformation>
+                        </CardRoot>
+                    </div>
+
+                    <div class="card flex justify-content-center">
+                        <PChart ref="chart" type="bar" :data="ageDistribuition" :options="ageDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" :canvas-props="{width: 500, height: 300}" />
+                    </div>
+
+                    <CardRoot class="h-36">
+                        <CardValue class="flex gap-3 relative h-28">
+                            <p class="font-semibold">Moda</p>
+                            <div class="self-end">
+                                <p class="text-xl">
+                                    {{ statistic?.averageAge ?? 0 }}
+                                </p>
+                            </div>
+                        </CardValue>
+                    </CardRoot>
+               </div>
+
             </div>
         </div>
     </div>
