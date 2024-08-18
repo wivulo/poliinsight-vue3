@@ -30,7 +30,7 @@ export default {
 </script>
 
 <template>
-    <DataTable :value="events" size="small" paginator :rows="7"
+    <DataTable :value="events" size="small" paginator :rows="7" :rowsPerPageOptions="[5, 10, 20, 50]"
         dataKey="id" scrollable scrollHeight="380px" :loading="busy" lazy
         class="w-full" tableClass="text-[0.94rem]"
     >                                        
@@ -57,5 +57,11 @@ export default {
         </Column>
         
         <Column field="organizer.name" header="Organizador" />
+
+        <template #empty>
+            <div class="flex items-center justify-center h-10">
+                <p class="text-gray-400">Nenhum dado disponível</p>
+            </div>
+        </template>
     </DataTable>
 </template>

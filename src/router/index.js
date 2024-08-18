@@ -17,6 +17,7 @@ import DashboardGeral from "@/views/dashboad/index.vue"
 import Calendar from "@/views/event/calendar/index.vue"
 import Speakers from "@/views/event/speakers/index.vue"
 import Registrations from "@/views/event/registrations/index.vue"
+import EventRegistrationsShow from "@/views/event/registrations/show.vue"
 import Tickets from "@/views/event/tickets/index.vue"
 import MyEvents from "@/views/event/my_events/index.vue"
 
@@ -157,6 +158,12 @@ const router = createRouter({
       meta: {
         layout: 'default-layout'
       }
+    },
+
+    {
+      path: '/gestao-de-eventos/inscricoes/:id',
+      name: 'event.registrations.show',
+      component: EventRegistrationsShow,
     },
 
     {

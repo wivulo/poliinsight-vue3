@@ -63,8 +63,8 @@ export default {
 </script>
 
 <template>
-    <div class="flex px-5 py-7 w-full h-[90vh] overflow-y-auto">
-        <div class="flex flex-col gap-5 items-center min-h-[90vh] w-full">
+    <div class="flex px-5 py-7 w-full">
+        <div class="flex flex-col gap-5 items-center w-full">
             <Card class="w-full shadow-sm">
                 <template #content>
                     <InputGroup>
@@ -93,8 +93,8 @@ export default {
                     <template #content>
                         <div class="flex flex-col gap-3">
     
-                            <div class="w-full h-[218px] border">
-                                <Image :src="event.imageURL" :imageStyle="{height: '218px', width: '218px'}"/>
+                            <div class="w-full h-[218px] border overflow-hidden">
+                                <Image :src="event.imageURL" class="object-center object-scale-down" :alt="event.name"/>
                             </div>
 
                             <div>

@@ -1,6 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import Swal from 'sweetalert2'
+import { store } from '@/store'
 
 // Add a request interceptor
 axios.interceptors.request.use(function (config) {
@@ -30,7 +31,21 @@ axios.interceptors.response.use(async function (response) {
         text: 'A tua sessão expirou, por favor faça o login novamente.',
         icon: 'error',
       })
+
       Cookies.remove('token');
+      store.dispatch('auth/logout');
+      window.location.href = '/login';
+    }
+
+    if(error.response.status === 401 && error.response.data.error === 'Access denied'){
+      await Swal.fire({
+        title: 'ACESSO NEGADO!',
+        text: 'Não tens permissão para aceder a este recurso.',
+        icon: 'error',
+      })
+
+      Cookies.remove('token');
+      store.dispatch('auth/logout');
       window.location.href = '/login';
     }
 

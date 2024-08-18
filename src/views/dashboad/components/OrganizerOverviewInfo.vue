@@ -272,9 +272,8 @@ export default {
                 <p class="text-[0.9rem] text-surface-600 font-semibold ">Estatísticas do evento mais recente </p>
             </div>
 
-            <div class="flex flex-wrap gap-14">
+            <div v-if="data.last_event.event && data.last_event?.statistic.id" class="flex flex-wrap gap-14">
                 <div class="card w-1/4 flex flex-col gap-4 text-base text-surface-600 font-medium mr-10">
-
                     <CardRoot class="h-[250px] flex flex-col">
                         <CardHeader>
                             <p>{{ data.last_event?.event?.name }}</p>
@@ -303,6 +302,15 @@ export default {
                     <PChart ref="chart" type="bar" :data="ageDistribuition" :options="ageDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" :canvas-props="{width: 300, height: 300}" />
                 </div>
             </div>
+
+            <div v-else class="flex flex-col justify-center items-center text-center text-sm h-72">
+                <p>Nenhum evento recente encontrado</p>
+                <p>Por favor, clica no link abaixo <br /> para criar um evento</p>
+                <RouterLink :to="{name: 'gestao-eventos.create'}" class="text-red-600 font-semibold">
+                    Criar evento
+                </RouterLink>
+            </div>
+
         </div>
 
         <div class="flex flex-col gap-5 w-full mt-7">
