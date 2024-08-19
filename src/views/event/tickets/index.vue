@@ -11,13 +11,15 @@ import InputGroup from 'primevue/inputgroup';
 import ModalNewTicket from './components/ModalNovoTicket.vue';
 import ModalEditTicket from './components/ModalEditTicket.vue';
 import ModalDeleteTicket from './components/ModalDeleteTicket.vue';
+import InputNumber from 'primevue/inputnumber';
 
 export default {
     name: "event.tickets",
     mixins: [setDocumentTitleMixin],
     components: {
         DataTable, Column, SplitButton, Button, InputText, InputGroup, 
-        ModalNewTicket, ModalEditTicket, ModalDeleteTicket
+        ModalNewTicket, ModalEditTicket, ModalDeleteTicket,
+        InputNumber
     },
     data(){
         return {
@@ -57,12 +59,12 @@ export default {
     methods: {
         async getTickets(){
             this.tickets.busy = true;
-            const response = TicketsService.getByUserId(this.user.id)
+            const response = await TicketsService.getByUserId(this.user.id)
             .catch(error => {
                 this.$toast.add({severity:'error', summary:'Erro', detail: 'Erro ao buscar os tickets', life: 3000});
             });
-            this.tickets.busy = false;
             this.tickets.data = response.data;
+            this.tickets.busy = false;
         },
 
         handleHideSelectionMode(){
@@ -105,12 +107,12 @@ export default {
 
         <div class="flex gap-2 justify-end my-2">
             <template v-if="isItemSelected">
-                <Button severety="secondary" size="small" class="actions-button h-9">
+                <Button severity="secondary" size="small" class="actions-button h-9">
                     <i class="fa fa-trash mr-2"></i>Deletar
                 </Button>
             </template>
 
-            <Button size="small" class="actions-button h-9" @click="handleNewTicket">
+            <Button size="small" class="actions-button h-9 px-5" @click="handleNewTicket">
                 <i class="fa fa-plus mr-1"></i> ingresso
             </Button>
         </div>
@@ -122,12 +124,12 @@ export default {
                  </Button>
                 <InputText size="small" v-model="filter" id="search" type="text" placeholder="Pesquisar..." class="w-full rounded-none h-9 border-l-0" />
 
-                <Button size="small" class="h-9 bg-surface-500 border-none text-black hover:bg-surface-600">
+                <Button size="small" severity="transparent" class="h-9 border border-zinc-300 border-r-0">
                     <i class="fa fa-filter mr-2"></i>
                     Filtro
                 </Button>
 
-                <SplitButton :model="searchActions" severity="secondary" size="small" />
+                <SplitButton :model="searchActions" severity="transparent" class="border border-l-0 border-zinc-300 rounded-l-none" size="small" />
             </InputGroup>
         </div>
 
@@ -138,17 +140,21 @@ export default {
             </div>
         </div>
 
-        <DataTable :value="tickets.data" size="small" paginator :rows="7"
+        <DataTable :value="tickets.data" size="small" paginator :rows="7" :totalRecords="tickets.data.length"
             v-model:selection="itemSelected" dataKey="id" scrollable scrollHeight="380px"
             @row-select="onRowSelected" @row-unselect="onRowUnselected"
-            :loading="tickets.busy" lazy
+            :loading="tickets.busy" lazy :rowsPerPageOptions="[7, 10, 20, 50]"
         >
                 
             <Column selectionMode="multiple" v-if="selectionModeIsVisible" headerStyle="width: 3rem"></Column>
                         
             <Column field="name" header="Nome"></Column>
             
-            <Column field="price" header="Preço" />
+            <Column field="price" header="Preço">
+                <template #body="props">
+                    <InputNumber id="price" v-model="props.data.price" mode="currency" currency="AOA" locale="pt-AO" class="h-9 w-auto" input-class="w-auto border-none" :readonly="true"/>
+                </template>
+            </Column>
 
             <Column field="quantity" header="Quantidade" />
 
@@ -170,7 +176,7 @@ export default {
                                 command: () => this.handleDeleteTicket(props.data)
                             },
                         ]" 
-                        severity="secondary" size="small" class="text-sm"
+                        size="small" class="text-sm"
                     >
                         <div  class="px-2 py-1">
                             <i class="fa fa-cog mr-1" /> opções

@@ -73,7 +73,7 @@ export default {
         async handleCreateEvent(){ 
             // console.log(this.event)      
             this.busy = true
-            const response = await EventServices.createEvent({...this.event, organizerId: this.user?.id ?? 1, typeId: this.event.typeId.id})
+            const response = await EventServices.createEvent({...this.event, organizerId: this.user.id})
             .catch(() => this.handleErrorMessage())
             this.busy = false
             
@@ -114,33 +114,33 @@ export default {
 <template>
     <div class="p-4 px-5 w-full flex flex-col gap-5">
         <div>
-            <p class="text-surface-400 font-semibold text-xl">Criar Evento</p>
+            <p class="text-surface-600 font-semibold text-lg">Criar Evento</p>
         </div>
 
         <div class="flex w-full my-3 gap-5 justify-between">
             <div class="flex flex-col">
-                <label for="category" class="flex-grow pl-3">
+                <label for="category" class="flex-grow pl-3 text-surface-400">
                     <small>Catégoria</small>
                 </label>
-                <Dropdown id="category" v-model="event.categoryId"  :options="categories.data" optionLabel="name" placeholder="Selecione uma categória" class="h-9 w-[290px]" />
+                <Dropdown id="category" v-model="event.categoryId"  :options="categories.data" optionLabel="name" optionValue="id" placeholder="Selecione uma categória" class="h-9 w-[290px]" />
             </div>
 
             <div class="flex flex-col">
-                <label for="vacancies" class="pl-3">
+                <label for="vacancies" class="pl-3 text-surface-400">
                     <small> Número de vagas </small>
                 </label>
                 <InputNumber id="vacancies" v-model="event.vacancies" class="w-full border-slate-300 h-9" :required="true"/>
             </div>
 
             <div class="flex flex-col">
-                <label for="freeOrPaid" class="pl-3">
+                <label for="freeOrPaid" class="pl-3 text-surface-400">
                     <small> Tipo de evento </small>
                 </label>
-                <Dropdown id="freeOrPaid" v-model="event.typeId"  :options="event_type" optionLabel="label" placeholder="Selecione o tipo de evento" class="h-9 w-[290px]" />
+                <Dropdown id="freeOrPaid" v-model="event.type"  :options="event_type" optionLabel="label" optionValue="value" placeholder="Selecione o tipo de evento" class="h-9 w-[290px]" />
             </div>
 
             <div class="flex flex-col">
-                <label for="departament" class="pl-3">
+                <label for="departament" class="pl-3 text-surface-400">
                     <small> Departamento </small>
                 </label>
                 <InputText id="departament" v-model="event.departament" class="w-full border-slate-300 h-9" :required="true" placeholder="Ex:. Engenharia"/>

@@ -7,7 +7,7 @@ export default {
     },
 
     store(ticket){
-        return axios.post(`${databaseURL}/tickets`, ticket)
+        return axios.post(`${databaseURL}/tickets`, {ticket})
     },
 
     show(id){

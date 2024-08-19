@@ -41,11 +41,12 @@ export default {
     methods : {
         async show(){
             this.visible = true;
+            await this.fetchEvents();
         },
 
         async fetchEvents(){
             this.events.busy = true
-            const response = await EventServices.fetchEvents()
+            const response = await EventServices.fetchEventsOrganizer(this.user.id)
             .catch(() => this.$toast.add({severity:'error', summary: 'Error', detail: 'Erro ao buscar os eventos', life: 3000}))
             this.events.data = response.data
             this.events.busy = false
@@ -59,7 +60,7 @@ export default {
 
             this.busy = false
 
-            if(response.status == 200 && !response.data.error){
+            if(response.status == 201 && !response.data.error){
                 this.$toast.add({severity:'success', summary: 'Success', detail: 'Ingresso criado com sucesso', life: 3000});
                 this.$emit('created');
                 this.reset();
@@ -95,11 +96,11 @@ export default {
 
 <template>
     <Dialog v-model:visible="visible" modal header="Ingresso" :style="{ width: '30rem' }">
-        <div v-if="busy" class="flex">
+        <!-- <div v-if="busy" class="flex">
             <ProgressSpinner />
-        </div>
+        </div> -->
 
-        <div v-else>
+        <div>
             <div class="flex flex-col w-full">
                 <label for="event">Evento</label>
                 <Dropdown id="event" v-model="ticket.eventId" :options="events.data" optionLabel="name" optionValue="id" placeholder="Selecione um evento" 
@@ -109,7 +110,7 @@ export default {
             
             <div class="flex flex-col w-full my-2">
                 <label for="name">Nome</label>
-                <InputText id="name" v-model="ticket.name" class="w-full h-9"/>
+                <InputText id="name" v-model="ticket.name" class="w-full h-9" placeholder="Ex:. INDIVIDUAL"/>
             </div>
 
             <div class="flex gap-3 mt-2">
@@ -129,8 +130,9 @@ export default {
                     <Button severity="secondary" text @click="handleCancel" size="small" class="h-9">
                         <i class="fa fa-times mr-1"/> Cancelar
                     </Button>
-                    <Button @click="handleStore" size="small" class="h-9">
-                        <i class="fa fa-save mr-1"/> Salvar
+                    <Button @click="handleStore" size="small" class="h-9" :loading="busy">
+                        <i class="fas fa-spinner animate-spin mr-1" v-if="busy" />
+                        <i class="fa fa-save mr-1"/> {{ busy ? 'Salvando...' : 'Salvar' }}
                     </Button>
                 </div>
         </template>

@@ -69,7 +69,7 @@ export default {
             this.busy = true
             const responde = await EventServices.getStatistic(this.$route.params.id)
             .catch(() => this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar as estatísticas'}))
-            this.statictic = responde.data
+            this.statistic = responde.data
             this.busy = false
         },
 
@@ -243,7 +243,7 @@ export default {
                             <p class="font-semibold">Vagas Restantes</p>
                             <div class="self-end">
                                 <p class="text-xl">
-                                    {{ event?.vacancies == null ? 0 : event?.vacancies - statistic?.totalParticipants }}
+                                    {{ (+event?.vacancies) - (+statistic?.totalParticipants) }}
                                 </p>
                             </div>
                             </CardValue>

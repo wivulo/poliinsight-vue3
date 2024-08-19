@@ -67,8 +67,8 @@ export default {
                 // Secondary Button
                 {
                     'text-white dark:text-surface-900': parent.props.severity === 'secondary' && !parent.props.text && !parent.props.outlined && !parent.props.plain,
-                    'bg-surface-500 dark:bg-surface-400': parent.props.severity === 'secondary' && !parent.props.text && !parent.props.outlined && !parent.props.plain,
-                    'border border-surface-500 dark:border-surface-400': parent.props.severity === 'secondary' && !parent.props.text && !parent.props.outlined && !parent.props.plain
+                    'bg-gray-500/80 dark:bg-zinc-400': parent.props.severity === 'secondary' && !parent.props.text && !parent.props.outlined && !parent.props.plain,
+                    'border-gray-500/80 dark:border-zinc-400': parent.props.severity === 'secondary' && !parent.props.text && !parent.props.outlined && !parent.props.plain
                 },
                 // Secondary Text Button
                 { 'text-surface-500 dark:text-surface-400': parent.props.text && parent.props.severity === 'secondary' && !parent.props.plain },
@@ -252,8 +252,8 @@ export default {
                 // Secondary Button
                 {
                     'text-white dark:text-surface-900': parent.props.severity === 'secondary' && !parent.props.text && !parent.props.outlined && !parent.props.plain,
-                    'bg-surface-500 dark:bg-surface-400': parent.props.severity === 'secondary' && !parent.props.text && !parent.props.outlined && !parent.props.plain,
-                    'border border-surface-500 dark:border-surface-400': parent.props.severity === 'secondary' && !parent.props.text && !parent.props.outlined && !parent.props.plain
+                    'bg-gray-500/80 dark:bg-gray-500': parent.props.severity === 'secondary' && !parent.props.text && !parent.props.outlined && !parent.props.plain,
+                    'border border-gray-500/80 dark:border-zinc-400': parent.props.severity === 'secondary' && !parent.props.text && !parent.props.outlined && !parent.props.plain
                 },
                 // Secondary Text Button
                 { 'text-surface-500 dark:text-surface-400': parent.props.text && parent.props.severity === 'secondary' && !parent.props.plain },

@@ -44,9 +44,9 @@ export default {
             </template>
         </Column>
 
-        <Column field="type" header="Tipo de evento" >
+        <Column field="category" header="Tipo de evento" >
             <template #body="props">
-                {{ props.data.type?.name }}
+                {{ props.data.category?.name }}
             </template>
         </Column>
 

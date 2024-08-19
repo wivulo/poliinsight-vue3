@@ -49,5 +49,22 @@ axios.interceptors.response.use(async function (response) {
       window.location.href = '/login';
     }
 
+    if(error.response.status >= 500){
+      await Swal.fire({
+        html: 
+        `
+        <p><b>Ocorreu um erro inesperado no servidor.</b></p>
+        <p style="text-align: left;">Faça as seguintes verificações:</p>
+        <ul style="text-align: left;margin-top: 5px">
+          <li>1. Recarregue a página</<li>
+          <li>2. Verifica a tua conexão à internet.</li>
+          <li>3. Verifica se o servidor está online.</li>
+          <li>4. Verifica se o servidor está a responder.</li>
+        </ul>
+        <p>Se o problema persistir, contacta o administrador do sistema.</p>`,
+        icon: 'error',
+      })
+    }
+
     return Promise.reject(error);
   });
