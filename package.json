@@ -19,7 +19,7 @@
     "@vueuse/components": "^10.9.0",
     "@vueuse/core": "^10.9.0",
     "animejs": "^3.2.2",
-    "axios": "^1.6.8",
+    "axios": "^1.7.4",
     "chart.js": "^4.4.3",
     "dayjs": "^1.11.12",
     "js-cookie": "^3.0.5",
