@@ -42,7 +42,7 @@ export default {
 </script>
 
 <template>
-    <header class="border-b border-surface-100 w-full">
+    <header class="border-b border-slate-200 w-full">
         <div class="app-container flex justify-between  py-2 px-4 pl-5">
             <div class="py-1 flex items-center">
                 <span class="relative">

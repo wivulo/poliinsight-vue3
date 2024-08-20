@@ -12,13 +12,13 @@ export default {
 </script>
 
 <template>
-  <div class="flex w-full overflow-x-hidden">
+  <div class="flex w-full overflow-x-hidden h-full">
     <ApplicationSidebar/>
 
-    <div id="page-wrapper" class="gray-bg">
-      <ApplicationHeader/>
+    <div id="page-wrapper" class="h-full">
+      <ApplicationHeader class="bg-zinc-50"/>
 
-      <div class="flex w-full overflow-x-hidden fadeInRight">
+      <div class="flex w-full overflow-x-hidden fadeInRight bg-zinc-50 h-full">
         <router-view v-slot="{ Component }">
           <transition>
             <component :is="Component" />

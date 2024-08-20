@@ -10,7 +10,7 @@ export default {
 </script>
 
 <template>
-    <Card class="py-0 bg-surface-100">
+    <Card class="py-0">
         <template #content>
             <div class="relative">
                 <slot />
