@@ -12,6 +12,9 @@ import ModalNewTicket from './components/ModalNovoTicket.vue';
 import ModalEditTicket from './components/ModalEditTicket.vue';
 import ModalDeleteTicket from './components/ModalDeleteTicket.vue';
 import InputNumber from 'primevue/inputnumber';
+import CCard from "@/components/PCard/index.js"
+import SpeedDial from 'primevue/speeddial';
+
 
 export default {
     name: "event.tickets",
@@ -19,7 +22,7 @@ export default {
     components: {
         DataTable, Column, SplitButton, Button, InputText, InputGroup, 
         ModalNewTicket, ModalEditTicket, ModalDeleteTicket,
-        InputNumber
+        InputNumber, CardRoot: CCard.Root, SpeedDial
     },
     data(){
         return {
@@ -46,6 +49,8 @@ export default {
                     }
                 },
             ],
+
+            isShowActions: false,
         }
     },
     created(){
@@ -105,17 +110,27 @@ export default {
         <ModalEditTicket ref="ModalEditTicket" @updated="getTickets" />
         <ModalDeleteTicket ref="ModalDeleteTicket" @deleted="getTickets" />
 
-        <div class="flex gap-2 justify-end my-2">
-            <template v-if="isItemSelected">
-                <Button severity="secondary" size="small" class="actions-button h-9">
-                    <i class="fa fa-trash mr-2"></i>Deletar
-                </Button>
-            </template>
+        <CardRoot class="mt-4">
+        <div class="flex gap-2 justify-between my-2">
+            <div>
+                <h1 class="text-base font-semibold">Ingressos</h1>
+                <p class="text-sm">Lista de ingressos dos meus eventos</p>
+            </div>
 
-            <Button size="small" class="actions-button h-9 px-5" @click="handleNewTicket">
-                <i class="fa fa-plus mr-1"></i> ingresso
-            </Button>
+            <div>
+                <template v-if="isItemSelected">
+                    <Button severity="secondary" size="small" class="actions-button h-9">
+                        <i class="fa fa-trash mr-2"></i>Deletar
+                    </Button>
+                </template>
+
+                <Button size="small" class="actions-button h-9 px-5" @click="handleNewTicket">
+                    <i class="fa fa-plus mr-1"></i> ingresso
+                </Button>
+            </div>
         </div>
+
+        <hr />
 
         <div class="flex my-4">
             <InputGroup>
@@ -141,8 +156,8 @@ export default {
         </div>
 
         <DataTable :value="tickets.data" size="small" paginator :rows="7" :totalRecords="tickets.data.length"
-            v-model:selection="itemSelected" dataKey="id" scrollable scrollHeight="380px"
-            @row-select="onRowSelected" @row-unselect="onRowUnselected"
+            v-model:selection="itemSelected" dataKey="id"
+            @row-select="onRowSelected" @row-unselect="onRowUnselected" class="ctable"
             :loading="tickets.busy" lazy :rowsPerPageOptions="[7, 10, 20, 50]"
         >
                 
@@ -161,9 +176,9 @@ export default {
             <Column field="event.name" header="Evento" />
 
             
-            <Column field="actions" header="Ações">
+            <Column field="actions" header="Ações" class="relative">
                 <template #body="props">
-                    <SplitButton 
+                    <!-- <SplitButton 
                         :model="[
                             {
                                 label: 'Editar',
@@ -181,7 +196,46 @@ export default {
                         <div  class="px-2 py-1">
                             <i class="fa fa-cog mr-1" /> opções
                         </div>
-                    </SplitButton>
+                    </SplitButton> -->
+
+                    <SpeedDial 
+                        :model="[
+                            {
+                                label: 'Editar',
+                                icon: 'fa fa-pencil',
+                                command: () => this.handleEditTicket(props.data)
+                            },
+                            {
+                                label: 'Eliminar',
+                                icon: 'fa fa-trash',
+                                command: () => this.handleDeleteTicket(props.data)
+                            },
+                        ]" 
+                        direction="down"
+                        class="top-2"
+                        showIcon="fa fa-cog" 
+                        hideIcon="fa fa-times"
+                        @hide="() => isShowActions = false"
+                        @show="() => isShowActions = true"
+                        :pt="{
+                            menu: {
+                                class: [
+                                    // Spacing
+                                    'm-0 p-0',
+
+                                    // Layout & Flexbox
+                                    'list-none flex items-center justify-center',
+
+                                    // Transitions
+                                    'transition delay-200',
+                                    {'z-30': isShowActions},
+                                    {'z-20': !isShowActions}
+                                ]
+                            }
+                        }"
+
+                        :tooltipOptions="{ position: 'right' }"
+                    />
                 </template>
             </Column>
 
@@ -191,5 +245,12 @@ export default {
                 </div>
             </template>
         </DataTable>
+        </CardRoot>
     </div>
 </template>
+
+<style>
+div[data-pc-section="root"].ctable > div[data-pc-section="wrapper"] {
+    overflow: visible !important;
+}
+</style>

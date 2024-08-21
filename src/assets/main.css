@@ -198,3 +198,11 @@ textarea {
   font-size: .8rem;
   transition: all 0.2s ease-out;
 }
+
+.ctable th[data-pc-section='headercell']{
+  @apply text-[0.9rem] font-semibold;
+} 
+
+.ctable td[data-pc-section='bodycell']{
+  @apply text-[0.899rem];
+}

@@ -79,7 +79,6 @@ export default {
 
         reset(){
             this.visible = false;
-            this.ticket.data = null;
         },
 
         handlehidden(){

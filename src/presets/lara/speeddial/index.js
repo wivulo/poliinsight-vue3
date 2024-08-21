@@ -13,7 +13,7 @@ export default {
 
                 // Sizes & Spacing
                 'leading-[normal]',
-                'w-16 h-16 p-0 py-3',
+                'w-8 h-8 p-0 py-3',
 
                 // Shapes
                 'rounded-full',
@@ -226,14 +226,12 @@ export default {
 
             // Transitions
             'transition delay-200',
-
-            // Z-Index (Positioning)
             'z-20'
         ]
     },
     menuitem: ({ props, context }) => ({
         class: [
-            'transform transition-transform duration-200 ease-out transition-opacity duration-800',
+            'transform transition-transform duration-200 ease-out transition-opacity duration-800 shadow-sm shadow-black rounded-full',
 
             // Conditional Appearance
             context.hidden ? 'opacity-0 scale-0' : 'opacity-100 scale-100',
@@ -256,16 +254,16 @@ export default {
             'flex items-center justify-center',
 
             // Size
-            'w-12 h-12',
+            'w-7 h-7',
 
             // Shape
             'rounded-full relative overflow-hidden',
 
             // Appearance
-            'bg-surface-600 dark:bg-surface-0/80 text-white dark:text-surface-900/80',
+            'bg-white dark:bg-surface-0/80 text-surface-600 dark:text-surface-900/80',
 
             // Hover Effects
-            'hover:bg-surface-700 dark:hover:bg-surface-200/80'
+            'hover:bg-white hover:text-surface-800 dark:hover:bg-surface-200/80'
         ]
     },
     mask: ({ state }) => ({
