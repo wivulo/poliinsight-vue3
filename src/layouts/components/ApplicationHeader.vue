@@ -43,14 +43,7 @@ export default {
 
 <template>
     <header class="border-b border-slate-200 w-full">
-        <div class="app-container flex justify-between  py-2 px-4 pl-5">
-            <div class="py-1 flex items-center">
-                <span class="relative">
-                    <i class="fa fa-search absolute top-2/4 -mt-2 left-3 text-surface-400 dark:text-surface-600" />
-                    <InputText v-model="search" placeholder="Search" size="small" class="pl-10" />
-                </span>
-            </div>
-
+        <div class="app-container flex justify-end  py-2 px-4 pl-5">
             <div class="flex">
                 <nav class="app-navbar">
                      <ul class="flex items-center self-center mb-0">
@@ -94,7 +87,9 @@ export default {
                                 </template>
 
                                 <template #option="{ option }">
-                                    <Button class="h-2 text-md text-zinc-500 hover:text-blue-600" :label="option" link @click="handleUserMenuClick(option)" />
+                                    <div class="h-2 text-md text-zinc-500 w-full text-left justify-start" @click="handleUserMenuClick(option)">
+                                        {{ option }}
+                                    </div>
                                 </template>
                             </Dropdown>
                         </li>

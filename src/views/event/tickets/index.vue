@@ -14,6 +14,7 @@ import ModalDeleteTicket from './components/ModalDeleteTicket.vue';
 import InputNumber from 'primevue/inputnumber';
 import CCard from "@/components/PCard/index.js"
 import SpeedDial from 'primevue/speeddial';
+import Dropdown from 'primevue/dropdown';
 
 
 export default {
@@ -22,7 +23,7 @@ export default {
     components: {
         DataTable, Column, SplitButton, Button, InputText, InputGroup, 
         ModalNewTicket, ModalEditTicket, ModalDeleteTicket,
-        InputNumber, CardRoot: CCard.Root, SpeedDial
+        InputNumber, CardRoot: CCard.Root, SpeedDial, Dropdown
     },
     data(){
         return {
@@ -178,64 +179,39 @@ export default {
             
             <Column field="actions" header="Ações" class="relative">
                 <template #body="props">
-                    <!-- <SplitButton 
-                        :model="[
+                    <Dropdown 
+                        :options="[
                             {
                                 label: 'Editar',
                                 icon: 'fa fa-pencil',
-                                command: () => this.handleEditTicket(props.data)
+                                command: () => handleEditTicket(props.data)
                             },
                             {
                                 label: 'Eliminar',
                                 icon: 'fa fa-trash',
-                                command: () => this.handleDeleteTicket(props.data)
+                                command: () => handleDeleteTicket(props.data)
                             },
                         ]" 
-                        size="small" class="text-sm"
+                        class="p-0 bg-primary-500"
+                        icon
+                        option-label="label"
                     >
-                        <div  class="px-2 py-1">
-                            <i class="fa fa-cog mr-1" /> opções
-                        </div>
-                    </SplitButton> -->
+                        <template #value>
+                            <div class="flex justify-center items-center text-white">
+                                <i class="fa fa-cog mr-1"/> Opções
+                            </div>
+                        </template>
 
-                    <SpeedDial 
-                        :model="[
-                            {
-                                label: 'Editar',
-                                icon: 'fa fa-pencil',
-                                command: () => this.handleEditTicket(props.data)
-                            },
-                            {
-                                label: 'Eliminar',
-                                icon: 'fa fa-trash',
-                                command: () => this.handleDeleteTicket(props.data)
-                            },
-                        ]" 
-                        direction="down"
-                        class="top-2"
-                        showIcon="fa fa-cog" 
-                        hideIcon="fa fa-times"
-                        @hide="() => isShowActions = false"
-                        @show="() => isShowActions = true"
-                        :pt="{
-                            menu: {
-                                class: [
-                                    // Spacing
-                                    'm-0 p-0',
+                        <template #option="{ option }">
+                            <div class="h-2 text-md text-zinc-700 py-2 w-full" @click="option.command">
+                                <i :class="option.icon" class="mr-1" /> {{ option.label }}
+                            </div>
+                        </template>
 
-                                    // Layout & Flexbox
-                                    'list-none flex items-center justify-center',
-
-                                    // Transitions
-                                    'transition delay-200',
-                                    {'z-30': isShowActions},
-                                    {'z-20': !isShowActions}
-                                ]
-                            }
-                        }"
-
-                        :tooltipOptions="{ position: 'right' }"
-                    />
+                        <template #dropdownicon>
+                            <i class="fa fa-chevron-down text-white"/>
+                        </template>
+                    </Dropdown>
                 </template>
             </Column>
 
