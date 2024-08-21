@@ -1,6 +1,6 @@
 <script>
 import DashboadServices from "@/services/DashboadServices"
-import Card from "./OverviewCard/index.js"
+import Card from "@/components/PCard/index.js"
 import TableEvents from "./TableEvents.vue"
 import PChart from 'primevue/chart';
 import dayjs from 'dayjs'
@@ -49,7 +49,7 @@ export default {
     computed: {
         ...mapGetters({
             user: 'auth/user'
-        }),
+        })
     },
     methods: {
         async getDashboardData(){
@@ -77,6 +77,10 @@ export default {
 
         dateFormater(date) {
             return dayjs(date).format('DD/MM/YYYY')
+        },
+
+        time(date){
+            return dayjs(date).format('HH:mm')
         },
 
         setdataGenderDistribuition() {
@@ -272,35 +276,36 @@ export default {
                 <p class="text-[0.9rem] text-surface-600 font-semibold ">Estatísticas do evento mais recente </p>
             </div>
 
-            <div v-if="data.last_event.event && data.last_event?.statistic.id" class="flex flex-wrap gap-14">
-                <div class="card w-1/4 flex flex-col gap-4 text-base text-surface-600 font-medium mr-10">
-                    <CardRoot class="h-[250px] flex flex-col">
+            <div v-if="data.last_event.event && data.last_event?.statistic.id" class="flex flex-wrap gap-7">
+                <div class="w-[30%] text-base text-surface-600 font-medium">
+                    <CardRoot class="cardInformation h-[300px] flex flex-col">
                         <CardHeader>
-                            <p>{{ data.last_event?.event?.name }}</p>
+                            <p>{{ data.last_event?.event?.name }} <small> ({{ data.last_event?.event?.status.description }})</small></p>
                         </CardHeader>
                         <CardValue>
                            
                         </CardValue>
-                        <CardInformation class="mt-2 flex flex-col gap-1">
+                        <CardInformation class="mt-2 flex flex-col gap-1 relative h-full">
                             <p><b>Localização</b>: {{ data.last_event?.event?.localization }}</p>
-                            <p><b>Data</b>: {{ dateFormater(data.last_event?.event?.date) }}</p>
-                            <p><b>Tipo de evento</b>: {{ data.last_event?.event?.type?.name }}</p>
+                            <p><b>Data de início</b>: {{ dateFormater(data.last_event?.event?.date) }} às {{ time(data.last_event?.event?.time) }}</p>
+                            <p><b>Data de fim</b>: {{ dateFormater(data.last_event?.event?.endDate) }}</p> às {{ time(data.last_event?.event?.timeEnd) }}
+                            <p><b>Categoria</b>: {{ data.last_event?.event?.category?.name }}</p>
                             <p><b>Departamento</b>: {{ data.last_event?.event?.departament }}</p>
 
-                            <RouterLink :to="{name: 'analise_relatorios.analitics.show', params: {id: data.last_event?.event?.id ?? 1}}" class="mt-2 text-red-600">
+                            <RouterLink :to="{name: 'analise_relatorios.analitics.show', params: {id: data.last_event?.event?.id ?? 1}}" class="text-red-600 absolute left-0 bottom-0">
                                 Ver mais
                             </RouterLink>
                         </CardInformation>
                     </CardRoot>
                 </div>
 
-                <div class="card flex justify-content-center">
+                <CardRoot class="cardroot flex justify-content-center">
                     <PChart ref="chart" type="pie" :data="dataGenderDistribuition" :options="dataGenderDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" class="w-full md:w-30rem" />
-                </div>
+                </CardRoot>
 
-                <div class="card flex justify-content-center">
+                <CardRoot class="cardroot flex justify-content-center">
                     <PChart ref="chart" type="bar" :data="ageDistribuition" :options="ageDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" :canvas-props="{width: 300, height: 300}" />
-                </div>
+                </CardRoot>
             </div>
 
             <div v-else class="flex flex-col justify-center items-center text-center text-sm h-72">
@@ -318,7 +323,27 @@ export default {
                 <p class="text-[0.9rem] text-slate-600 font-semibold ">Últimos eventos</p>
             </div>
 
-            <TableEvents :events="data.last_five_events" :busy="busy" />
+            <CardRoot>
+                <TableEvents :events="data.last_five_events" :busy="busy" />
+            </CardRoot>
         </div>
     </div>
 </template>
+
+<style>
+.cardroot div[data-pc-section="content"]{
+    padding-top: 5px;
+    padding-bottom: 0
+}
+
+.cardInformation div[data-pc-section="body"],
+.cardInformation div[data-pc-section="content"],
+.cardInformation div[data-pc-section="content"] > div{
+    height: 100%; 
+}
+
+.cardInformation div[data-pc-section="content"] > div{
+    display: flex;
+    flex-direction: column;
+}
+</style>

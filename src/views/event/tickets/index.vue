@@ -12,7 +12,7 @@ import ModalNewTicket from './components/ModalNovoTicket.vue';
 import ModalEditTicket from './components/ModalEditTicket.vue';
 import ModalDeleteTicket from './components/ModalDeleteTicket.vue';
 import InputNumber from 'primevue/inputnumber';
-/* paginator :rows="7" :totalRecords="tickets.data.length" */
+
 export default {
     name: "event.tickets",
     mixins: [setDocumentTitleMixin],
@@ -140,7 +140,7 @@ export default {
             </div>
         </div>
 
-        <DataTable :value="tickets.data" size="small"
+        <DataTable :value="tickets.data" size="small" paginator :rows="7" :totalRecords="tickets.data.length"
             v-model:selection="itemSelected" dataKey="id" scrollable scrollHeight="380px"
             @row-select="onRowSelected" @row-unselect="onRowUnselected"
             :loading="tickets.busy" lazy :rowsPerPageOptions="[7, 10, 20, 50]"

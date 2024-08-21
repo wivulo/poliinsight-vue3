@@ -8,7 +8,7 @@ import Image from 'primevue/image';
 import PChart from 'primevue/chart';
 import { dateFormatter } from "@/utils/dateFormatter"
 import { emptyDataPlugin } from "@/helpers/chartjs.plugins.js";
-import CCard from "@/views/dashboad/components/OverviewCard/index"
+import CCard from "@/components/PCard/index.js"
 
 export default {
     name: 'Statistic_repots.analitics.show',

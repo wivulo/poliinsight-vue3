@@ -1,6 +1,6 @@
 <script>
 import DashboadServices from "@/services/DashboadServices"
-import Card from "./OverviewCard/index.js"
+import Card from "@/components/PCard/index.js"
 import TableEvents from "./TableEvents.vue"
 
 export default {

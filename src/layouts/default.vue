@@ -16,9 +16,9 @@ export default {
     <ApplicationSidebar/>
 
     <div id="page-wrapper" class="h-full">
-      <ApplicationHeader class="bg-zinc-50"/>
+      <ApplicationHeader class="bg-zinc-50 application-header"/>
 
-      <div class="flex w-full overflow-x-hidden fadeInRight bg-zinc-50 h-full">
+      <div class="flex w-full overflow-x-hidden fadeInRight bg-zinc-50 application-body">
         <router-view v-slot="{ Component }">
           <transition>
             <component :is="Component" />
@@ -36,5 +36,13 @@ export default {
     flex-shrink: 1;
     width: calc(100% - 230px);
     left: 230px;
+}
+
+.application-header {
+  height: 70px;
+}
+
+.application-body{
+  height: calc(100% - 70px);
 }
 </style>
