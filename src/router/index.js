@@ -20,6 +20,8 @@ import Registrations from "@/views/event/registrations/index.vue"
 import EventRegistrationsShow from "@/views/event/registrations/show.vue"
 import Tickets from "@/views/event/tickets/index.vue"
 import MyEvents from "@/views/event/my_events/index.vue"
+import RegistrationTable from "@/views/event/components/RegistrationTable.vue"
+import TicketsTable from "@/views/event/components/TicketsTable.vue"
 
 import Analitics from "@/views/statistic_repots/analitics/index.vue"
 import AnaliticsShow from "@/views/statistic_repots/analitics/show.vue"
@@ -131,6 +133,23 @@ const router = createRouter({
       meta: {
         layout: 'default-layout'
       }
+    },
+    {
+      path: '/event/:id', name: 'event.show', component: EventViewer,
+      meta: { layout: 'default-layout' },
+      children: [
+        {
+          path: 'inscricoes',
+          name: 'event.show.registrations',
+          component: RegistrationTable,
+        },
+
+        {
+          path: 'ingressos',
+          name: 'event.show.tickets',
+          component: TicketsTable,
+        }
+      ]
     },
     // "gestao-eventos.calendar",
     {
@@ -279,15 +298,6 @@ const router = createRouter({
       }
     },
 
-    {
-      path: '/event',
-      name: 'event.home',
-      component: EventHome
-    },
-    {
-      path: '/event/:id', name: 'event.show', component: EventViewer,
-      meta: { layout: 'default-layout' }
-    },
   ]
 })
 

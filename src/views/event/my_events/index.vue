@@ -16,6 +16,8 @@ import EventFilters from "@/components/EventFilters.vue"
 import ModalEditEvent from "@/views/event/components/ModalEditEvent.vue"
 import ModalDeleteEvent from "@/views/event/components/ModalDeleteEvent.vue"
 import EventStatus from '@/components/EventStatus.vue';
+import Dropdown from 'primevue/dropdown';
+import CCard from "@/components/PCard/index.js"
 import dayjs from 'dayjs'
 
 
@@ -23,9 +25,9 @@ export default {
     name: "Event.MyEvents",
     components: {
         Button, InputText, DataTable, Column,
-        InputGroup, InputGroupAddon, Calendar,
+        InputGroup, InputGroupAddon, Calendar, CardRoot: CCard.Root,
         IconField, InputIcon, SplitButton, EventFilters,
-        ModalEditEvent, ModalDeleteEvent, EventStatus
+        ModalEditEvent, ModalDeleteEvent, EventStatus, Dropdown
     },
     data(){
         return {
@@ -131,128 +133,152 @@ export default {
         <ModalEditEvent ref="ModalEditEvent" />
         <ModalDeleteEvent ref="ModalDeleteEvent" @event-deleted="fetchEvents" />
 
-        <div>
-            <div class="flex gap-2 justify-end ">
-                <template v-if="isItemSelected">
-                    <Button size="small" class="actions-button">
-                        <i class="fa fa-trash mr-2"></i>Deletar
+        <CardRoot class="mt-4">
+
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-base font-semibold">Meus eventos</h1>
+                    <p class="text-sm">Lista dos meus eventos</p>
+                </div>
+
+                <div class="flex gap-2 justify-end ">
+                    <template v-if="isItemSelected">
+                        <Button size="small" severity="secondary">
+                            <i class="fa fa-trash mr-2"></i>Deletar
+                        </Button>
+                    </template>
+
+                    <Button size="small" class="h-9 px-5">
+                        <router-link :to="{name: 'gestao-eventos.create'}" class="text-white hover:text-primary">
+                            <i class="fa fa-plus mr-2"></i> Evento
+                        </router-link>
                     </Button>
-                </template>
-
-                <Button size="small" class="actions-button">
-                    <router-link :to="{name: 'gestao-eventos.create'}" class="text-white hover:text-primary">
-                        <i class="fa fa-plus mr-2"></i> Criar evento
-                    </router-link>
-                </Button>
-            </div>
-        </div>
-
-        <div class="my-3">
-            <div class="flex">
-                <InputGroup>
-                    <Button size="small" class="h-9 bg-transparent border border-surface-300 border-r-0">
-                        <i class="fa fa-search text-black" />
-                     </Button>
-                    <InputText size="small" v-model="filter" id="search" type="text" placeholder="Pesquisar..." class="w-full rounded-none h-9 border-l-0" />
-
-                    <Button size="small" class="h-9 bg-surface-500 border-none text-black hover:bg-surface-600">
-                        <i class="fa fa-filter mr-2"></i>
-                        Filtro
-                    </Button>
-
-                    <SplitButton :model="searchActions" severity="secondary" size="small" />
-                </InputGroup>
-            </div>
-        </div>
-
-        <div class="my-3" v-show="showFilters">
-           <EventFilters />
-        </div>
-
-        <div>
-            <div v-if="selectionModeIsVisible" class="my-4 w-full flex justify-between items-center">
-                <div class="flex gap-3 items-center">
-                    <Button size="small" text icon="fa fa-times" class="h-6 w-6" @click="handleHideSelectionMode"/> 
-                    Selecionados: {{ selectedEvents.length }}
                 </div>
             </div>
 
-            <div>
-                <DataTable :value="events" size="small" paginator :rows="7"
-                    v-model:selection="itemSelected" dataKey="id" scrollable scrollHeight="380px"
-                    @row-select="onRowSelected" @row-unselect="onRowUnselected"
-                    :loading="busy" lazy
-                >
-                
-                    <Column selectionMode="multiple" v-if="selectionModeIsVisible" headerStyle="width: 3rem"></Column>
-                    
-                    <Column field="int_id" header="ID" />
-                    
-                    <Column field="name" header="Nome" />
-                    
-                    <Column field="localization" header="Localização" />
+            <hr />
 
-                    <Column field="date" header="Data">
-                        <template #body="props">
-                            {{ dateFormater(props.data.date) }}
-                        </template>
-                    </Column>
+            <div class="my-3">
+                <div class="flex">
+                    <InputGroup>
+                        <Button size="small" class="h-9 bg-transparent border border-surface-300 border-r-0">
+                            <i class="fa fa-search text-black" />
+                         </Button>
+                        <InputText size="small" v-model="filter" id="search" type="text" placeholder="Pesquisar..." class="w-full rounded-none h-9 border-l-0" />
 
-                    <Column field="category" header="Tipo de evento" >
-                        <template #body="props">
-                            {{ props.data.category?.name }}
-                        </template>
-                    </Column>
+                        <Button size="small" severity="transparent" class="h-9 border border-zinc-300 border-r-0">
+                            <i class="fa fa-filter mr-2"></i>
+                            Filtro
+                        </Button>
 
-                    <Column field="status" header="Estado" >
-                        <template #body="props">
-                            <EventStatus :status="props.data.status" />
-                        </template>
-                    </Column>
-                    
-                    <!-- <Column field="organizer.name" header="Organizador" /> -->
-
-                    <Column field="actions" header="Ações">
-                        <template #body="props">
-                            <SplitButton 
-                                :model="[
-                                    {
-                                        label: 'Visualizar',
-                                        icon: 'fa fa-eye',
-                                        command: () => this.handleViewEvent(props.data)
-                                    },
-                                    {
-                                        label: 'Mapa do evento',
-                                        icon: 'fa fa-chart-line',
-                                        command: () => this.handleViewEstatisticEvent(props.data)
-                                    },
-                                    {
-                                        label: 'Editar',
-                                        icon: 'fa fa-pencil',
-                                        command: () => this.handleEditEvent(props.data)
-                                    },
-                                    {
-                                        label: 'Eliminar',
-                                        icon: 'fa fa-trash',
-                                        command: () => this.handleDeleteEvent(props.data)
-                                    },
-                                ]" 
-                                severity="secondary" size="small" class="text-sm"
-                            >
-                                <div  class="px-2 py-1">
-                                    <i class="fa fa-cog mr-1" />
-                                </div>
-                            </SplitButton>
-                        </template>
-                    </Column>
-                </DataTable>
+                        <SplitButton :model="searchActions" severity="transparent" class="border border-l-0 border-zinc-300 rounded-l-none" size="small" />
+                    </InputGroup>
+                </div>
             </div>
-        </div>
+
+            <div class="my-3" v-show="showFilters">
+               <EventFilters />
+            </div>
+
+            <div>
+                <div v-if="selectionModeIsVisible" class="my-4 w-full flex justify-between items-center">
+                    <div class="flex gap-3 items-center">
+                        <Button size="small" text icon="fa fa-times" class="h-6 w-6" @click="handleHideSelectionMode"/> 
+                        Selecionados: {{ selectedEvents.length }}
+                    </div>
+                </div>
+
+                <div>
+                    <DataTable :value="events" size="small" paginator :rows="7"
+                        v-model:selection="itemSelected" dataKey="id" scrollable
+                        @row-select="onRowSelected" @row-unselect="onRowUnselected"
+                        :loading="busy" lazy class="ctable" :rowsPerPageOptions="[7, 10, 20, 50]" 
+                        :totalRecords="events.length"
+                    >
+
+                        <Column selectionMode="multiple" v-if="selectionModeIsVisible" headerStyle="width: 3rem"></Column>
+
+                        <Column field="int_id" header="ID" />
+
+                        <Column field="name" header="Nome" />
+
+                        <Column field="localization" header="Localização" />
+
+                        <Column field="date" header="Data">
+                            <template #body="props">
+                                {{ dateFormater(props.data.date) }}
+                            </template>
+                        </Column>
+
+                        <Column field="category" header="Tipo de evento" >
+                            <template #body="props">
+                                {{ props.data.category?.name }}
+                            </template>
+                        </Column>
+
+                        <Column field="status" header="Estado" >
+                            <template #body="props">
+                                <EventStatus :status="props.data.status" />
+                            </template>
+                        </Column>
+
+                        <!-- <Column field="organizer.name" header="Organizador" /> -->
+
+                        <Column field="actions" header="Ações">
+                            <template #body="props">
+                                <Dropdown 
+                                    :options="[
+                                        {
+                                            label: 'Visualizar',
+                                            icon: 'fa fa-eye',
+                                            command: () => this.handleViewEvent(props.data)
+                                        },
+                                        {
+                                            label: 'Mapa do evento',
+                                            icon: 'fa fa-chart-line',
+                                            command: () => this.handleViewEstatisticEvent(props.data)
+                                        },
+                                        {
+                                            label: 'Editar',
+                                            icon: 'fa fa-pencil',
+                                            command: () => this.handleEditEvent(props.data)
+                                        },
+                                        {
+                                            label: 'Eliminar',
+                                            icon: 'fa fa-trash',
+                                            command: () => this.handleDeleteEvent(props.data)
+                                        },
+                                    ]" 
+                                    class="p-0 bg-primary-500"
+                                    option-label="label"
+                                >
+                                    <template #value>
+                                        <div class="flex justify-center items-center text-white">
+                                            <i class="fa fa-cog"/>
+                                        </div>
+                                    </template>
+
+                                    <template #option="{ option }">
+                                        <div class="h-2 text-sm flex items-center text-zinc-700 py-2 w-full" @click="option.command">
+                                            <i :class="option.icon" class="mr-1" /> {{ option.label }}
+                                        </div>
+                                    </template>
+
+                                    <template #dropdownicon>
+                                        <i class="fa fa-chevron-down text-white"/>
+                                    </template>
+                                </Dropdown>
+                            </template>
+                        </Column>
+                    </DataTable>
+                </div>
+            </div>
+        </CardRoot>
     </div>
 </template>
 
-<style scoped>
-.actions-button {
-    @apply h-8 bg-surface-500 border-none hover:bg-surface-600
+<style>
+div[data-pc-section="root"].ctable > div[data-pc-section="wrapper"] {
+    overflow: visible !important;
 }
 </style>

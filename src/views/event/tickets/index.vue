@@ -13,7 +13,6 @@ import ModalEditTicket from './components/ModalEditTicket.vue';
 import ModalDeleteTicket from './components/ModalDeleteTicket.vue';
 import InputNumber from 'primevue/inputnumber';
 import CCard from "@/components/PCard/index.js"
-import SpeedDial from 'primevue/speeddial';
 import Dropdown from 'primevue/dropdown';
 
 
@@ -23,7 +22,7 @@ export default {
     components: {
         DataTable, Column, SplitButton, Button, InputText, InputGroup, 
         ModalNewTicket, ModalEditTicket, ModalDeleteTicket,
-        InputNumber, CardRoot: CCard.Root, SpeedDial, Dropdown
+        InputNumber, CardRoot: CCard.Root, Dropdown
     },
     data(){
         return {
@@ -203,7 +202,7 @@ export default {
                         </template>
 
                         <template #option="{ option }">
-                            <div class="h-2 text-md text-zinc-700 py-2 w-full" @click="option.command">
+                            <div class="h-2 text-sm flex items-center text-zinc-700 py-2 w-full" @click="option.command">
                                 <i :class="option.icon" class="mr-1" /> {{ option.label }}
                             </div>
                         </template>

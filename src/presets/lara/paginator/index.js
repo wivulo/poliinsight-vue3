@@ -150,7 +150,7 @@ export default {
             'border-0 rounded-full dark:rounded-md',
 
             // Size
-            'min-w-[3rem] h-12 m-[0.143rem]',
+            'min-w-[3rem] h-10 m-[0.13rem]',
             'leading-none',
 
             // Color
@@ -181,7 +181,7 @@ export default {
                 'relative',
 
                 // Shape
-                'h-12',
+                'h-10',
                 'rounded-md',
 
                 // Spacing
@@ -196,7 +196,7 @@ export default {
                 'duration-200',
 
                 // States
-                'hover:border-primary-500 dark:hover:border-primary-300',
+                'dark:hover:border-primary-300',
                 { 'focus:outline-none focus:outline-offset-0 focus:ring focus:ring-primary-400/50 dark:focus:ring-primary-300/50': !state.focused },
 
                 // Misc
@@ -222,7 +222,7 @@ export default {
 
                 // Sizing and Spacing
                 'w-[1%]',
-                'p-3 pr-0',
+                'p-2 pr-0',
 
                 //Shape
                 'rounded-none',
@@ -253,7 +253,7 @@ export default {
                 'text-surface-500',
 
                 // Size
-                'w-12',
+                'w-10',
 
                 // Shape
                 'rounded-tr-md',

@@ -162,7 +162,7 @@ export default {
 <style scoped>
 aside{
     width: 230px;
-    z-index: 2001;
+    z-index: 30;
     position: fixed;
     /* width: clamp(15vw, 18vw, 30vw); */
     height: 100vh;
