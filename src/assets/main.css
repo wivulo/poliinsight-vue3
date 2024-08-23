@@ -200,7 +200,7 @@ textarea {
 }
 
 .ctable th[data-pc-section='headercell']{
-  @apply text-[0.9rem] font-semibold;
+  @apply text-[0.9rem] font-medium;
 } 
 
 .ctable td[data-pc-section='bodycell']{

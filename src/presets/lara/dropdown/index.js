@@ -48,7 +48,7 @@ export default {
 
             // Sizing and Spacing
             'w-[1%]',
-            'p-1 px-3',
+            'p-1 px-3 pr-1',
             { 'pr-7': props.showClear },
 
             //Shape
@@ -80,7 +80,7 @@ export default {
             'text-surface-500',
 
             // Size
-            'w-12',
+            'w-8 px-2',
 
             // Shape
             'rounded-tr-md',
