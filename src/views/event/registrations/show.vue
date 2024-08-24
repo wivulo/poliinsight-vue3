@@ -1,5 +1,6 @@
 <script>
 import EventServices from '@/services/EventServices';
+import EventConfigServices from '@/services/EventConfigServices.js';
 import { setDocumentTitleMixin } from "@/config/document.title.js"
 import Image from 'primevue/image';
 import FloatLabel from 'primevue/floatlabel';
@@ -9,6 +10,7 @@ import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import RadioButton from 'primevue/radiobutton';
+import { event } from '@/store/modules/event';
 
 export default {
     name: "event.registrations.show",
@@ -40,11 +42,16 @@ export default {
                 {label: 'Transferência Bancária', value: 'bank_transfer'},
                 {label: 'Depósito Bancário', value: 'bank_deposit'},
                 {label: 'Dinheiro em mão', value: 'cash'},
-            ]
+            ],
+            eventConfig: {
+                data: {},
+                busy: false
+            }
         };
     },
-    created(){
-        this.getEvent()
+    async created(){
+        await this.getEvent()
+        this.getEventConfig(this.event?.category.name)
     },
     methods: {
         async getEvent(){
@@ -53,6 +60,14 @@ export default {
             .catch(() => this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar evento'}))
             this.event = responde.data
             this.busy = false
+        },
+
+        async getEventConfig(eventType){
+            this.eventConfig.busy = true
+            const responde = await EventConfigServices.showByEventType(eventType)
+            .catch(() => this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar configuração do evento'}))
+            this.eventConfig.data = responde.data
+            this.eventConfig.busy = false
         },
 
         handleMakeRegistration(){
@@ -128,7 +143,7 @@ export default {
                         </div>
                     </div>
 
-                    <div class="flex flex-col gap-3 mt-4 mb-2 text-sm">
+                    <div class="flex flex-col gap-3 mt-4 mb-2 text-sm" v-if="event?.type === 'paid'">
                         <p class="ml-2">Taxa de inscrição</p>
                         <div class="flex flex-col gap-2">
                             <div class="flex align-items-center">
