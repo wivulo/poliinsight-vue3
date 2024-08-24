@@ -42,6 +42,7 @@ export default {
         }
     },
     async created(){
+        this.$router.push({name: 'event.show.registrations'})
         this.getEvent()
     },
     computed: {
@@ -71,7 +72,7 @@ export default {
 </script>
 
 <template>
-    <div class="flex px-5 py-7 w-full">
+    <div id="eventShow" class="flex px-5 py-7 w-full">
         <div class="flex flex-col gap-5 items-center w-full">
             <CardRoot class="w-full shadow-sm cardroot">
                 <InputGroup>
@@ -145,7 +146,7 @@ export default {
                         <TabMenu :model="tabItems">
                             <template #item="{ item, props }">
                                 <router-link v-slot="{ href, navigate }" :to="{name: item.route}" custom>
-                                    <a v-ripple :href="href" v-bind="props.action" @click="navigate">
+                                    <a v-ripple :href="href" v-bind="props.action" @click="navigate" class="text-sm">
                                         <span v-bind="props.icon" />
                                         <span v-bind="props.label">{{ item.label }}</span>
                                     </a>
@@ -167,20 +168,23 @@ export default {
     </div>
 </template>
 
-<style scoped>
-div#autocomplete-statistic-viewer[data-pc-name="autocomplete"] input{
-    border-radius: 0 5px 5px 0px;
-}
+<style>
 
-.cardroot div[data-pc-section="content"]{
-    @apply py-[5px]
-}
+#eventShow {
+    div#autocomplete-statistic-viewer[data-pc-name="autocomplete"] input{
+        border-radius: 0 5px 5px 0px;
+    }
 
-.cardroot div[data-pc-section="body"] {
-    @apply px-[5px]
-}
+    div.cardroot div[data-pc-section="content"]{
+        @apply py-[5px]
+    }
 
-ul li{
-    @apply flex justify-between gap-1
+    .cardroot div[data-pc-section="body"] {
+        @apply px-[5px]
+    }
+
+    ul li{
+        @apply flex justify-between gap-1
+    }
 }
 </style>

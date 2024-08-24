@@ -210,7 +210,7 @@ export default {
 </script>
 
 <template>
-    <div>
+    <div id="organizerOverview">
         <div class="flex justify-between w-full">
             <CardRoot>
                 <CardHeader icon="fa-chart-line text-red-600">
@@ -331,19 +331,21 @@ export default {
 </template>
 
 <style>
-.cardroot div[data-pc-section="content"]{
-    padding-top: 5px;
-    padding-bottom: 0
-}
+#organizerOverview {
+    .cardroot div[data-pc-section="content"]{
+        padding-top: 5px;
+        padding-bottom: 0
+    }
 
-.cardInformation div[data-pc-section="body"],
-.cardInformation div[data-pc-section="content"],
-.cardInformation div[data-pc-section="content"] > div{
-    height: 100%; 
-}
+    .cardInformation div[data-pc-section="body"],
+    .cardInformation div[data-pc-section="content"],
+    .cardInformation div[data-pc-section="content"] > div{
+        height: 100%; 
+    }
 
-.cardInformation div[data-pc-section="content"] > div{
-    display: flex;
-    flex-direction: column;
+    .cardInformation div[data-pc-section="content"] > div{
+        display: flex;
+        flex-direction: column;
+    }
 }
 </style>
