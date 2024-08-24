@@ -10,14 +10,15 @@ import InputGroup from 'primevue/inputgroup';
 import InputNumber from 'primevue/inputnumber';
 import CCard from "@/components/PCard/index.js"
 import Dropdown from 'primevue/dropdown';
+import EventStatus from '@/components/EventStatus.vue';
 import dayjs from 'dayjs'
 
 export default {
     name: "event.registrations",
     mixins: [setDocumentTitleMixin],
     components: {
-        DataTable, Column, Button, InputText, InputGroup,
-        InputNumber, CardRoot: CCard.Root, Dropdown
+        DataTable, Column, Button, InputText, InputGroup, EventStatus,
+        InputNumber, CardRoot: CCard.Root, Dropdown,
     },
     data(){
         return {
@@ -28,24 +29,9 @@ export default {
                 busy: false,
                 data: []
             },
-            isItemSelected: false,
-            itemSelected: null,
             filter: null,
             
-            selectedTickets: [],
             showFilters: false,
-
-            selectionModeIsVisible: false,
-
-            searchActions: [
-                {
-                    label: 'Mostrar caixa de seleção',
-                    icon: 'fa fa-check-square',
-                    command: () => {
-                        this.selectionModeIsVisible = !this.selectionModeIsVisible;
-                    }
-                },
-            ],
 
             isShowActions: false,
         }
@@ -65,23 +51,6 @@ export default {
             .catch(() => this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar os eventos'}))
             this.events.data = responde.data
             this.events.busy = false
-        },
-
-        handleHideSelectionMode(){
-            this.selectionModeIsVisible = false;
-            this.selectedTickets = [];
-        },
-
-        onRowSelected(item){
-            this.selectedTickets.push(item.data);
-            this.isItemSelected = true;
-        },
-        onRowUnselected(item){
-            this.selectedTickets = this.selectedTickets.filter(user => user.id !== item.data.id);
-
-            if(this.selectedTickets.length === 0){
-                this.isItemSelected = false;
-            }
         },
 
         handleNewTicket(){
@@ -114,26 +83,15 @@ export default {
                  </Button>
                 <InputText size="small" v-model="filter" id="search" type="text" placeholder="Pesquisar..." class="w-full rounded-none h-9 border-l-0" />
 
-                <Button size="small" severity="transparent" class="h-9 border border-zinc-300 border-r-0">
+                <Button size="small" severity="transparent" class="h-9 border border-zinc-300">
                     <i class="fa fa-filter mr-2"></i>
                     Filtro
                 </Button>
-
-                <SplitButton :model="searchActions" severity="transparent" class="border border-l-0 border-zinc-300 rounded-l-none" size="small" />
             </InputGroup>
         </div>
 
-        <div v-if="selectionModeIsVisible" class="my-4 w-full flex justify-between items-center">
-            <div class="flex gap-3 items-center">
-                <Button size="small" text icon="fa fa-times" class="h-6 w-6" @click="handleHideSelectionMode"/> 
-                    Selecionados: {{ selectedTickets.length }}
-            </div>
-        </div>
-
         <DataTable :value="events.data" size="small" paginator :rows="7" :totalRecords="events.data.length"
-            v-model:selection="itemSelected" dataKey="id"
-            @row-select="onRowSelected" @row-unselect="onRowUnselected" class="ctable"
-            :loading="events.busy" lazy :rowsPerPageOptions="[7, 10, 20, 50]"
+            dataKey="id" class="ctable" :loading="events.busy" lazy :rowsPerPageOptions="[7, 10, 20, 50]"
         >
 
             <Column field="name" header="Nome" />
@@ -161,9 +119,12 @@ export default {
             
             <Column field="actions" header="Ações" class="relative">
                 <template #body="props">
-                    <Button size="small" class="h-9">
-                        <i class="fa fa-pencil mr-1 text-sm" /> incrição
-                    </Button>
+                    <router-link v-slot="{ navigate }" :to="{name: 'event.registrations.show', params: {id: props.data.id}}" custom>
+                        <Button v-ripple severity="transparent" size="small" class="p-ripple h-9" title="Fazer incrições" @click="navigate">
+                            <!-- <i class="fa fa-pencil text-sm" /> -->
+                            <i class="fa fa-file-signature text-sm" />
+                        </Button>
+                    </router-link>
                 </template>
             </Column>
 

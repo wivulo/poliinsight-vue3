@@ -27,6 +27,9 @@ export default defineComponent({
             token: 'auth/token',
         }),
   },
+  // mounted() {
+  //   this.$primevue.config.ripple = true;
+  // },
   watch: {
     $route(to, from) {
       if (!this.token && !this.user) {

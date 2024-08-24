@@ -10,6 +10,7 @@ import "@/plugin/axios"
 import PrimeVue from 'primevue/config';
 import Lara from '@/presets/lara';
 import ToastService from 'primevue/toastservice';
+import Ripple from 'primevue/ripple';
 
 //local css
 import './assets/main.css'
@@ -38,8 +39,10 @@ app.use(store)
 app.use(PrimeVue, {
     unstyled: true,
     pt: Lara,
+    ripple: true
 });
 app.use(ToastService);
+app.directive('ripple', Ripple);
 
 
 // app.use(BootstrapVue)
