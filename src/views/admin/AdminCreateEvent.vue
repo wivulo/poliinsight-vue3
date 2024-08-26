@@ -26,12 +26,14 @@ export default {
         return {
             categories: {
                 data: [],
-                busy: false
+                busy: false,
+                selected: null
             },
             event_type: [
                 {label: 'Gratuito', value: 'free'},
                 {label: 'Pago', value: 'paid'}
             ],
+            eventTypeSelected: null,
             flayerName: null,
             event: {
                 flayer: null,
@@ -73,6 +75,9 @@ export default {
         async handleCreateEvent(){ 
             // console.log(this.event)      
             this.busy = true
+            this.event.categoryId = this.categories.selected.id
+            this.event.type = this.eventTypeSelected.value
+            // console.log(this.event)
             const response = await EventServices.createEvent({...this.event, organizerId: this.user.id})
             .catch(() => this.handleErrorMessage())
             this.busy = false
@@ -122,7 +127,16 @@ export default {
                 <label for="category" class="flex-grow pl-3 text-surface-400">
                     <small>Catégoria</small>
                 </label>
-                <Dropdown id="category" v-model="event.categoryId"  :options="categories.data" optionLabel="name" optionValue="id" placeholder="Selecione uma categória" class="h-9 w-[290px]" />
+                <Dropdown id="category" v-model="categories.selected"  :options="categories.data" optionLabel="name" placeholder="Selecione uma categória" class="h-9 w-[290px]">
+                    <template #value="slotProps">
+                        <div v-if="slotProps.value" class="flex items-center text-black">
+                            {{ slotProps.value.name }}
+                        </div>
+                        <div v-else>
+                            {{ slotProps.placeholder }}
+                        </div>
+                    </template>
+                </Dropdown>
             </div>
 
             <div class="flex flex-col">
@@ -136,7 +150,16 @@ export default {
                 <label for="freeOrPaid" class="pl-3 text-surface-400">
                     <small> Tipo de evento </small>
                 </label>
-                <Dropdown id="freeOrPaid" v-model="event.type"  :options="event_type" optionLabel="label" optionValue="value" placeholder="Selecione o tipo de evento" class="h-9 w-[290px]" />
+                <Dropdown id="freeOrPaid" v-model="eventTypeSelected"  :options="event_type" optionLabel="label" placeholder="Selecione o tipo de evento" class="h-9 w-[290px]">
+                    <template #value="slotProps">
+                        <div v-if="slotProps.value" class="flex items-center text-black">
+                            {{ slotProps.value.label }}
+                        </div>
+                        <div v-else>
+                            {{ slotProps.placeholder }}
+                        </div>
+                    </template>
+                </Dropdown>
             </div>
 
             <div class="flex flex-col">
