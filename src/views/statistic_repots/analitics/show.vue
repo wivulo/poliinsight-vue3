@@ -52,8 +52,11 @@ export default {
             return dateFormatter
         },
 
-        fullname(){
+        old_fullname(){
             return `${this.statistic?.oldestParticipantInfo.name} ${this.statistic?.oldestParticipantInfo.nickname}`
+        },
+        new_fullname(){
+            return `${this.statistic?.youngestParticipantInfo.name} ${this.statistic?.youngestParticipantInfo.nickname}`
         }
     },
     methods: {
@@ -77,7 +80,6 @@ export default {
             let male = 0;
             let female = 0;
 
-            console.log(this.statistic)
             if(this.statistic?.genderDistribution){
                 male = this.statistic.genderDistribution?.male;
                 female = this.statistic.genderDistribution?.female;
@@ -124,23 +126,25 @@ export default {
         setageDistribuition() {
             let ages = [0, 0, 0, 0]
 
-            if(this.statistic?.agesDistribution != null){
+            if(this.statistic?.agesDistribution){
                 let objAges = this.statistic.agesDistribution;
                 for(const age in objAges){
                     if(+age >= 40 ){
-                        ages[3] = objAges[age]
+                        ages[3] += objAges[age]
                     }
                     else if(+age >= 30 && +age < 40){
-                        ages[2] = objAges[age]
+                        ages[2] += objAges[age]
                     }
                     else if(+age >= 25 && +age < 30){
-                        ages[1] = objAges[age]
+                        ages[1] += objAges[age]
                     }
                     else {
-                        ages[0] = objAges[age]
+                        ages[0] += objAges[age]
                     }
                 }
             }
+
+            console.log(ages)
 
             return {
                 labels: ['17-24', '25-30', '30-40', '40-75'],
@@ -187,7 +191,7 @@ export default {
                     },
                     y: {
                         beginAtZero: true,
-                        suggestedMax: 1000,
+                        suggestedMax: 50,
                         ticks: {
                             color: textColorSecondary
                         },
@@ -198,7 +202,25 @@ export default {
                 }
             };
         },
-    }
+
+        updateCharts() {
+            this.dataGenderDistribuition = this.setdataGenderDistribuition();
+            this.dataGenderDistribuitionChartOptions = this.setdataGenderDistribuitionChartOptions();
+            this.ageDistribuition = this.setageDistribuition();
+            this.ageDistribuitionChartOptions = this.setAgeDistribuitionChartOptions();
+
+            this.$nextTick(() => {
+                if (this.$refs.chart && this.$refs.chart.chart) {
+                    this.$refs.chart.chart.update();
+                }
+            });
+        }
+    },
+    watch: {
+        statistic() {
+            this.updateCharts();
+        }
+    },
 }
 </script>
 
@@ -233,7 +255,7 @@ export default {
                                 </p>
                             </div>
                             <div class="w-5 h-40 border border-zinc-300 overflow-hidden relative">
-                                <div class="w-5 bg-zinc-600 absolute bottom-0 left-0" :style="{height: statistic?.totalParticipants ?? 0+'px'}"></div>
+                                <div class="w-5 bg-zinc-600 absolute bottom-0 left-0" :style="{height: statistic?.totalParticipants*((1/100)*160)+'px' ?? 0+'px'}"></div>
                             </div>
                         </CardValue>
                     </CardRoot>
@@ -263,7 +285,7 @@ export default {
                                 <p>Participante Mais velho</p>
                             </CardHeader>
                             <CardValue class="mt-5 text-sm" v-if="statistic?.oldestParticipantInfo">
-                                <p><b>Nome:</b> {{ fullname }}</p>
+                                <p><b>Nome:</b> {{ old_fullname }}</p>
                                 <p><b>Idade: </b> {{ statistic.oldestParticipant }} anos</p>
                             </CardValue>
                             <CardInformation v-else class="mt-5">
@@ -276,7 +298,7 @@ export default {
                                 <p>Participante Mais novo</p>
                             </CardHeader>
                             <CardValue class="mt-5 text-sm" v-if="statistic?.oldestParticipantInfo">
-                                <p><b>Nome:</b> {{ fullname }}</p>
+                                <p><b>Nome:</b> {{ new_fullname }}</p>
                                 <p><b>Idade: </b> {{ statistic?.youngestParticipant }} anos</p>
                             </CardValue>
                             <CardInformation v-else class="mt-5">

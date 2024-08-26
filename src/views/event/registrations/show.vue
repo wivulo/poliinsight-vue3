@@ -12,7 +12,6 @@ import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import RadioButton from 'primevue/radiobutton';
-import { event } from '@/store/modules/event';
 import SingleInformation from './components/SingleInformation.vue';
 import GroupInformation from './components/GroupInformation.vue';
 import CompanyInformation from './components/CompanyInformation.vue';
@@ -67,19 +66,15 @@ export default {
 
         async handleMakeRegistration(){
             try {
-                this.registration.data = {
-                    ...this.$refs.SingleInformation.data
-                }
+                this.registration.data = this.$refs.SingleInformation.data
 
                 this.registration.busy = true
-                this.$toast.add({severity: 'info', summary: 'Salvando...', detail: 'A salvar as informaçºoes do participante', life: 2000})
                 let response = await ParticipantServices.store(this.registration.data)
 
                 if(response.data?.error || response.status > 299) throw new Error('Error')
 
                 const participante = response.data
 
-                this.$toast.add({severity: 'info', summary: 'Inscrevendo...', detail: 'A inscrever o participante', life: 2000})
                 response = await RegistrationServices.store({
                     eventId: this.event?.id,
                     userId: null,
@@ -90,7 +85,8 @@ export default {
                 if(response.data?.error || response.status > 299) throw new Error('Error')
 
 
-                this.$toast.add({severity: 'success', summary: 'Sucesso', detail: 'Participante inscrito com sucesso', life: 3000})
+                this.$swal.fire('Sucesso', 'Inscrição feita com sucesso', 'success')
+                this.handleReset()
             } catch (error) {
                 this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao fazer a inscrição', life: 3000})
             } finally {
@@ -99,7 +95,7 @@ export default {
         },
 
         handleReset(){
-
+            this.$refs.SingleInformation.reset()
         }
     }
 }
@@ -107,12 +103,12 @@ export default {
 
 <template>
     <div class="w-full flex flex-col relative">
-        <div class="w-full h-1/2 overflow-hidden flex justify-between items-center">
+        <div class="w-full h-2/3 overflow-hidden flex justify-between items-center">
             <i class="fas fa-spinner animate-spin mr-1" v-if="busy" />
-            <Image :src="event?.imageURL" :alt="event?.name" class="object-cover" />
+            <Image :src="event?.imageURL" :alt="event?.name" class="object-cover w-full" image-class="w-full" />
         </div>
 
-        <div class="w-full h-1/2" />
+        <div class="w-full h-1/3" />
 
         <div id="registration-box" class="bg-slate-50/95">
             <div v-if="eventConfig.busy" class="w-full h-full flex justify-center items-center">

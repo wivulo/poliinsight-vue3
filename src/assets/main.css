@@ -206,3 +206,7 @@ textarea {
 .ctable td[data-pc-section='bodycell']{
   @apply text-[0.899rem];
 }
+
+div:where(.swal2-container) {
+  z-index: 1102 !important;
+}

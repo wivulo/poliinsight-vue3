@@ -58,13 +58,18 @@ export default {
         async handleStore(){
             this.busy = true;
             this.importData.operadorId = this.user.id
+            this.importData.eventId = this.importData.eventId.id
             const response = await ImportServices.importParticipants(this.importData)
             .catch(() => this.handleErrorMessage())
 
             this.busy = false
+            if(response?.data.error){
+                this.$toast.add({severity:'error', summary: 'Error', detail: response.data.error, life: 3000});
+                return;
+            }
 
-            if(response.status == 201 && !response.data.error){
-                this.$toast.add({severity:'success', summary: 'Success', detail: 'Participantes importados com sucesso', life: 3000});
+            if(response?.status == 201){
+                this.$swal.fire('', 'Participantes importados com sucesso', 'success');
                 this.$emit('created');
                 this.reset();
                 this.handlehidden();
@@ -82,6 +87,12 @@ export default {
 
         reset(){
             this.visible = false;
+            this.importData = {
+                description: null,
+                operadorId: null,
+                eventId: null,
+                file: null
+            }
         },
 
         handlehidden(){
@@ -106,6 +117,12 @@ export default {
             e.preventDefault();
             this.prepareFile(e.target.files[0])
         },
+
+        formatBytes(bytes) {
+            if (bytes < 1024) return bytes + " Bytes";
+            else if (bytes < 1048576) return (bytes / 1024).toFixed(3) + " KB";
+            else if (bytes < 1073741824) return (bytes / 1048576).toFixed(3) + " MB";
+        },
     }
 }
 </script>
@@ -115,9 +132,18 @@ export default {
         <div>
             <div class="flex flex-col w-full">
                 <label for="event">Evento</label>
-                <Dropdown id="event" v-model="importData.eventId" :options="events.data" optionLabel="name" optionValue="id" placeholder="Selecione um evento" 
+                <Dropdown id="event" v-model="importData.eventId" :options="events.data" optionLabel="name" placeholder="Selecione um evento" 
                     class="w-full"
-                />
+                >
+                    <template #value="slotProps">
+                        <div v-if="slotProps.value" class="flex items-center text-black">
+                            {{ slotProps.value.name }}
+                        </div>
+                        <div v-else>
+                            {{ slotProps.placeholder }}
+                        </div>
+                    </template>
+                </Dropdown>
             </div>
             
             <div class="flex flex-col w-full my-3">
@@ -129,7 +155,7 @@ export default {
                 <p>Participantes</p>
                 <div class="flex justify-center items-center mt-2 w-full">
                     <div class="flex items-center justify-center w-full">
-                        <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-28 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                        <label v-if="!importData.file" for="dropzone-file" class="flex flex-col items-center justify-center w-full h-28 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                             <div class="flex flex-col items-center justify-center pt-5 pb-6">
                                 <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
@@ -139,6 +165,18 @@ export default {
                             </div>
                             <input id="dropzone-file" type="file" class="hidden" @change="handleOnChange" />
                         </label>
+
+                        <div v-else class="w-full h-28 flex justify-center items-center">
+                            <div class="flex flex-col items-center justify-center w-full h-28 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                    </svg>
+                                    <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">{{ importData.file.name }}</span></p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ formatBytes(importData.file.size) }}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div> 
                 </div>
             </div>

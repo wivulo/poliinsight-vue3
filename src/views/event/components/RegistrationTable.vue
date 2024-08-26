@@ -1,4 +1,5 @@
 <script>
+import RegistrationServices from '@/services/RegistrationServices.js';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
@@ -27,17 +28,20 @@ export default {
     methods: {
         async getEventRegistrations(){
             this.busy = true
-            this.registrations = [
-                {
-                    id: 1,
-                    name: 'João',
-                    email: 'joao@gmail.com',
-                    data: dayjs().format('DD/MM/YYYY')
-                }
-            ]
-            this.totalRecods = 1
+            const response = await RegistrationServices.showByEvent(this.$route.params.id)
+            .catch(() => this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar inscrições'}))
+            this.registrations = response.data
+            this.totalRecods = this.registrations.length
             this.busy = false
         },
+
+        getData(){
+            this.getEventRegistrations()
+        },
+
+        dateFormater(date) {
+            return dayjs(date).format('DD/MM/YYYY')
+        }
     }
 }
 
@@ -58,11 +62,19 @@ export default {
             dataKey="id" class="ctable" :loading="busy" lazy :rowsPerPageOptions="[5, 10, 20, 50]"
         >
 
-            <Column field="name" header="Nome" />
+            <Column field="participant.data" header="Nome" >
+                <template #body="props">
+                    <p>{{ props.data.participant.data.name +' '+ props.data.participant.data.nickname }}</p>
+                </template>
+            </Column>
 
-            <Column field="email" header="Email" />
+            <Column field="participant.data.email" header="Email" />
 
-            <Column field="data" header="Data" />
+            <Column field="createdAt" header="Data da inscrição" >
+                <template #body="props">
+                    <p>{{ dateFormater(props.data.createdAt) }}</p>
+                </template>
+            </Column>
 
             <Column field="actions" header="Ações" class="relative">
                 <template #body="props">

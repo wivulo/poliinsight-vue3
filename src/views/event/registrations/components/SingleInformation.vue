@@ -14,29 +14,12 @@ export default {
     data(){
         return {
             data: {},
-            orderedFields: {}
         }
-    },
-    mounted(){
-        this.orderFields()
     },
     methods: {
-        orderFields(){
-            this.fields?.map(field => {
-                switch(field.name){
-                    case 'name':
-                    case 'nickname': {
-                        if(this.orderFields['fullname']){
-                            this.orderFields['fullname'].push(field)
-                            return
-                        }
-
-                        this.orderFields['fullname'] = [field];
-                        break
-                    }
-                }
-            })
-        }
+        reset(){
+            this.data = {}
+        },
     },
 }
 </script>

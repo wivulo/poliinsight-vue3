@@ -36,6 +36,10 @@ export default {
             this.totalRecods = 1
             this.busy = false
         },
+
+        getData(){
+            this.getEventtickets()
+        },
     }
 }
 

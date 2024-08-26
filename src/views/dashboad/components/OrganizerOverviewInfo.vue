@@ -87,7 +87,7 @@ export default {
             let male = 0;
             let female = 0;
 
-            if(this.data.last_event?.statistic?.genderDistribution != null){
+            if(this.data.last_event?.statistic?.genderDistribution){
                 male = this.data.last_event?.statistic.genderDistribution?.male;
                 female = this.data.last_event?.statistic.genderDistribution?.female;
             }
@@ -133,20 +133,20 @@ export default {
         setageDistribuition() {
             let ages = [0, 0, 0, 0]
 
-            if(this.data.last_event?.statistic?.agesDistribution != null){
+            if(this.data.last_event?.statistic?.agesDistribution){
                 let objAges = this.data.last_event?.statistic.agesDistribution;
                 for(const age in objAges){
                     if(+age >= 40 ){
-                        ages[3] = objAges[age]
+                        ages[3] += objAges[age]
                     }
                     else if(+age >= 30 && +age < 40){
-                        ages[2] = objAges[age]
+                        ages[2] += objAges[age]
                     }
                     else if(+age >= 25 && +age < 30){
-                        ages[1] = objAges[age]
+                        ages[1] += objAges[age]
                     }
                     else {
-                        ages[0] = objAges[age]
+                        ages[0] += objAges[age]
                     }
                 }
             }
@@ -194,7 +194,7 @@ export default {
                     },
                     y: {
                         beginAtZero: true,
-                        suggestedMax: 1000,
+                        suggestedMax: 50,
                         ticks: {
                             color: textColorSecondary
                         },
@@ -205,6 +205,24 @@ export default {
                 }
             };
         },
+
+        updateCharts() {
+            this.dataGenderDistribuition = this.setdataGenderDistribuition();
+            this.dataGenderDistribuitionChartOptions = this.setdataGenderDistribuitionChartOptions();
+            this.ageDistribuition = this.setageDistribuition();
+            this.ageDistribuitionChartOptions = this.setAgeDistribuitionChartOptions();
+
+            this.$nextTick(() => {
+                if (this.$refs.chart && this.$refs.chart.chart) {
+                    this.$refs.chart.chart.update();
+                }
+            });
+        }
+    },
+    watch: {
+        data() {
+            this.updateCharts();
+        }
     },
 }
 </script>

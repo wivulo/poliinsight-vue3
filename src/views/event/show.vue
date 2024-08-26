@@ -9,12 +9,12 @@ import Image from 'primevue/image';
 import Dropdown from 'primevue/dropdown';
 import CCard from "@/components/PCard/index.js"
 import TabMenu from 'primevue/tabmenu';
-
+import ModalNewRegistration from './components/ModalNewRegistration.vue';
 
 export default {
     name: 'Event.viewer',
     components: {
-        AutoComplete, Card,
+        AutoComplete, Card, ModalNewRegistration,
         InputGroup, Button, TabMenu,
         Image, Dropdown, CardRoot: CCard.Root
     },
@@ -66,6 +66,15 @@ export default {
             .catch(() => this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar os eventos'}))
             this.events.data = responde.data
             this.events.busy = false
+        },
+
+        handleShowModalNewRegistration(){
+            this.$refs.ModalNewRegistration.show()
+        },
+
+        updateEvent(){
+            this.getEvent()
+            this.$refs.componentTabela.getData()
         }
     }
 }
@@ -73,6 +82,8 @@ export default {
 
 <template>
     <div id="eventShow" class="flex px-5 py-7 w-full">
+        <ModalNewRegistration ref="ModalNewRegistration" @created="updateEvent" />
+
         <div class="flex flex-col gap-5 items-center w-full">
             <CardRoot class="w-full shadow-sm cardroot">
                 <InputGroup>
@@ -96,19 +107,19 @@ export default {
             </div>
     
             <div class="flex gap-5 w-full h-full" v-else>
-                <CardRoot class="w-[30%] h-[530px]">
+                <CardRoot class="w-[30%] h-[600px]">
                     <div class="flex flex-col gap-3">
     
-                            <div class="w-full h-[218px] border overflow-hidden">
-                                <Image :src="event.imageURL" class="object-fill object-center" imageClass="h-[218px]" alt="event.name" preview/>
-                            </div>
+                        <div class="w-full h-[218px] border overflow-hidden">
+                            <Image :src="event.imageURL" class="object-fill object-center" imageClass="h-[218px]" alt="event.name" preview/>
+                        </div>
 
-                            <div>
-                                <p class="text-xl font-medium">
-                                    {{ event.name }}
-                                </p>
-                                <p>{{ event.localization }}</p>
-                            </div>
+                        <div>
+                            <p class="text-xl font-medium">
+                                {{ event.name }}
+                            </p>
+                            <p>{{ event.localization }}</p>
+                        </div>
 
                         <div class="mt-2">
                             <ul class="flex flex-col gap-2 text-sm">
@@ -138,10 +149,26 @@ export default {
                                 </li>
                             </ul>
                         </div>
+
+                        <div class="flex flex-col gap-3 border-t border-zinc-200 py-2">
+                            <Button text size="small" class="h-9 bg-gray-400/70 w-full" @click="handleShowModalNewRegistration">
+                                <span class="text-black">
+                                    <i class="fa fa-file-signature text-sm " /> Fazer inscrição
+                                </span>
+                            </Button>
+
+                            <router-link v-slot="{ navigate }" :to="{name: 'analise_relatorios.analitics.show', params: {id: event.id}}" custom>
+                                <Button v-ripple text size="small" class="h-9 bg-gray-400/70 w-full p-ripple" @click="navigate">
+                                    <span class="text-black">
+                                        <i class="fa fa-map text-sm " /> Mapa do evento
+                                    </span>
+                                </Button>
+                            </router-link>
+                        </div>
                     </div>
                 </CardRoot>
     
-                <CardRoot class="w-[70%] h-[530px]">
+                <CardRoot class="w-[70%] h-[600px]">
                    <div class="flex flex-col gap-5">
                         <TabMenu :model="tabItems">
                             <template #item="{ item, props }">
@@ -157,7 +184,7 @@ export default {
                         <div>
                             <router-view v-slot="{ Component }">
                                 <transition>
-                                    <component :is="Component" />
+                                    <component :is="Component" ref="componentTabela" />
                                 </transition>
                             </router-view>
                         </div>

@@ -59,7 +59,7 @@ export default {
 
 <template>
     <div class="w-full py-3 px-5">
-        <ModalNewParticipantImport ref="ModalNewParticipantImport" />
+        <ModalNewParticipantImport ref="ModalNewParticipantImport" @created="getImports"/>
 
         <CardRoot class="mt-4">
             <div class="flex gap-2 justify-between my-2">
@@ -92,11 +92,11 @@ export default {
                                     // command: () => handleDeleteTicket(props.data)
                                 },
                             ]" 
-                            class="p-0 bg-zinc-500"
+                            class="p-0 bg-gray-400/70"
                             option-label="label"
                         >
                             <template #value>
-                                <div class="flex justify-center items-center text-white">
+                                <div class="flex justify-center items-center text-black">
                                     Importar
                                 </div>
                             </template>
@@ -108,7 +108,7 @@ export default {
                             </template>
 
                             <template #dropdownicon>
-                                <i class="fa fa-chevron-down text-white font-thin text-sm"/>
+                                <i class="fa fa-chevron-down text-black font-thin text-sm"/>
                             </template>
                         </Dropdown>
                 </div>
@@ -140,9 +140,11 @@ export default {
                 
                 <Column field="actions" header="Ações" class="relative">
                     <template #body="props">
-                        <Button severity="transparent" size="small" class="h-9">
-                            <i class="fa fa-eye" />
-                        </Button>
+                        <router-link v-slot="{ navigate }" :to="{name: 'event.show', params: {id: props.data.event.id}}" custom>
+                            <Button severity="transparent" size="small" class="h-9" @click="navigate">
+                                <i class="fa fa-eye" />
+                            </Button>
+                        </router-link>
                     </template>
                 </Column>
 
