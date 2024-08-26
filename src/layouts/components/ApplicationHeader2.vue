@@ -5,7 +5,7 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import Avatar from 'primevue/avatar';
-
+import BaseGrayButton from './BaseGrayButton.vue'
 import logo from '@/assets/logo_without_bg.png'
 
 export default {
@@ -18,7 +18,7 @@ export default {
         }
     },
     components: {
-        AppLogo,
+        AppLogo, BaseGrayButton,
         InputText, Avatar,
         Button, Dropdown
     },
@@ -68,22 +68,22 @@ export default {
                 <nav class="app-navbar flex items-center">
                     <ul class="flex items-center self-center mb-0">
                         <li>
-                            <Button text class="soft-hover text-surface-500">
+                            <BaseGrayButton>
                                 <i class="fa fa-moon"/>
-                            </Button>
+                            </BaseGrayButton>
                         </li>
                         
                         <li v-if="user" class="flex border-x border-slate-200 me-3 px-1 pe-2">
 
                             <Dropdown :options="links">
                                 <template #value>
-                                    <div class="flex gap-1">
-                                        <div class="h-2">
-                                            <Avatar :label="user.name.charAt(0).toUpperCase()" class="mr-2 h-2" shape="circle"  />
+                                    <div class="flex gap-1 items-center h-6 pt-[2px]">
+                                        <div class="h-6 flex items-center">
+                                            <Avatar :label="user.name.charAt(0).toUpperCase()" class="h-5 text-sm" shape="circle"  />
                                         </div>
-                                        <div class="flex flex-col">
-                                            <p class="text-md">{{ user.name }}</p>
-                                            <p class="text-sm">
+                                        <div class="flex items-center h-6">
+                                            <!-- <p class="text-md">{{ user.name }}</p> -->
+                                            <p class="text-sm text-slate-600">
                                                 {{ user.email }}
                                             </p>
                                         </div>

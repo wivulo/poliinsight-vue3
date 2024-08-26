@@ -1,6 +1,8 @@
 <script>
 import EventServices from '@/services/EventServices';
 import EventConfigServices from '@/services/EventConfigServices.js';
+import ParticipantServices from '@/services/ParticipantServices.js'
+import RegistrationServices from '@/services/RegistrationServices.js'
 import { setDocumentTitleMixin } from "@/config/document.title.js"
 import Image from 'primevue/image';
 import FloatLabel from 'primevue/floatlabel';
@@ -11,33 +13,26 @@ import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import RadioButton from 'primevue/radiobutton';
 import { event } from '@/store/modules/event';
+import SingleInformation from './components/SingleInformation.vue';
+import GroupInformation from './components/GroupInformation.vue';
+import CompanyInformation from './components/CompanyInformation.vue';
 
 export default {
     name: "event.registrations.show",
     mixins: [setDocumentTitleMixin],
     components: {
         Image, FloatLabel, InputText, Checkbox, Button, Dropdown,
-        Calendar, RadioButton
+        Calendar, RadioButton, SingleInformation, GroupInformation, CompanyInformation
     },
     data() {
         return {
             title: 'Poliinsight | Inscrever participante',
             busy: false,
             event: null,
-            data: {
-                name: null,
-                nickname: null,
-                email: null,
-                phone: null,
-                gender: null,
-                birthdate: null,
-                registration_mode: null,
-                payment_mode: null,
+            registration: {
+                data: {},
+                busy: false
             },
-            options: [
-                "Masculino",
-                "Feminino",
-            ],
             payment_modes: [
                 {label: 'Transferência Bancária', value: 'bank_transfer'},
                 {label: 'Depósito Bancário', value: 'bank_deposit'},
@@ -56,6 +51,7 @@ export default {
     methods: {
         async getEvent(){
             this.busy = true
+            this.eventConfig.busy = true
             const responde = await EventServices.show(this.$route.params.id)
             .catch(() => this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar evento'}))
             this.event = responde.data
@@ -63,15 +59,47 @@ export default {
         },
 
         async getEventConfig(eventType){
-            this.eventConfig.busy = true
             const responde = await EventConfigServices.showByEventType(eventType)
             .catch(() => this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar configuração do evento'}))
             this.eventConfig.data = responde.data
             this.eventConfig.busy = false
         },
 
-        handleMakeRegistration(){
-            console.log(this.data)
+        async handleMakeRegistration(){
+            try {
+                this.registration.data = {
+                    ...this.$refs.SingleInformation.data
+                }
+
+                this.registration.busy = true
+                this.$toast.add({severity: 'info', summary: 'Salvando...', detail: 'A salvar as informaçºoes do participante', life: 2000})
+                let response = await ParticipantServices.store(this.registration.data)
+
+                if(response.data?.error || response.status > 299) throw new Error('Error')
+
+                const participante = response.data
+
+                this.$toast.add({severity: 'info', summary: 'Inscrevendo...', detail: 'A inscrever o participante', life: 2000})
+                response = await RegistrationServices.store({
+                    eventId: this.event?.id,
+                    userId: null,
+                    participantId: participante?.id,
+                    ticketId: null
+                })
+
+                if(response.data?.error || response.status > 299) throw new Error('Error')
+
+
+                this.$toast.add({severity: 'success', summary: 'Sucesso', detail: 'Participante inscrito com sucesso', life: 3000})
+            } catch (error) {
+                this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao fazer a inscrição', life: 3000})
+            } finally {
+                this.registration.busy = false
+            }
+        },
+
+        handleReset(){
+
         }
     }
 }
@@ -79,69 +107,31 @@ export default {
 
 <template>
     <div class="w-full flex flex-col relative">
-        <div class="w-full h-1/2 overflow-hidden">
+        <div class="w-full h-1/2 overflow-hidden flex justify-between items-center">
+            <i class="fas fa-spinner animate-spin mr-1" v-if="busy" />
             <Image :src="event?.imageURL" :alt="event?.name" class="object-cover" />
         </div>
 
-        <div class="w-full h-1/2">
-            <!-- <h1 class="text-2xl font-bold">{{event?.name}}</h1> -->
-        </div>
+        <div class="w-full h-1/2" />
 
         <div id="registration-box" class="bg-slate-50/95">
-            <div class="flex flex-col gap-5">
+            <div v-if="eventConfig.busy" class="w-full h-full flex justify-center items-center">
+                <i class="fas fa-spinner animate-spin" />
+            </div>
+
+            <div class="flex flex-col gap-5" v-else>
                 <div class="text-slate-700">
                     <p class="text-xl font-bold">{{event?.name}}</p>
                     <p class="text-sm font-semibold">Boletim de inscrição</p>
                 </div>
 
                 <form @submit.prevent="handleMakeRegistration" class="flex gap-2 flex-col px-3">
-                    <div class="flex gap-3">
-                        <div class="my-2 w-1/2">
-                            <label for="name" class="ml-2">
-                                <i class="fas fa-user me-1 "></i> <small> Nome </small>
-                            </label>
-                            <InputText id="name" v-model="data.name" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex:. Valter"/>
-                        </div>
-
-                        <div class="my-2 w-1/2">
-                            <label for="nickname" class="ml-2">
-                                <i class="fas fa-user me-1 "></i> <small> Sobrenome </small>
-                            </label>
-                            <InputText id="nickname" v-model="data.nickname" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex:. Ivulo"/>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-3">
-                        <div class="my-2 w-1/2">
-                            <label for="email" class="ml-2">
-                                <i class="fas fa-envelope me-1 "></i> <small> Email </small>
-                            </label>
-                            <InputText id="email" v-model="data.email" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex:. vivulo@gmail.com"/>
-                        </div>
-
-                        <div class="my-2 w-1/2">
-                            <label for="phone" class="ml-2">
-                                <i class="fas fa-phone me-1 "></i> <small> Nº Telemóvel </small>
-                            </label>
-                            <InputText id="phone" v-model="data.phone" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex:. +244923xxxxxx"/>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-3 my-2">
-                        <div class="w-1/2">
-                            <label for="birthDate" class="ml-2">
-                                <i class="fas fa-calendar me-1" /> <small> Data de nascimento </small>
-                            </label>
-                            <Calendar id="birthDate" v-model="data.birthDate" class="border-zinc-300 h-9 focus:outline-zinc-400 w-full" inputClass="hover:border-zinc-400" placeholder="ex.: 10/12/1998" />
-                        </div>
-
-                        <div class="w-1/2 flex flex-col">
-                            <label for="gender" class="ml-2">
-                                <i class="fas fa-user me-1" /> <small> Gênero </small>
-                            </label>
-                            <Dropdown id="gender" v-model="data.gender" :options="options" placeholder="Selecione um genero" class="h-9 w-full"  />
-                        </div>
-                    </div>
+                    <SingleInformation 
+                        v-if="eventConfig?.data.registrationType == 'single'" 
+                        :fields="eventConfig?.data.fields"
+                        ref="SingleInformation"
+                    />
+                    <GroupInformation v-else :fields="eventConfig?.data.fields" />
 
                     <div class="flex flex-col gap-3 mt-4 mb-2 text-sm" v-if="event?.type === 'paid'">
                         <p class="ml-2">Taxa de inscrição</p>
@@ -163,8 +153,9 @@ export default {
                     </div>
 
                     <div class="flex w-full justify-end my-2">
-                        <Button type="submit" size="small" class="h-9">
-                            <i class="fas fa-save me-2"></i> Inscrever
+                        <Button type="submit" size="small" class="h-9" :loading="registration.busy">
+                            <i class="fas fa-spinner animate-spin mr-2" v-if="registration.busy"/>
+                            <i class="fas fa-save me-2" v-else/> {{registration.busy ? 'Inscrevendo': 'Inscrever'}}
                         </Button>
                     </div>
                 </form>

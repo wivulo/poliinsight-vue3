@@ -6,6 +6,7 @@ import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import Avatar from 'primevue/avatar';
 import Skeleton from 'primevue/skeleton';
+import BaseGrayButton from './BaseGrayButton.vue'
 
 export default {
     name: 'ApplicationHeader',
@@ -16,7 +17,7 @@ export default {
         }
     },
     components: {
-        AppLogo,
+        AppLogo, BaseGrayButton,
         InputText, Avatar,
         Button, Dropdown, Skeleton
     },
@@ -48,15 +49,15 @@ export default {
                 <nav class="app-navbar">
                      <ul class="flex items-center self-center mb-0">
                         <li>
-                            <Button text class="soft-hover text-surface-500">
+                            <BaseGrayButton>
                                 <i class="fa fa-moon"/>
-                            </Button>
+                            </BaseGrayButton>
                         </li>
 
                         <li>
-                            <Button text class="soft-hover text-surface-500">
+                            <BaseGrayButton>
                                 <i class="fa fa-bell"/>
-                            </Button>
+                            </BaseGrayButton>
                         </li>
 
                         <li v-if="busy" class="flex gap-2">
@@ -71,15 +72,15 @@ export default {
                         
                         <li v-else-if="user" class="flex border-x border-slate-200 px-1">
 
-                            <Dropdown :options="links" class="p-0">
+                            <Dropdown :options="links" class="p-0 h-9">
                                 <template #value>
-                                    <div class="flex gap-1">
-                                        <div class="h-2">
-                                            <Avatar :label="user.name.charAt(0).toUpperCase()" class="mr-2 h-2" shape="circle"  />
+                                    <div class="flex gap-1 items-center h-6 pt-[2px]">
+                                        <div class="h-6 flex items-center">
+                                            <Avatar :label="user.name.charAt(0).toUpperCase()" class="h-5 text-sm" shape="circle"  />
                                         </div>
-                                        <div class="flex flex-col">
-                                            <p class="text-md">{{ user.name }}</p>
-                                            <p class="text-sm">
+                                        <div class="flex items-center h-6">
+                                            <!-- <p class="text-md">{{ user.name }}</p> -->
+                                            <p class="text-sm text-slate-600">
                                                 {{ user.email }}
                                             </p>
                                         </div>
@@ -123,9 +124,5 @@ export default {
     list-style: none;
     display: flex;
     gap: 1rem;
-}
-
-div[data-pc-name="avatar"]{
-    height: 35px !important;
 }
 </style>

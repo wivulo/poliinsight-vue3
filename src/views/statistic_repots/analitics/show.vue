@@ -34,8 +34,8 @@ export default {
         }
     },
     async created(){
-        this.getEvent()
-        this.getStatistic()
+        await this.getEvent()
+        await this.getStatistic()
     },
     mounted() {
         if (this.$refs.chart && this.$refs.chart.chart) {
@@ -52,8 +52,8 @@ export default {
             return dateFormatter
         },
 
-        fullname(name, nickname = null){
-            return `${name} ${nickname ? nickname: ''}`
+        fullname(){
+            return `${this.statistic?.oldestParticipantInfo.name} ${this.statistic?.oldestParticipantInfo.nickname}`
         }
     },
     methods: {
@@ -77,9 +77,10 @@ export default {
             let male = 0;
             let female = 0;
 
-            if(this.statictic?.genderDistribution != null){
-                male = this.statictic.genderDistribution?.male;
-                female = this.statictic.genderDistribution?.female;
+            console.log(this.statistic)
+            if(this.statistic?.genderDistribution){
+                male = this.statistic.genderDistribution?.male;
+                female = this.statistic.genderDistribution?.female;
             }
 
             return {
@@ -123,8 +124,8 @@ export default {
         setageDistribuition() {
             let ages = [0, 0, 0, 0]
 
-            if(this.statictic?.agesDistribution != null){
-                let objAges = this.statictic.agesDistribution;
+            if(this.statistic?.agesDistribution != null){
+                let objAges = this.statistic.agesDistribution;
                 for(const age in objAges){
                     if(+age >= 40 ){
                         ages[3] = objAges[age]
@@ -255,15 +256,15 @@ export default {
                     </div>
                </div>
 
-               <div class="flex gap-16 min-h-[19rem]">
+               <div class="flex gap-10 min-h-[19rem] pb-2">
                     <div class="flex flex-col gap-10">
                         <CardRoot class="h-32">
                             <CardHeader>
                                 <p>Participante Mais velho</p>
                             </CardHeader>
                             <CardValue class="mt-5 text-sm" v-if="statistic?.oldestParticipantInfo">
-                                <p><b>Nome:</b> {{ fullname(statistic?.oldestParticipantInfo?.name, statistic?.oldestParticipantInfo?.nickname) }}</p>
-                                <p><b>Idade: </b> {{ statistic?.oldestParticipant }} anos</p>
+                                <p><b>Nome:</b> {{ fullname }}</p>
+                                <p><b>Idade: </b> {{ statistic.oldestParticipant }} anos</p>
                             </CardValue>
                             <CardInformation v-else class="mt-5">
                                 <p>Nenhum dado disponível</p>
@@ -275,7 +276,7 @@ export default {
                                 <p>Participante Mais novo</p>
                             </CardHeader>
                             <CardValue class="mt-5 text-sm" v-if="statistic?.oldestParticipantInfo">
-                                <p><b>Nome:</b> {{ fullname(statistic?.youngestParticipantInfo?.name, statistic?.youngestParticipantInfo?.nickname) }}</p>
+                                <p><b>Nome:</b> {{ fullname }}</p>
                                 <p><b>Idade: </b> {{ statistic?.youngestParticipant }} anos</p>
                             </CardValue>
                             <CardInformation v-else class="mt-5">
@@ -284,12 +285,12 @@ export default {
                         </CardRoot>
                     </div>
 
-                    <div class="card flex justify-content-center">
+                    <CardRoot class="flex justify-content-center">
                         <PChart ref="chart" type="bar" :data="ageDistribuition" :options="ageDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" :canvas-props="{width: 500, height: 300}" />
-                    </div>
+                    </CardRoot>
 
-                    <CardRoot class="h-36">
-                        <CardValue class="flex gap-3 relative h-28">
+                    <CardRoot class="h-32">
+                        <CardValue class="flex gap-3 justify-between relative h-24 w-40">
                             <p class="font-semibold">Moda</p>
                             <div class="self-end">
                                 <p class="text-xl">

@@ -39,10 +39,10 @@ export default {
 }
 
 .application-header {
-  height: 70px;
+  height: 55px;
 }
 
 .application-body{
-  height: calc(100% - 70px);
+  height: calc(100% - 55px);
 }
 </style>
