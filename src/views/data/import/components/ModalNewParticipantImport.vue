@@ -128,7 +128,7 @@ export default {
 </script>
 
 <template>
-    <Dialog v-model:visible="visible" modal header="Importar participantes" :style="{ width: '40rem' }">
+    <Dialog v-model:visible="visible" modal header="Importar participantes" :style="{ width: '38rem' }">
         <div>
             <div class="flex flex-col w-full">
                 <label for="event">Evento</label>
