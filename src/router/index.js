@@ -36,7 +36,7 @@ import Import from "@/views/data/import/index.vue"
 import Export from "@/views/data/export/index.vue"
 
 import Settings from "@/views/setting/settings/index.vue"
-import Logs from "@/views/setting/logs/index.vue"
+// import Logs from "@/views/setting/logs/index.vue"
 import ResetMyPassword from "@/views/setting/password/index.vue"
 
 import Users from "@/views/seguranca/users/index.vue"
@@ -302,14 +302,14 @@ const router = createRouter({
       }
     },
     // "configuracoes.logs",
-    {
-      path: '/configuracoes/logs',
-      name: 'configuracoes.logs',
-      component: Logs,
-      meta: {
-        layout: 'default-layout'
-      }
-    },
+    // {
+    //   path: '/configuracoes/logs',
+    //   name: 'configuracoes.logs',
+    //   component: Logs,
+    //   meta: {
+    //     layout: 'default-layout'
+    //   }
+    // },
 
     {
       path: '/configuracoes/redefinir_minha_senha',
