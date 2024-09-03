@@ -22,6 +22,11 @@ import Tickets from "@/views/event/tickets/index.vue"
 import MyEvents from "@/views/event/my_events/index.vue"
 import RegistrationTable from "@/views/event/components/RegistrationTable.vue"
 import TicketsTable from "@/views/event/components/TicketsTable.vue"
+import Finaces from "@/views/event/finances/index.vue"
+import FinancesInvestiments from "@/views/event/finances/components/FinancesInvestiments.vue"
+import FinancesIncome from "@/views/event/finances/components/FinancesIncome.vue"
+import FinancesExpenses from "@/views/event/finances/components/FinancesExpenses.vue"
+import FinancesReports from "@/views/event/finances/components/FinancesReports.vue"
 
 import Analitics from "@/views/statistic_repots/analitics/index.vue"
 import AnaliticsShow from "@/views/statistic_repots/analitics/show.vue"
@@ -86,15 +91,6 @@ const router = createRouter({
       component: ResetPasswordEmail,
       meta: {
         layout: 'empty-layout'
-      }
-    },
-
-    {
-      path: '/error-500',
-      name: 'error.internal_server',
-      component: InternalServerError,
-      meta: {
-        layout: 'ErrorLayout'
       }
     },
 
@@ -193,6 +189,38 @@ const router = createRouter({
         layout: 'default-layout'
       }
     },
+
+    {
+      path: '/gestao-eventos/financas',
+      name: 'gestao-eventos.finance',
+      component: Finaces,
+      meta: {
+        layout: 'default-layout'
+      },
+      children: [
+        {
+          path: 'investimentos',
+          name: 'gestao-eventos.finance.investments',
+          component: FinancesInvestiments,
+        },
+        {
+          path: 'receitas',
+          name: 'gestao-eventos.finance.income',
+          component: FinancesIncome,
+        },
+        {
+          path: 'despesas',
+          name: 'gestao-eventos.finance.expenses',
+          component: FinancesExpenses,
+        },
+        {
+          path: 'relatorios',
+          name: 'gestao-eventos.finance.reports',
+          component: FinancesReports,
+        }
+      ]
+    },
+
     // "analise-relatorios.analitics",
     {
       path: '/analise-relatorios/analise',

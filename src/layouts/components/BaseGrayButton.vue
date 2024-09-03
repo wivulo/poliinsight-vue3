@@ -9,7 +9,7 @@ export default {
 </script>
 
 <template>
-    <Button size="small" text class="bg-gray-300/30 soft-hover text-surface-500 h-9">
+    <Button rounded severity="secondary" size="small" class="bg-gray-300/60 hover:bg-gray-300/90 border-0 soft-hover text-surface-800 h-9">
         <slot />
     </Button>
 </template>

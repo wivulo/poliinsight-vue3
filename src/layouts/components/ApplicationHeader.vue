@@ -50,13 +50,13 @@ export default {
                      <ul class="flex items-center self-center mb-0">
                         <li>
                             <BaseGrayButton>
-                                <i class="fa fa-moon"/>
+                                <i class="fa fa-moon text-slate-800"/>
                             </BaseGrayButton>
                         </li>
 
                         <li>
                             <BaseGrayButton>
-                                <i class="fa fa-bell"/>
+                                <i class="fa fa-bell text-slate-800"/>
                             </BaseGrayButton>
                         </li>
 
@@ -88,7 +88,7 @@ export default {
                                 </template>
 
                                 <template #option="{ option }">
-                                    <div class="h-2 text-md text-zinc-500 w-full text-left justify-start" @click="handleUserMenuClick(option)">
+                                    <div class="h-3 text-sm text-zinc-500 w-full text-left justify-start" @click="handleUserMenuClick(option)">
                                         {{ option }}
                                     </div>
                                 </template>

@@ -94,7 +94,7 @@ export default {
                         </Button>
 
                         <Button class="text-white w-auto h-9" @click="handleDeleteTicket" size="small">
-                            <ProgressSpinner v-if="busy" class="mr-2 w-6 h-6" />
+                            <i class="fas fa-spinner animate-spin mr-1" v-if="busy" />
                             <i class="fa fa-trash mr-1"  v-else/> <span>{{ busy ? 'Eliminando' : 'Eliminar' }}</span>
                         </Button>
                 </div>

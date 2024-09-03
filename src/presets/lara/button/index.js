@@ -54,8 +54,8 @@ export default {
             // Secondary Button
             {
                 'text-white dark:text-zinc-900': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain,
-                'bg-zinc-500 dark:bg-zinc-400': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain,
-                'border border-zinc-400 dark:border-zinc-400': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain
+                'bg-gray-300/50 hover:bg-gray-300/80 dark:bg-zinc-400': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain,
+                'border border-gray-300/50 dark:border-zinc-400': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain
             },
             // Secondary Text Button
             { 'text-surface-500 dark:text-surface-300': props.text && props.severity === 'secondary' && !props.plain },

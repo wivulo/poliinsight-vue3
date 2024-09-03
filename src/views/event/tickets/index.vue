@@ -14,7 +14,7 @@ import ModalDeleteTicket from './components/ModalDeleteTicket.vue';
 import InputNumber from 'primevue/inputnumber';
 import CCard from "@/components/PCard/index.js"
 import Dropdown from 'primevue/dropdown';
-
+import currency from '@/helpers/currency';
 
 export default {
     name: "event.tickets",
@@ -100,6 +100,10 @@ export default {
         handleDeleteTicket(ticket){
             this.$refs.ModalDeleteTicket.show(ticket.id)
         },
+
+        toKwanza(value){
+            return currency.KWAZA.format(value)
+        }
     }
 }
 </script>
@@ -167,7 +171,7 @@ export default {
             
             <Column field="price" header="Preço">
                 <template #body="props">
-                    <InputNumber id="price" v-model="props.data.price" mode="currency" currency="AOA" locale="pt-AO" class="h-9 w-auto" input-class="w-auto border-none" :readonly="true"/>
+                    {{ toKwanza(props.data.price) }}
                 </template>
             </Column>
 

@@ -28,5 +28,7 @@ export default {
 
     getByUserId(userId){
         return axios.get(`${databaseURL}/tickets/user/${userId}`)
-    }
+    },
+
+    delete(ticketId){},
 }

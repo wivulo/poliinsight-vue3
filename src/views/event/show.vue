@@ -151,14 +151,14 @@ export default {
                         </div>
 
                         <div class="flex flex-col gap-3 border-t border-zinc-200 py-2">
-                            <Button text size="small" class="h-9 bg-gray-400/70 w-full" @click="handleShowModalNewRegistration">
+                            <Button severity="secondary" size="small" class="h-9 bg-gray-400/80 hover:bg-gray-400 border-0 w-full" @click="handleShowModalNewRegistration">
                                 <span class="text-black">
                                     <i class="fa fa-file-signature text-sm " /> Fazer inscrição
                                 </span>
                             </Button>
 
                             <router-link v-slot="{ navigate }" :to="{name: 'analise_relatorios.analitics.show', params: {id: event.id}}" custom>
-                                <Button v-ripple text size="small" class="h-9 bg-gray-400/70 w-full p-ripple" @click="navigate">
+                                <Button severity="secondary" v-ripple size="small" class="h-9 bg-gray-400/80 border-0 hover:bg-gray-400 w-full p-ripple" @click="navigate">
                                     <span class="text-black">
                                         <i class="fa fa-map text-sm " /> Mapa do evento
                                     </span>

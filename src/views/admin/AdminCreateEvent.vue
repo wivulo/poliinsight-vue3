@@ -148,9 +148,9 @@ export default {
 
             <div class="flex flex-col">
                 <label for="freeOrPaid" class="pl-3 text-surface-400">
-                    <small> Tipo de evento </small>
+                    <small> Acesso ao evento </small>
                 </label>
-                <Dropdown id="freeOrPaid" v-model="eventTypeSelected"  :options="event_type" optionLabel="label" placeholder="Selecione o tipo de evento" class="h-9 w-[290px]">
+                <Dropdown id="freeOrPaid" v-model="eventTypeSelected"  :options="event_type" optionLabel="label" placeholder="Selecione a forma de acesso ao evento" class="h-9 w-[290px]">
                     <template #value="slotProps">
                         <div v-if="slotProps.value" class="flex items-center text-black">
                             {{ slotProps.value.label }}

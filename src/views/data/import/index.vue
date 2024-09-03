@@ -12,13 +12,15 @@ import InputNumber from 'primevue/inputnumber';
 import CCard from "@/components/PCard/index.js"
 import Dropdown from 'primevue/dropdown';
 import ModalNewParticipantImport from './components/ModalNewParticipantImport.vue'
+import ModalImportFinancialData from './components/ModalImportFinancialData.vue';
 
 export default {
     name: "data.import",
     mixins: [setDocumentTitleMixin],
     components: {
         DataTable, Column, SplitButton, Button, InputText, InputGroup,
-        InputNumber, CardRoot: CCard.Root, Dropdown, ModalNewParticipantImport
+        InputNumber, CardRoot: CCard.Root, Dropdown, ModalNewParticipantImport,
+        ModalImportFinancialData,
     },
     data(){
         return {
@@ -52,7 +54,11 @@ export default {
 
         handleShowModalModalNewParticipantImport(){
             this.$refs.ModalNewParticipantImport.show()
-        }
+        },
+
+        handleShowModalImportFinancialData(){
+            this.$refs.ModalImportFinancialData.show()
+        },
     }
 }
 </script>
@@ -60,6 +66,8 @@ export default {
 <template>
     <div class="w-full py-3 px-5">
         <ModalNewParticipantImport ref="ModalNewParticipantImport" @created="getImports"/>
+
+        <ModalImportFinancialData ref="ModalImportFinancialData" @created="getImports"/>
 
         <CardRoot class="mt-4">
             <div class="flex gap-2 justify-between my-2">
@@ -88,8 +96,8 @@ export default {
                                 },
                                 {
                                     label: 'Registros financeiros',
-                                    icon: 'fal fa-dollar-sign',
-                                    // command: () => handleDeleteTicket(props.data)
+                                    icon: 'fa fa-coins',
+                                    command: this.handleShowModalImportFinancialData
                                 },
                             ]" 
                             class="p-0 bg-gray-400/70"
