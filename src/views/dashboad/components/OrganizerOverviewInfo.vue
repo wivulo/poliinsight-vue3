@@ -298,7 +298,7 @@ export default {
                 <div class="w-[30%] text-base text-surface-600 font-medium">
                     <CardRoot class="cardInformation h-[300px] flex flex-col">
                         <CardHeader>
-                            <p>{{ data.last_event?.event?.name }} <small> ({{ data.last_event?.event?.status.description }})</small></p>
+                            <p>{{ data.last_event?.event?.name }}</p>
                         </CardHeader>
                         <CardValue>
                            
