@@ -99,10 +99,14 @@ export default {
                     </AutoComplete>
                 </InputGroup>
             </CardRoot>
+
+            <div v-if="busy" class="flex-grow flex w-full h-full justify-center items-center">
+                <i class="fa fa-spinner animate-spin text-black text-base" />
+            </div>
     
-            <div v-if="!event" class="flex-grow flex w-full h-full justify-center items-center">
+            <div v-else-if="!busy && !event" class="flex-grow flex w-full h-full justify-center items-center">
                 <p class="text-xl text-surface-400 font-light">
-                    Selecione um evento para ver as estatísticas
+                    Nenhum evento encontrado!
                 </p>
             </div>
     

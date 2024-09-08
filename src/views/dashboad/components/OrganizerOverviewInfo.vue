@@ -235,7 +235,8 @@ export default {
                     <p>Eventos</p>
                 </CardHeader>
                 <CardValue>
-                    {{ data.total_events }}
+                    <i class="fa fa-spinner animate-spin text-black text-base" v-if="busy"></i>
+                   <span v-else> {{ data.total_events }}</span>
                 </CardValue>
                 <CardInformation>
                     <p>0% - na ultima semana</p>
@@ -248,7 +249,8 @@ export default {
                     <p>Total de participantes</p>
                 </CardHeader>
                 <CardValue>
-                    {{ data.total_participants }}
+                    <i class="fa fa-spinner animate-spin text-black text-base" v-if="busy"></i>
+                    <span v-else>{{ data.total_participants }}</span>
                 </CardValue>
                 <CardInformation>
                     <p>0% - na ultima semana</p>
@@ -263,12 +265,13 @@ export default {
                     <template v-if="data.popular?.name.length > 16">
                         {{ data.popular?.name.substr(0, 18) +'... - Nº '+ data.popular?.registrations?.length ?? 'Nenhum evento popular' }}
                     </template>
-                   <template v-else>
+                   <template v-else="data.popular?.name.length <= 16">
                     {{ data.popular?.name +' - Nº '+ data.popular?.registrations?.length ?? 'Nenhum evento popular' }}
                    </template>
                 </CardValue>
                 <CardValue class="text-sm py-1" v-else>
-                    Nenhum evento popular
+                    <i class="fa fa-spinner animate-spin text-black text-base" v-if="busy"></i>
+                    <span v-else>Nenhum evento popular</span>
                 </CardValue>
                 <CardInformation>
                     <p>0% - na ultima semana</p>
@@ -281,7 +284,8 @@ export default {
                     <p>Visitantes</p>
                 </CardHeader>
                 <CardValue>
-                    {{ 0 }}
+                    <i class="fa fa-spinner animate-spin text-black text-base" v-if="busy"></i>
+                    <span v-else>{{ 0 }}</span>
                 </CardValue>
                 <CardInformation>
                     <p>0% - na ultima semana</p>
@@ -289,51 +293,70 @@ export default {
             </CardRoot>
         </div>
 
-        <div class="flex flex-col gap-5 w-full mt-7" v-if="data.last_event">
+        <div class="flex flex-col gap-5 w-full mt-7">
             <div class="mt-3">
                 <p class="text-[0.9rem] text-surface-600 font-semibold ">Estatísticas do evento mais recente </p>
             </div>
 
-            <div v-if="data.last_event.event && data.last_event?.statistic.id" class="flex flex-wrap gap-7">
-                <div class="w-[30%] text-base text-surface-600 font-medium">
-                    <CardRoot class="cardInformation h-[300px] flex flex-col">
-                        <CardHeader>
-                            <p>{{ data.last_event?.event?.name }}</p>
-                        </CardHeader>
-                        <CardValue>
-                           
-                        </CardValue>
-                        <CardInformation class="mt-2 flex flex-col gap-1 relative h-full">
-                            <p><b>Localização</b>: {{ data.last_event?.event?.localization }}</p>
-                            <p><b>Data de início</b>: {{ dateFormater(data.last_event?.event?.date) }} às {{ time(data.last_event?.event?.time) }}</p>
-                            <p><b>Data de fim</b>: {{ dateFormater(data.last_event?.event?.endDate) }}</p> às {{ time(data.last_event?.event?.timeEnd) }}
-                            <p><b>Categoria</b>: {{ data.last_event?.event?.category?.name }}</p>
-                            <p><b>Departamento</b>: {{ data.last_event?.event?.departament }}</p>
+            <template v-if="busy">
+                <div class="flex justify-between gap-7">
+                    <div class="w-[30%] text-base text-surface-600 font-medium">
+                        <CardRoot class="cardInformation h-[300px] flex flex-col justify-center items-center">
+                            <i class="fa fa-spinner animate-spin text-black text-base" />
+                        </CardRoot>
+                    </div>
 
-                            <RouterLink :to="{name: 'analise_relatorios.analitics.show', params: {id: data.last_event?.event?.id ?? 1}}" class="text-red-600 absolute left-0 bottom-0">
-                                Ver mais
-                            </RouterLink>
-                        </CardInformation>
+                    <CardRoot class="cardroot flex justify-center items-center" style="width: 300px;height: 300px;">
+                        <i class="fa fa-spinner animate-spin text-black text-base" />
+                    </CardRoot>
+
+                    <CardRoot class="cardroot flex justify-center items-center" style="width: 300px;height: 300px;">
+                        <i class="fa fa-spinner animate-spin text-black text-base" />
+                    </CardRoot>
+                </div>
+            </template>
+
+            <template v-else>
+                <div v-if="data.last_event.event && data.last_event?.statistic.id" class="flex flex-wrap gap-7">
+                    <div class="w-[30%] text-base text-surface-600 font-medium">
+                        <CardRoot class="cardInformation h-[300px] flex flex-col">
+                            <CardHeader>
+                                <p>{{ data.last_event?.event?.name }}</p>
+                            </CardHeader>
+                            <CardValue>
+                            
+                            </CardValue>
+                            <CardInformation class="mt-2 flex flex-col gap-1 relative h-full">
+                                <p><b>Localização</b>: {{ data.last_event?.event?.localization }}</p>
+                                <p><b>Data de início</b>: {{ dateFormater(data.last_event?.event?.date) }} às {{ time(data.last_event?.event?.time) }}</p>
+                                <p><b>Data de fim</b>: {{ dateFormater(data.last_event?.event?.endDate) }}</p> às {{ time(data.last_event?.event?.timeEnd) }}
+                                <p><b>Categoria</b>: {{ data.last_event?.event?.category?.name }}</p>
+                                <p><b>Departamento</b>: {{ data.last_event?.event?.departament }}</p>
+
+                                <RouterLink :to="{name: 'analise_relatorios.analitics.show', params: {id: data.last_event?.event?.id ?? 1}}" class="text-red-600 absolute left-0 bottom-0">
+                                    Ver mais
+                                </RouterLink>
+                            </CardInformation>
+                        </CardRoot>
+                    </div>
+
+                    <CardRoot class="cardroot flex justify-center">
+                        <PChart ref="chart" type="pie" :data="dataGenderDistribuition" :options="dataGenderDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" class="w-full md:w-30rem" />
+                    </CardRoot>
+
+                    <CardRoot class="cardroot flex justify-center">
+                        <PChart ref="chart" type="bar" :data="ageDistribuition" :options="ageDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" :canvas-props="{width: 300, height: 300}" />
                     </CardRoot>
                 </div>
 
-                <CardRoot class="cardroot flex justify-content-center">
-                    <PChart ref="chart" type="pie" :data="dataGenderDistribuition" :options="dataGenderDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" class="w-full md:w-30rem" />
-                </CardRoot>
-
-                <CardRoot class="cardroot flex justify-content-center">
-                    <PChart ref="chart" type="bar" :data="ageDistribuition" :options="ageDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" :canvas-props="{width: 300, height: 300}" />
-                </CardRoot>
-            </div>
-
-            <div v-else class="flex flex-col justify-center items-center text-center text-sm h-72">
-                <p>Nenhum evento recente encontrado</p>
-                <p>Por favor, clica no link abaixo <br /> para criar um evento</p>
-                <RouterLink :to="{name: 'gestao-eventos.create'}" class="text-red-600 font-semibold">
-                    Criar evento
-                </RouterLink>
-            </div>
-
+                <div v-else class="flex flex-col justify-center items-center text-center text-sm h-72">
+                    <p>Nenhum evento recente encontrado</p>
+                    <p>Por favor, clica no link abaixo <br /> para criar um evento</p>
+                    <RouterLink :to="{name: 'gestao-eventos.create'}" class="text-red-600 font-semibold">
+                        Criar evento
+                    </RouterLink>
+                </div>
+            </template>
         </div>
 
         <div class="flex flex-col gap-5 w-full mt-7">

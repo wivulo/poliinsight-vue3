@@ -5,25 +5,32 @@ import Tree from 'primevue/tree';
 import PanelMenu from 'primevue/panelmenu';
 import { mapGetters } from 'vuex';
 import anime from 'animejs';
+import Skeleton from 'primevue/skeleton';
+
 
 export default {
     name: 'AppSidebar',
     components: {
-        AppLogo, Button, Tree, PanelMenu
+        AppLogo, Button, Tree, PanelMenu, Skeleton
     },
     data() {
         return {
             activeMenu: null,
             mapped_rules: {},
+            mapped_paths: {}
         }
     },
     created() {
         this.navs.map(nav => {
             nav.rules.map(rule => {
                 this.mapped_rules[rule.route] = nav
+                this.mapped_paths[rule.link] = nav
             })
             nav.show = false
         })
+    },
+    mounted(){
+        this.checkPath()
     },
     methods: {
         handleLogout() {
@@ -65,26 +72,51 @@ export default {
                 complete: done,
             });
         },
-    },
-    computed: {
-        ...mapGetters({
-            user: 'auth/user',
-            navs: 'auth/navAndRoles'
-        })
-    },
-    watch: {
-        $route(to, from){
+
+        getPath(fullPath) {
+            // Dividir o caminho em partes
+            const pices = fullPath.split('/');
+            
+            // Pegar as três primeiras partes e reconstruir o caminho
+            const target = `/${pices[1]}/${pices[2]}`;
+            
+            return target;
+        },
+
+        checkPath(){
             try {
                 const mappedRule = this.mapped_rules[this.$route.name];
                 if (mappedRule) {
                     this.activeMenu = mappedRule.code;
                     this.toggleShow(true, mappedRule);
                 } else {
-                    console.warn(`No mapped rule found for route: ${to.name}`);
+                    const path = this.getPath(this.$route.fullPath)
+                    const mappedPath = this.mapped_paths[path]
+                    // console.log(this.mapped_paths)
+                    // console.log(path)
+                    // console.log(this.mapped_paths[path])
+                    if(mappedPath){
+                        this.activeMenu = mappedPath.code;
+                        this.toggleShow(true, mappedPath);
+                    } else {
+                        console.warn(`No mapped rule found for route: ${this.$route.name}`);
+                    }
                 }
             } catch (error) {
                 console.error("Error in $route watcher:", error);
             }
+        },
+    },
+    computed: {
+        ...mapGetters({
+            user: 'auth/user',
+            navs: 'auth/navAndRoles',
+            fetchNavsBusy: 'auth/fetchNavsBusy',
+        })
+    },
+    watch: {
+        $route(to, from){
+            this.checkPath()
         }
     }
 }
@@ -101,7 +133,16 @@ export default {
             </div>
 
             <div class="app-sidebar-body mt-4 flex flex-col vh-75 overflow-y-auto ">
-                <ul class="app-sidebar-nav list-group flex flex-col gap-1 relative text-md">
+                <div v-if="fetchNavsBusy" class="w-full flex flex-col gap-2">
+                    <Skeleton height="2rem"></Skeleton>
+                    <Skeleton height="2rem"></Skeleton>
+                    <Skeleton height="2rem"></Skeleton>
+                    <Skeleton height="2rem"></Skeleton>
+                    <Skeleton height="2rem"></Skeleton>
+                    <Skeleton height="2rem"></Skeleton>
+                </div>
+
+                <ul v-else class="app-sidebar-nav list-group flex flex-col gap-1 relative text-md">
                     <template v-for="nav in navs">
                         <li v-if="nav.visible" :key="nav.code" 
                             class="list-group-item" :class="{'bg-slate-200': nav.show, 'bg-transparent': !nav.show, 'border-l-4 border-red-600': nav.show}"
@@ -129,7 +170,7 @@ export default {
                                     <li v-for="rule in nav.rules" :key="rule.code" @click.stop>
                                         <router-link :to="{name: rule.route}" class="app-sidebar-nav-link pl-8" @click.stop>
                                             <span class="app-sidebar-nav-link-text hover:text-black hover:font-semibold"
-                                                :class="{'text-zinc-950 font-semibold': rule.route === $route.name}"
+                                                :class="{'text-zinc-950 font-semibold': $route.fullPath.includes(rule.link)}"
                                             >
                                                 {{rule.name}}
                                             </span>

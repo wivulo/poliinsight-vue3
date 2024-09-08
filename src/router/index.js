@@ -115,7 +115,7 @@ const router = createRouter({
     },
     // "gestao-eventos.list"
     {
-      path: '/gestao-de-eventos/listar-eventos',
+      path: '/gestao-eventos/listar-eventos',
       name: 'gestao-eventos.list',
       component: AdminListEvent,
       meta: {
@@ -123,7 +123,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/gestao-de-eventos/meus-eventos',
+      path: '/gestao-eventos/meus-eventos',
       name: 'gestao-eventos.my_events',
       component: MyEvents,
       meta: {
@@ -131,7 +131,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/event/:id', name: 'event.show', component: EventViewer,
+      path: '/gestao-eventos/meus-eventos/:id', name: 'event.show', component: EventViewer,
       meta: { layout: 'default-layout' },
       children: [
         {
@@ -223,7 +223,7 @@ const router = createRouter({
 
     // "analise-relatorios.analitics",
     {
-      path: '/analise-relatorios/analise',
+      path: '/analise-relatorios/mapa-do-evento',
       name: 'analise_relatorios.analitics',
       component: Analitics,
       meta: {
@@ -231,7 +231,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/analise-relatorios/analise/:id',
+      path: '/analise-relatorios/mapa-do-evento/:id',
       name: 'analise_relatorios.analitics.show',
       component: AnaliticsShow,
       meta: {

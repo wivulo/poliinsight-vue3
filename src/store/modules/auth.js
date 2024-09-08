@@ -17,6 +17,7 @@ export const auth = {
         navAndRoles: getLocalStorage('AUTH_NAV_AND_ROLES', []),
         RolesAndPath: getLocalStorage('AUTH_ROLES_AND_PATH', []),
         onlyRoles: getLocalStorage('AUTH_ONLY_ROLES', []),
+        fetchNavsBusy: false,
     },
     // getters
     getters: {
@@ -29,6 +30,7 @@ export const auth = {
         navAndRoles: state => state.navAndRoles,
         RolesAndPath: state => state.RolesAndPath,
         onlyRoles: state => state.onlyRoles,
+        fetchNavsBusy: state => state.fetchNavsBusy
     },
   
     // mutations
@@ -89,15 +91,20 @@ export const auth = {
             setLocalStorage('AUTH_NAV_AND_ROLES',  state.navAndRoles)
             setLocalStorage('AUTH_ROLES_AND_PATH',  state.RolesAndPath)
             setLocalStorage('AUTH_ONLY_ROLES', state.onlyRoles )
-          },
-          [types.FETCH_NAV_AND_ROLES_FAILURE]  (state) {
+        },
+        [types.FETCH_NAV_AND_ROLES_FAILURE]  (state) {
             state.navAndRoles = []
             state.RolesAndPath = []
             state.onlyRoles = []
             setLocalStorage('AUTH_NAV_AND_ROLES', [])
             setLocalStorage('AUTH_ROLES_AND_PATH', [])
             setLocalStorage('AUTH_ONLY_ROLES', [])
-          },
+        },
+
+        [types.FETCH_NAVS_BUSY] (state, { busy }){
+            console.log(busy)
+            state.fetchNavsBusy = busy
+        },
     },
   
     // actions
@@ -127,10 +134,14 @@ export const auth = {
 
         async fetchNavAndRoles ({ commit }, id) {
             try {
-              let { data } = await axios.get(`${databaseURL}/rulesForGroup/navAndRules/${id}`)
-              commit(types.FETCH_NAV_AND_ROLES_SUCCESS, data)
+                commit(types.FETCH_NAVS_BUSY,  {busy: true})
+
+                let { data } = await axios.get(`${databaseURL}/rulesForGroup/navAndRules/${id}`)
+                commit(types.FETCH_NAV_AND_ROLES_SUCCESS, data)
             } catch (e) {
               commit(types.FETCH_NAV_AND_ROLES_FAILURE, null)
+            } finally {
+                commit(types.FETCH_NAVS_BUSY,  {busy: false})
             }
           },
     

@@ -14,7 +14,8 @@ export default {
         },
         busy: {
             type: Boolean,
-            required: true
+            required: true,
+            default: false
         },
     },
     components: {
