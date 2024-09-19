@@ -3,6 +3,8 @@ import { defineComponent, computed } from 'vue';
 import Toast from 'primevue/toast';
 import { useRouter } from 'vue-router';
 import { mapGetters } from 'vuex';
+import { useVuelidate } from '@vuelidate/core'
+
 
 export default defineComponent({
   name: "App",
@@ -19,6 +21,7 @@ export default defineComponent({
 
     return {
       layout,
+      v$: useVuelidate(),
     };
   },
   computed: {

@@ -21,8 +21,8 @@ export default {
             'duration-200',
 
             // States
-            { 'hover:border-primary-500 dark:hover:border-primary-300': !props.invalid },
-            { 'outline-none outline-offset-0 ring ring-primary-400/50 dark:ring-primary-300/50': state.focused },
+            { 'hover:border-zinc-400 dark:hover:border-primary-300': !props.invalid },
+            { 'outline-none outline-offset-0': state.focused },
 
             // Misc
             'cursor-pointer',
@@ -131,7 +131,7 @@ export default {
         class: [
             'flex items-center justify-between',
             // Spacing
-            'py-3 px-5',
+            'py-2 px-5',
             'm-0',
 
             //Shape
@@ -172,8 +172,8 @@ export default {
                 'align-bottom',
 
                 // Size
-                'w-6',
-                'h-6',
+                'w-5',
+                'h-5',
 
                 // Spacing
                 'mr-2',
@@ -191,8 +191,8 @@ export default {
                 'justify-center',
 
                 // Size
-                'w-6',
-                'h-6',
+                'w-5',
+                'h-5',
 
                 // Shape
                 'rounded-md',
@@ -251,8 +251,8 @@ export default {
                 'text-base leading-none',
 
                 // Size
-                'w-4',
-                'h-4',
+                'w-3',
+                'h-3',
 
                 // Colors
                 'text-white dark:text-surface-900',
@@ -273,8 +273,8 @@ export default {
                 'align-bottom',
 
                 // Size
-                'w-6',
-                'h-6',
+                'w-5',
+                'h-5',
 
                 // Spacing
                 'mr-2',
@@ -292,8 +292,8 @@ export default {
                 'justify-center',
 
                 // Size
-                'w-6',
-                'h-6',
+                'w-5',
+                'h-5',
 
                 // Shape
                 'rounded-md',
@@ -352,8 +352,8 @@ export default {
                 'text-base leading-none',
 
                 // Size
-                'w-4',
-                'h-4',
+                'w-3',
+                'h-3',
 
                 // Colors
                 'text-white dark:text-surface-900',

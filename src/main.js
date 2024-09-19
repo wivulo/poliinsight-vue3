@@ -26,6 +26,21 @@ import ErrorLayout from './layouts/error.vue'
 import EmptyLayout from './layouts/empty.vue'
 import NavbarLayout from './layouts/navbar-layout.vue'
 
+//vuelidate
+import Vuelidate from '@vuelidate/core'
+
+//HTML to Paper
+import VueHtmlToPaper from 'vue-html-to-paper'
+const vueHtmlToPaperOptions = {
+  name: '_blank',
+  specs: [
+    'scrollbars=yes'
+  ],
+  styles: [],
+  timeout: 1000, // default timeout before the print window appears
+  autoClose: true // if false, the window will not close after printing
+}
+
 const options = {
     confirmButtonColor: '#059669',
     cancelButtonColor: '#ff7674',
@@ -53,5 +68,12 @@ app.component("default-layout", DefaultLayout)
 app.component("error-layout", ErrorLayout)
 app.component("empty-layout", EmptyLayout)
 app.component("navbar-layout", NavbarLayout)
+
+
+//vuelidate
+app.use(Vuelidate)
+
+//HTML to Paper
+app.use(VueHtmlToPaper, vueHtmlToPaperOptions)
 
 app.mount('#app')

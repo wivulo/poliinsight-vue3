@@ -134,8 +134,8 @@ export default {
                             @click="handleSelectEvent(event)"
                         >
                             <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-full overflow-hidden">
-                                    <img :src="event.imageURL" :alt="event.name" class="object-fill h-12" />
+                                <div class="w-[3.7rem] h-12 rounded-full overflow-hidden">
+                                    <img :src="event.imageURL" :alt="event.name" class="object-fill w-full h-full" />
                                 </div>
                                 <div>
                                     <p class="text-slate-600 text-sm">{{ event.name }}</p>

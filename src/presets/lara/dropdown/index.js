@@ -22,7 +22,7 @@ export default {
 
             // States
             { 'hover:border-zinc-400 dark:hover:border-primary-300': !props.invalid },
-            { 'outline-none outline-offset-0 ring ring-zinc-400/50 dark:ring-primary-300/50': state.focused },
+            { 'outline-none outline-offset-0 dark:ring-primary-300/50': state.focused },
 
             // Misc
             'cursor-pointer',
