@@ -45,4 +45,11 @@ export default {
 .application-body{
   height: calc(100% - 55px);
 }
+
+@media (min-width: 1500px){
+  #page-wrapper {
+    width: calc(100% - 240px);
+    left: 240px;
+  }
+}
 </style>

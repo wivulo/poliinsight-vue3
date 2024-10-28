@@ -24,6 +24,11 @@ export default {
                 data: [],
                 selectected: false
             },
+            event: {
+                busy: false,
+                data: null,
+            },
+
             filter: null,
 
             tabItems: [
@@ -35,8 +40,12 @@ export default {
         }
     },
     created(){
-        this.$router.push({name: 'gestao-eventos.finance.investments'})
+        this.$router.push({name: 'gestao-eventos.finance.investments', query: this.$route.query})
         this.getEvents();
+
+        if(this.$route.query.eventId){
+            this.getEvent(this.$route.query.eventId)
+        }
     },
     computed: {
         ...mapGetters({
@@ -58,9 +67,28 @@ export default {
             this.$toast.add({severity:'error', summary: 'Error', detail: 'Erro ao buscar os eventos', life: 3000})
         },
 
-        handleSelectEvent(event){
-            this.events.selectected = event
+        async getEvent(eventId){
+            try {
+                this.event.busy = true
+                const responde = await EventServices.show(eventId)
+                .catch(() => this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar evento'}))
+                this.event.data = responde.data
+            }finally{
+                this.event.busy = false
+            }
+        },
+
+        async handleSelectEvent(event){
+            await this.getEvent(event.id)
+            this.$router.push({query: {eventId: event.id}})
         }
+    },
+    watch: {
+        // $route(to, from){
+        //     if(to.query.eventId){
+        //         this.getEvent(to.query.eventId)
+        //     }
+        // }
     }
 }
 </script>
@@ -74,10 +102,10 @@ export default {
                     <p class="text-sm">Controle as finanças do evento aqui</p>
                 </div>
 
-                <template v-if="events.selectected">
+                <template v-if="event.data">
                     <TabMenu :model="tabItems">
                         <template #item="{ item, props }">
-                            <router-link v-slot="{ href, navigate }" :to="{name: item.route}" custom>
+                            <router-link v-slot="{ href, navigate }" :to="{name: item.route, query: $route.query}" custom>
                                 <a v-ripple :href="href" v-bind="props.action" @click="navigate" class="text-sm">
                                     <span v-bind="props.icon" />
                                     <span v-bind="props.label">{{ item.label }}</span>
@@ -89,7 +117,7 @@ export default {
                     <div>
                         <router-view v-slot="{ Component }">
                             <transition>
-                                <component :is="Component" ref="componentTabela" :eventId="events.selectected?.id" />
+                                <component :is="Component" ref="componentTabela" :eventId="event.data?.id" />
                             </transition>
                         </router-view>
                     </div>
@@ -130,16 +158,23 @@ export default {
                     </div>
 
                     <div v-else>
-                        <div v-for="event in events.data" :key="event.id" class="flex justify-between items-center bg-gray-400/30 p-2 rounded-md cursor-pointer"
-                            @click="handleSelectEvent(event)"
+                        <div v-for="eventi in events.data" :key="eventi.id" class="flex h-[65px] items-center bg-gray-400/30 hover:bg-gray-400/40 p-2 rounded-md cursor-pointer border-l-4 relative"
+                            @click="handleSelectEvent(eventi)"
+                            :class="{'bg-gray-400/40 border-primary-500': $route.query.eventId == eventi.id}"
                         >
-                            <div class="flex items-center gap-3">
+                            <div v-if="event.busy" class="absolute top-0 left-0 w-full h-[65px] flex items-center justify-center bg-gray-400/10 z-20 rounded-md">
+                                <div class="flex justify-center items-center">
+                                    <i class="fa fa-spinner animate-spin text-black"></i>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3 z-10">
                                 <div class="w-[3.7rem] h-12 rounded-full overflow-hidden">
-                                    <img :src="event.imageURL" :alt="event.name" class="object-fill w-full h-full" />
+                                    <img :src="eventi.imageURL" :alt="eventi.name" class="object-fill w-full h-full" />
                                 </div>
                                 <div>
-                                    <p class="text-slate-600 text-sm">{{ event.name }}</p>
-                                    <p class="text-slate-400 text-xs">{{ event.description }}</p>
+                                    <p class="text-slate-600 text-sm">{{ eventi.name }}</p>
+                                    <p class="text-slate-400 text-xs">{{ eventi.description }}</p>
                                 </div>
                             </div>
                         </div>

@@ -201,7 +201,7 @@ export default {
                     </div>
 
                     <div v-else>
-                        <div v-for="event in events.data" :key="event.id" class="flex justify-between border-l-4 items-center bg-gray-400/30 p-2 rounded-md cursor-pointer"
+                        <div v-for="event in events.data" :key="event.id" class="flex justify-between border-l-4 items-center bg-gray-400/30 hover:bg-gray-400/40 p-2 rounded-md cursor-pointer"
                             @click="handleSelectEvent(event)"
                             :class="{'bg-gray-400/50 border-primary-500': $route.query.eventId == event.id}"
                         >

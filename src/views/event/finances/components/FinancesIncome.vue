@@ -1,12 +1,122 @@
 <script>
+//Receitas
+import FinancesServices from '@/services/FinancesServices.js';
+import currency from '@/helpers/currency';
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import InputGroup from 'primevue/inputgroup';
+import InputNumber from 'primevue/inputnumber';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Dropdown from 'primevue/dropdown';
+import Textarea from 'primevue/textarea'
+import dayjs from 'dayjs'
+
 export default {
     name: "Finance.Income",
+    components: {
+        Button, InputText, InputGroup, InputNumber,
+        DataTable, Column, Dropdown, Textarea
+    },
+    data(){
+        return {
+            filter: null,
+            incomes: {
+                busy: false,
+                data: []
+            },
+
+            income: {
+                name: '',
+                amount: 0,
+                eventId: null,
+                source: null,
+                description: null,
+            }
+        }
+    },
     created(){
-        this.fetchIncome();
+        this.fetchIncomes();
     },
     methods: {
-        fetchIncome(){
-            console.log('fetchIncome');
+        async fetchIncomes(){
+            try {
+                this.incomes.busy = true;
+                const response = await FinancesServices.findIncome(this.eventId);
+                this.incomes.data = response.data;
+            } catch (error) {
+                console.error(error);
+            } finally {
+                this.incomes.busy = false;
+            }
+        },
+
+        async storeIncome(){
+            try {
+                const result = await this.$swal.fire({
+                    title: '',
+                    text: 'Tem a certeza?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim, Tenho',
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: 'rgb(218, 85, 81)',
+                    cancelButtonColor: 'rgba(150, 150, 150, .5)',
+                })
+
+                if(!result.isConfirmed) return;
+
+                this.incomes.busy = true;
+                const response = await FinancesServices.storeIncome(this.eventId, this.income)
+                .catch(() => this.handleErrorMessage())
+
+                if(response?.status === 201){
+                    this.$toast.add({severity: 'success', summary: 'Success', detail: 'Receita criada com sucesso', life: 2000})
+                    this.incomes.data.push(response.data);
+                    this.reset();
+                    this.fetchIncomes();
+                    return
+                }
+
+                this.handleErrorMessage()
+            } finally {
+                this.incomes.busy = false;
+            }
+        },
+
+        handleErrorMessage(){
+            this.$toast.add({
+                severity: 'error',
+                summary: 'Error', 
+                detail: 'Erro ao criar a receita', 
+                life: 2000
+            })
+        },
+
+        reset(){
+            this.income = {
+                name: '',
+                amount: 0,
+                eventId: null,
+                source: null,
+                description: null,
+            }
+        },
+
+        toKwanza(value){
+            return currency.KWAZA.format(value)
+        },
+
+        dateFormater(date) {
+            return dayjs(date).format('DD/MM/YYYY')
+        },
+
+        handleEditIncome(income){
+            console.log('handleEditIncome', income);
+        },
+
+        handleDeleteIncome(income){
+            console.log('handleDeleteIncome', income);
         }
     },
     watch: {
@@ -18,7 +128,121 @@ export default {
 </script>
 
 <template>
-    <div>
-        <p>Receitas</p>
+    <div class="w-full flex flex-col gap-5 py-5">
+        <div class="flex flex-col gap-1">
+            <label for="investiment">
+                Receita
+            </label>
+
+            <div class="flex gap-2 items-end">
+                <div class="flex flex-col gap-1 grow">
+                    <label for="name">
+                        Nome
+                    </label>
+                    <InputText size="small" v-model="income.name" id="name" placeholder="Ex:. Doação" class="w-full h-9" />
+                </div>
+                
+                <div class="flex flex-col gap-1 grow">
+                    <label for="value">
+                        Valor
+                    </label>
+
+                    <InputNumber size="small" v-model="income.amount" id="value" placeholder="Ex:. 100 000 kz" class="w-full h-9" 
+                    mode="currency" currency="AOA" locale="pt-AO" :min="0" :max="1000000"
+                />
+                </div>
+
+                <div class="flex flex-col gap-1 grow">
+                    <label for="source">
+                        Fonte
+                    </label>
+                    <InputText size="small" v-model="income.source" id="source" placeholder="Ex:. Instituição XY " class="w-full h-9" />
+                </div>
+            </div>
+
+            <div class="flex gap-2 items-end mt-2">
+                <div class="flex flex-col gap-1 grow">
+                    <label for="description">
+                        Descrição
+                    </label>
+
+                    <Textarea v-model="income.description" id="description" rows="2"
+                        placeholder="Ex:. Doação feita pela Intituição XY" class="w-full hover:border-slate-400" 
+                    />
+                </div>
+
+                <div class="flex grow-0 h-full items-end">
+                    <Button size="small" class="h-9 border border-surface-300 border-l-0" @click="storeIncome">
+                        <i class="fa fa-save mr-2" /> Salvar
+                    </Button>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <DataTable :value="incomes.data" size="small" paginator :rows="5" :totalRecords="incomes.data.length"
+            dataKey="id" class="ctable"
+            :loading="incomes.busy" lazy :rowsPerPageOptions="[5, 10, 20, 50]"
+        >                        
+            <Column field="name" header="Nome"></Column>
+
+            <Column field="amount" header="Montante">
+                <template #body="props">
+                    {{ toKwanza(props.data.amount) }}
+                </template>
+            </Column>
+
+            <Column field="source" header="Fonte"></Column>
+            
+            <Column field="createdAt" header="Data de Criação">
+                <template #body="props">
+                    {{ dateFormater(props.data.createdAt) }}
+                </template>
+            </Column>
+
+            <Column field="actions" header="Ações" class="relative">
+                <template #body="props">
+                    <Dropdown 
+                        :options="[
+                            {
+                                label: 'Editar',
+                                icon: 'fa fa-pencil',
+                                command: () => handleEditIncome(props.data)
+                            },
+                            {
+                                label: 'Eliminar',
+                                icon: 'fa fa-trash',
+                                command: () => handleDeleteIncome(props.data)
+                            },
+                        ]" 
+                        class="p-0 bg-primary-500"
+                        option-label="label"
+                    >
+                        <template #value>
+                            <div class="flex justify-center items-center text-white">
+                                <i class="fa fa-cog mr-1"/> Opções
+                            </div>
+                        </template>
+
+                        <template #option="{ option }">
+                            <div class="h-2 text-sm flex items-center text-zinc-700 py-2 w-full" @click="option.command">
+                                <i :class="option.icon" class="mr-1" /> {{ option.label }}
+                            </div>
+                        </template>
+
+                        <template #dropdownicon>
+                            <i class="fa fa-chevron-down text-white"/>
+                        </template>
+                    </Dropdown>
+                </template>
+            </Column>
+
+            <template #empty>
+                <div class="flex items-center justify-center h-10">
+                    <p class="text-gray-400">Nenhum dado disponível</p>
+                </div>
+            </template>
+        </DataTable>
     </div>
 </template>

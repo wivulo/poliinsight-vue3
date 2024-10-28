@@ -1,4 +1,11 @@
 <script>
+/*
+Despesas
+  eventId     String
+  amount      Float
+  category    String
+  description String?
+*/
 export default {
     name: "Finance.Expenses",
     created(){

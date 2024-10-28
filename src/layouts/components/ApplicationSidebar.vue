@@ -225,4 +225,10 @@ li.list-group-item{
 .app-sidebar-nav-link-text{
     font-size: .85rem;
 }
+
+@media (min-width: 1500px){
+    aside{
+        width: 240px;
+    }
+}
 </style>

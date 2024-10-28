@@ -35,6 +35,7 @@ export default {
     },
     created() {
         this.getDashboardData()
+        console.log(window.innerWidth)
     },
     mounted() {
         if (this.$refs.chart && this.$refs.chart.chart) {
@@ -317,7 +318,7 @@ export default {
             </template>
 
             <template v-else>
-                <div v-if="data.last_event.event && data.last_event?.statistic.id" class="flex flex-wrap gap-7">
+                <div v-if="data.last_event.event && data.last_event?.statistic.id" class="flex flex-wrap justify-between">
                     <div class="w-[30%] text-base text-surface-600 font-medium">
                         <CardRoot class="cardInformation h-[300px] flex flex-col">
                             <CardHeader>
@@ -326,7 +327,7 @@ export default {
                             <CardValue>
                             
                             </CardValue>
-                            <CardInformation class="mt-2 flex flex-col gap-1 relative h-full">
+                            <CardInformation class="mt-2 flex flex-col gap-2 relative h-full text-sm">
                                 <p><b>Localização</b>: {{ data.last_event?.event?.localization }}</p>
                                 <p><b>Data de início</b>: {{ dateFormater(data.last_event?.event?.date) }} às {{ time(data.last_event?.event?.time) }}</p>
                                 <p><b>Data de fim</b>: {{ dateFormater(data.last_event?.event?.endDate) }}</p> às {{ time(data.last_event?.event?.timeEnd) }}

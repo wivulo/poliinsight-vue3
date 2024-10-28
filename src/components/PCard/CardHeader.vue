@@ -14,6 +14,6 @@ export default {
 
 <style>
 .card-title p{
-    font-size: clamp(0.94rem, 1.2vw, 1.5rem);
+    font-size: clamp(0.94rem, 1vw, 1.5rem);
 }
 </style>

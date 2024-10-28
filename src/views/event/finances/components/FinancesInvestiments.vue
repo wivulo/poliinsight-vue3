@@ -66,7 +66,7 @@ export default {
                 .catch(() => this.handleErrorMessage())
 
                 if(response?.status === 201){
-                    this.$toast.add({severity: 'success', summary: 'Success', detail: 'Evento criado com sucesso', life: 2000})
+                    this.$toast.add({severity: 'success', summary: 'Success', detail: 'Investimento criado com sucesso', life: 2000})
                     this.investments.data.push(response.data);
                     this.reset();
                     this.fetchInvestiments();
