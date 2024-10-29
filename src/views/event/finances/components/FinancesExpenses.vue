@@ -19,6 +19,7 @@ Despesas
 */
 export default {
     name: "Finance.Expenses",
+    props: ['eventId'],
     components: {
         Button, InputText, InputGroup, InputNumber,
         DataTable, Column, Dropdown, Textarea,

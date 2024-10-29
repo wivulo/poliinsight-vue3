@@ -14,6 +14,7 @@ import dayjs from 'dayjs'
 
 export default {
     name: "Finance.Income",
+    props: ['eventId'],
     components: {
         Button, InputText, InputGroup, InputNumber,
         DataTable, Column, Dropdown, Textarea,
