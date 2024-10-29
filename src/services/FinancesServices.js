@@ -42,7 +42,6 @@ export default {
         return axios.post(`${databaseURL}/finances/incomes/`, {
             income: {
                 eventId: eventId,
-                name: income.name,
                 amount: income.amount,
                 source: income.source,
                 description: income.description,
@@ -71,7 +70,6 @@ export default {
         return axios.post(`${databaseURL}/finances/expenses/`, {
             expense: {
                 eventId: eventId,
-                name: expense.name,
                 amount: expense.amount,
                 category: expense.category,
                 description: expense.description,

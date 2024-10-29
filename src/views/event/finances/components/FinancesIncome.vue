@@ -28,7 +28,6 @@ export default {
             },
 
             income: {
-                name: '',
                 amount: 0,
                 eventId: null,
                 source: null,
@@ -137,10 +136,10 @@ export default {
 
             <div class="flex gap-2 items-end">
                 <div class="flex flex-col gap-1 grow">
-                    <label for="name">
-                        Nome
+                    <label for="source">
+                        Fonte
                     </label>
-                    <InputText size="small" v-model="income.name" id="name" placeholder="Ex:. Doação" class="w-full h-9" />
+                    <InputText size="small" v-model="income.source" id="source" placeholder="Ex:. Instituição XY " class="w-full h-9" />
                 </div>
                 
                 <div class="flex flex-col gap-1 grow">
@@ -151,13 +150,6 @@ export default {
                     <InputNumber size="small" v-model="income.amount" id="value" placeholder="Ex:. 100 000 kz" class="w-full h-9" 
                     mode="currency" currency="AOA" locale="pt-AO" :min="0" :max="1000000"
                 />
-                </div>
-
-                <div class="flex flex-col gap-1 grow">
-                    <label for="source">
-                        Fonte
-                    </label>
-                    <InputText size="small" v-model="income.source" id="source" placeholder="Ex:. Instituição XY " class="w-full h-9" />
                 </div>
             </div>
 
