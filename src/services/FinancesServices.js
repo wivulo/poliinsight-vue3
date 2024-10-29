@@ -4,11 +4,11 @@ import axios from 'axios'
 export default {
     //Investimentos
     findInvestiment(eventId) {
-        return axios.get(`${databaseURL}/finances/investiment/${eventId}`);
+        return axios.get(`${databaseURL}/finances/investiments/${eventId}`);
     },
 
     storeInvestiment(eventId, investiment){
-        return axios.post(`${databaseURL}/finances/investiment/`, {
+        return axios.post(`${databaseURL}/finances/investiments/`, {
             investiment: {
                 eventId: eventId,
                 name: investiment.name,
@@ -17,25 +17,29 @@ export default {
         });
     },
 
-    show(id){
-        return axios.get(`${databaseURL}/finances/show/${id}`);
+    showInvestiment(id){
+        return axios.get(`${databaseURL}/finances/investiments/show/${id}`);
     },
 
     deleteInvestiment(id){
-        return axios.delete(`${databaseURL}/finances/investiment/${id}`);
+        return axios.delete(`${databaseURL}/finances/investiments/${id}`);
     },
 
     updateInvestiment(investiment){
-        return axios.put(`${databaseURL}/finances/investiment`, investiment);
+        return axios.put(`${databaseURL}/finances/investiments`, investiment);
     },
 
     //Receitas
-    findIncome(eventId) {
-        return axios.get(`${databaseURL}/finances/income/${eventId}`);
+    findIncomes(eventId) {
+        return axios.get(`${databaseURL}/finances/incomes/${eventId}`);
+    },
+
+    showIncome(id){
+        return axios.get(`${databaseURL}/finances/incomes/show/${id}`);
     },
 
     storeIncome(eventId, income){
-        return axios.post(`${databaseURL}/finances/income/`, {
+        return axios.post(`${databaseURL}/finances/incomes/`, {
             income: {
                 eventId: eventId,
                 name: income.name,
@@ -47,20 +51,24 @@ export default {
     },
 
     deleteIncome(id){
-        return axios.delete(`${databaseURL}/finances/income/${id}`);
+        return axios.delete(`${databaseURL}/finances/incomes/${id}`);
     },
 
     updateIncome(income){
-        return axios.put(`${databaseURL}/finances/income`, income);
+        return axios.put(`${databaseURL}/finances/incomes`, income);
     },
 
     //Despesas
     findExpenses(eventId) {
-        return axios.get(`${databaseURL}/finances/expense/${eventId}`);
+        return axios.get(`${databaseURL}/finances/expenses/${eventId}`);
+    },
+
+    showExpense(id){
+        return axios.get(`${databaseURL}/finances/expenses/show/${id}`);
     },
 
     storeExpense(eventId, expense){
-        return axios.post(`${databaseURL}/finances/expense/`, {
+        return axios.post(`${databaseURL}/finances/expenses/`, {
             expense: {
                 eventId: eventId,
                 name: expense.name,
@@ -72,10 +80,10 @@ export default {
     },
 
     deleteExpense(id){
-        return axios.delete(`${databaseURL}/finances/expense/${id}`);
+        return axios.delete(`${databaseURL}/finances/expenses/${id}`);
     },
 
     updateExpense(expense){
-        return axios.put(`${databaseURL}/finances/expense`, expense);
+        return axios.put(`${databaseURL}/finances/expenses`, expense);
     },
 }
