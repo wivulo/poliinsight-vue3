@@ -42,7 +42,7 @@ export default {
         async fetchIncomes(){
             try {
                 this.incomes.busy = true;
-                const response = await FinancesServices.findIncome(this.eventId);
+                const response = await FinancesServices.findIncomes(this.eventId);
                 this.incomes.data = response.data;
             } catch (error) {
                 console.error(error);
