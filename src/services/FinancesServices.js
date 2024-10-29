@@ -55,7 +55,7 @@ export default {
     },
 
     //Despesas
-    findExpense(eventId) {
+    findExpenses(eventId) {
         return axios.get(`${databaseURL}/finances/expense/${eventId}`);
     },
 

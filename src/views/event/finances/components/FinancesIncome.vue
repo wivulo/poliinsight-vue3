@@ -16,7 +16,7 @@ export default {
     name: "Finance.Income",
     components: {
         Button, InputText, InputGroup, InputNumber,
-        DataTable, Column, Dropdown, Textarea
+        DataTable, Column, Dropdown, Textarea,
     },
     data(){
         return {
@@ -172,8 +172,9 @@ export default {
                 </div>
 
                 <div class="flex grow-0 h-full items-end">
-                    <Button size="small" class="h-9 border border-surface-300 border-l-0" @click="storeIncome">
-                        <i class="fa fa-save mr-2" /> Salvar
+                    <Button size="small" class="h-9 border border-surface-300 border-l-0" @click="storeIncome" :loading="incomes.busy">
+                        <i class="fas fa-spinner animate-spin mr-1" v-if="incomes.busy" />
+                        <i class="fa fa-save mr-1"/> {{ busy ? 'Salvando...' : 'Salvar' }}                    
                     </Button>
                 </div>
             </div>

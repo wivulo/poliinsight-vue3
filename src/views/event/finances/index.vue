@@ -169,11 +169,11 @@ export default {
                             </div>
 
                             <div class="flex items-center gap-3 z-10">
-                                <div class="w-[3.7rem] h-12 rounded-full overflow-hidden">
+                                <div class="w-[3rem] h-12 rounded-full overflow-hidden">
                                     <img :src="eventi.imageURL" :alt="eventi.name" class="object-fill w-full h-full" />
                                 </div>
                                 <div>
-                                    <p class="text-slate-600 text-sm">{{ eventi.name }}</p>
+                                    <p class="text-slate-800 text-sm">{{ eventi.name }}</p>
                                     <p class="text-slate-400 text-xs">{{ eventi.description }}</p>
                                 </div>
                             </div>
