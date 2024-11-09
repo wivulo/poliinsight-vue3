@@ -11,6 +11,7 @@ import Dropdown from 'primevue/dropdown';
 import TableReports from './components/TableReports.vue';
 import ModalNewEventOverviewReport from './components/ModalNewEventOverviewReport.vue';
 import ModalNewEventFinancialreport from './components/ModalNewEventFinancialreport.vue';
+import { EventImpl } from '@fullcalendar/core/internal';
 export default {
     name: "statistic_repots.reports",
     mixins: [setDocumentTitleMixin],
@@ -201,17 +202,23 @@ export default {
                     </div>
 
                     <div v-else>
-                        <div v-for="event in events.data" :key="event.id" class="flex justify-between border-l-4 items-center bg-gray-400/30 hover:bg-gray-400/40 p-2 rounded-md cursor-pointer"
-                            @click="handleSelectEvent(event)"
-                            :class="{'bg-gray-400/50 border-primary-500': $route.query.eventId == event.id}"
+                        <div v-for="eventi in events.data" :key="eventi.id" class="flex justify-between border-l-4 items-center bg-gray-400/30 hover:bg-gray-400/40 p-2 rounded-md cursor-pointer relative"
+                            @click="handleSelectEvent(eventi)"
+                            :class="{'bg-gray-400/50 border-primary-500': $route.query.eventId == eventi.id}"
                         >
-                            <div class="flex items-center gap-3">
+                            <div v-if="event.busy" class="absolute top-0 left-0 w-full h-[65px] flex items-center justify-center bg-gray-400/10 z-20 rounded-md">
+                                <div class="flex justify-center items-center">
+                                    <i class="fa fa-spinner animate-spin text-black"></i>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3 z-10">
                                 <div class="w-[3.7rem] h-12 rounded-full overflow-hidden">
-                                    <img :src="event.imageURL" :alt="event.name" class="object-fill w-full h-full" />
+                                    <img :src="eventi.imageURL" :alt="eventi.name" class="object-fill w-full h-full" />
                                 </div>
                                 <div>
-                                    <p class="text-slate-600 text-sm">{{ event.name }}</p>
-                                    <p class="text-slate-400 text-xs">{{ event.description }}</p>
+                                    <p class="text-slate-600 text-sm">{{ eventi.name }}</p>
+                                    <p class="text-slate-400 text-xs">{{ eventi.description }}</p>
                                 </div>
                             </div>
                         </div>
