@@ -55,20 +55,24 @@ export default {
         },
 
         async handleDeleteTicket(){
-            this.busy = true;
-            const response = await TicketsService.delete(this.ticket.data.id)
-            .catch(() => this.$toast.add({severity:'error', summary: 'Error', detail: 'Erro ao eliminar ingresso', life: 3000}) )
-            .finally(() => this.busy = false )
+            try {
+                this.busy = true;
+                const response = await TicketsService.delete(this.ticket.data.id)
 
-            if(response.status == 200){
-                this.$toast.add({severity:'success', summary: 'Success', detail: 'Ingresso eliminado com sucesso', life: 3000});
-                this.$emit('deleted');
-                this.reset();
-                this.handlehidden();
-                return;
+                if(response.status == 200){
+                    this.$toast.add({severity:'success', summary: 'Success', detail: 'Ingresso eliminado com sucesso', life: 3000});
+                    this.$emit('deleted');
+                    this.reset();
+                    this.handlehidden();
+                    return;
+                }
+
+                this.$toast.add({severity:'error', summary: 'Error', detail: 'Erro ao eliminar ingresso', life: 3000});
+            } catch (error) {
+                this.$toast.add({severity:'error', summary: 'Error', detail: 'Erro ao eliminar ingresso', life: 3000})
+            } finally {
+                this.busy = false;
             }
-
-            this.$toast.add({severity:'error', summary: 'Error', detail: 'Erro ao eliminar ingresso', life: 3000});
         },
     }
 }

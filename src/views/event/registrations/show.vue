@@ -15,13 +15,15 @@ import RadioButton from 'primevue/radiobutton';
 import SingleInformation from './components/SingleInformation.vue';
 import GroupInformation from './components/GroupInformation.vue';
 import CompanyInformation from './components/CompanyInformation.vue';
+import PaidEvent from './components/PaidEvent.vue';
 
 export default {
     name: "event.registrations.show",
     mixins: [setDocumentTitleMixin],
     components: {
         Image, FloatLabel, InputText, Checkbox, Button, Dropdown,
-        Calendar, RadioButton, SingleInformation, GroupInformation, CompanyInformation
+        Calendar, RadioButton, SingleInformation, GroupInformation, CompanyInformation,
+        PaidEvent
     },
     data() {
         return {
@@ -32,11 +34,6 @@ export default {
                 data: {},
                 busy: false
             },
-            payment_modes: [
-                {label: 'Transferência Bancária', value: 'bank_transfer'},
-                {label: 'Depósito Bancário', value: 'bank_deposit'},
-                {label: 'Dinheiro em mão', value: 'cash'},
-            ],
             eventConfig: {
                 data: {},
                 busy: false
@@ -94,6 +91,13 @@ export default {
             }
         },
 
+        handleRegistrationUpdate(value){
+            this.registration.data = {
+                ...this.registration.data,
+                ...value
+            }
+        },
+
         handleReset(){
             this.$refs.SingleInformation.reset()
         }
@@ -129,7 +133,13 @@ export default {
                     />
                     <GroupInformation v-else :fields="eventConfig?.data.fields" />
 
-                    <div class="flex flex-col gap-3 mt-4 mb-2 text-sm" v-if="event?.type === 'paid'">
+                    <PaidEvent
+                        v-if="event?.type === 'paid'" 
+                        :event="event" 
+                        @update:registration="handleRegistrationUpdate" 
+                    />
+
+                    <!-- <div class="flex flex-col gap-3 mt-4 mb-2 text-sm" v-if="event?.type === 'paid'">
                         <p class="ml-2">Taxa de inscrição</p>
                         <div class="flex flex-col gap-2">
                             <div class="flex align-items-center">
@@ -146,7 +156,7 @@ export default {
                         <div class="flex flex-col gap-2">
                             <Dropdown id="payment" v-model="data.payment_mode" :options="payment_modes" optionLabel="label" placeholder="Selecione um método de pagamento" class="h-9 w-full"  />
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="flex w-full justify-end my-2">
                         <Button type="submit" size="small" class="h-9" :loading="registration.busy">

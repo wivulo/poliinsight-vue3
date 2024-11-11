@@ -79,6 +79,18 @@ export default {
 
         reset(){
             this.visible = false;
+            this.ticket = {
+                name: null,
+                eventId: null,
+                price: 0,
+                quantity: 0,
+            }
+
+            this.events = {
+                busy: false,
+                data: [],
+                selected: null,
+            }
         },
 
         handlehidden(){
@@ -95,16 +107,20 @@ export default {
 
 <template>
     <Dialog v-model:visible="visible" modal header="Ingresso" :style="{ width: '30rem' }">
-        <!-- <div v-if="busy" class="flex">
-            <ProgressSpinner />
-        </div> -->
-
         <div>
             <div class="flex flex-col w-full">
                 <label for="event">Evento</label>
                 <Dropdown id="event" v-model="ticket.eventId" :options="events.data" optionLabel="name" optionValue="id" placeholder="Selecione um evento" 
-                    class="w-full"
-                />
+                    class="w-full">
+                    <template #value="slotProps">
+                        <div v-if="slotProps.value" class="flex items-center text-slate-700">
+                            {{ events.data.find(event => event.id === slotProps.value).name }}
+                        </div>
+                        <span v-else>
+                            {{ slotProps.placeholder }}
+                        </span>
+                    </template>
+                </Dropdown>
             </div>
             
             <div class="flex flex-col w-full my-2">

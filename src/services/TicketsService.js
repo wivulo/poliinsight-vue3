@@ -30,5 +30,7 @@ export default {
         return axios.get(`${databaseURL}/tickets/user/${userId}`)
     },
 
-    delete(ticketId){},
+    delete(ticketId){
+        return axios.delete(`${databaseURL}/tickets/${ticketId}`)
+    },
 }
