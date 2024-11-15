@@ -15,6 +15,8 @@ import RadioButton from 'primevue/radiobutton';
 import SingleInformation from './components/SingleInformation.vue';
 import GroupInformation from './components/GroupInformation.vue';
 import CompanyInformation from './components/CompanyInformation.vue';
+import templateSeminar from './components/TemplateSeminar.vue';
+import templateAcademicCompetition from './components/TemplateAcademicCompetition.vue';
 import PaidEvent from './components/PaidEvent.vue';
 
 export default {
@@ -23,17 +25,13 @@ export default {
     components: {
         Image, FloatLabel, InputText, Checkbox, Button, Dropdown,
         Calendar, RadioButton, SingleInformation, GroupInformation, CompanyInformation,
-        PaidEvent
+        PaidEvent, templateSeminar, templateAcademicCompetition
     },
     data() {
         return {
             title: 'Poliinsight | Inscrever participante',
             busy: false,
             event: null,
-            registration: {
-                data: {},
-                busy: false
-            },
             eventConfig: {
                 data: {},
                 busy: false
@@ -61,46 +59,12 @@ export default {
             this.eventConfig.busy = false
         },
 
-        async handleMakeRegistration(){
-            try {
-                this.registration.data = this.$refs.SingleInformation.data
-
-                this.registration.busy = true
-                let response = await ParticipantServices.store(this.registration.data)
-
-                if(response.data?.error || response.status > 299) throw new Error('Error')
-
-                const participante = response.data
-
-                response = await RegistrationServices.store({
-                    eventId: this.event?.id,
-                    userId: null,
-                    participantId: participante?.id,
-                    ticketId: null
-                })
-
-                if(response.data?.error || response.status > 299) throw new Error('Error')
-
-
-                this.$swal.fire('Sucesso', 'Inscrição feita com sucesso', 'success')
-                this.handleReset()
-            } catch (error) {
-                this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao fazer a inscrição', life: 3000})
-            } finally {
-                this.registration.busy = false
-            }
-        },
-
-        handleRegistrationUpdate(value){
-            this.registration.data = {
-                ...this.registration.data,
-                ...value
-            }
-        },
-
-        handleReset(){
-            this.$refs.SingleInformation.reset()
-        }
+        // handleRegistrationUpdate(value){
+        //     this.registration.data = {
+        //         ...this.registration.data,
+        //         ...value
+        //     }
+        // },
     }
 }
 </script>
@@ -114,7 +78,9 @@ export default {
 
         <div class="w-full h-1/3" />
 
-        <div id="registration-box" class="bg-slate-50/95">
+        <div id="registration-box" class="bg-slate-50/95 rounded-md shadow-md w-[600px]"
+            :class="{ 'w-[800px]': eventConfig?.data.template === 'templateAcademicCompetition'}"
+        >
             <div v-if="eventConfig.busy" class="w-full h-full flex justify-center items-center">
                 <i class="fas fa-spinner animate-spin" />
             </div>
@@ -125,46 +91,11 @@ export default {
                     <p class="text-sm font-semibold">Boletim de inscrição</p>
                 </div>
 
-                <form @submit.prevent="handleMakeRegistration" class="flex gap-2 flex-col px-3">
-                    <SingleInformation 
-                        v-if="eventConfig?.data.registrationType == 'single'" 
-                        :fields="eventConfig?.data.fields"
-                        ref="SingleInformation"
-                    />
-                    <GroupInformation v-else :fields="eventConfig?.data.fields" />
-
-                    <PaidEvent
-                        v-if="event?.type === 'paid'" 
-                        :event="event" 
-                        @update:registration="handleRegistrationUpdate" 
-                    />
-
-                    <!-- <div class="flex flex-col gap-3 mt-4 mb-2 text-sm" v-if="event?.type === 'paid'">
-                        <p class="ml-2">Taxa de inscrição</p>
-                        <div class="flex flex-col gap-2">
-                            <div class="flex align-items-center">
-                                <RadioButton v-model="data.registration_mode" inputId="mode1" name="mode1" value="single" />
-                                <label for="mode1" class="ml-2">Individual - 5000 Kz</label>
-                            </div>
-                            <div class="flex align " >
-                                <RadioButton v-model="data.registration_mode" inputId="mode2" name="mode2" value="group" />
-                                <label for="mode2" class="ml-2">Grupo - 10000 Kz</label>
-                            </div>
-                        </div>
-
-                        <p class="mt-2 ml-2">Método de pagamento</p>
-                        <div class="flex flex-col gap-2">
-                            <Dropdown id="payment" v-model="data.payment_mode" :options="payment_modes" optionLabel="label" placeholder="Selecione um método de pagamento" class="h-9 w-full"  />
-                        </div>
-                    </div> -->
-
-                    <div class="flex w-full justify-end my-2">
-                        <Button type="submit" size="small" class="h-9" :loading="registration.busy">
-                            <i class="fas fa-spinner animate-spin mr-2" v-if="registration.busy"/>
-                            <i class="fas fa-save me-2" v-else/> {{registration.busy ? 'Inscrevendo': 'Inscrever'}}
-                        </Button>
-                    </div>
-                </form>
+                <component 
+                    :is="eventConfig?.data.template" 
+                    :fields="eventConfig?.data.fields"
+                    :event="event"
+                />
             </div>
         </div>
     </div>
@@ -172,7 +103,7 @@ export default {
 
 <style scoped>
 #registration-box{
-    @apply absolute w-[600px] h-[520px] overflow-y-auto rounded-md px-6 py-6;
+    @apply absolute h-[520px] overflow-y-auto rounded-md px-6 py-6;
 }
 #registration-box {
     top: 50%;

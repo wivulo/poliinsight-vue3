@@ -42,8 +42,8 @@ export default {
             'duration-200',
 
             // States
-            { 'hover:border-primary-500 dark:hover:border-primary-400': !props.invalid },
-            'focus:outline-none focus:outline-offset-0 focus:ring focus:ring-primary-500/50 dark:focus:ring-primary-400/50'
+            { 'hover:border-zinc-400': !props.invalid },
+            'focus:outline-none focus:outline-offset-0'
         ]
     }),
     inputicon: {
