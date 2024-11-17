@@ -147,12 +147,6 @@ export default {
                             <i class="fa fa-trash mr-2"></i>Deletar
                         </Button>
                     </template>
-
-                    <Button size="small" class="h-9 px-5">
-                        <router-link :to="{name: 'gestao-eventos.create'}" class="text-white hover:text-primary">
-                            <i class="fa fa-plus mr-2"></i> Evento
-                        </router-link>
-                    </Button>
                 </div>
             </div>
 
@@ -193,14 +187,20 @@ export default {
                         v-model:selection="itemSelected" dataKey="id" scrollable
                         @row-select="onRowSelected" @row-unselect="onRowUnselected"
                         :loading="busy" lazy class="ctable" :rowsPerPageOptions="[7, 10, 20, 50]" 
-                        :totalRecords="events.length"
+                        :totalRecords="events.length" stripedRows
                     >
 
                         <Column selectionMode="multiple" v-if="selectionModeIsVisible" headerStyle="width: 3rem"></Column>
 
                         <Column field="int_id" header="ID" />
 
-                        <Column field="name" header="Nome" />
+                        <Column field="name" header="Nome">
+                            <template #body="props">
+                                <router-link :to="{name: 'event.show', params: {id: props.data.id}}" class="hover:text-primary-500">
+                                    {{ props.data.name }}
+                                </router-link>
+                            </template>
+                        </Column>
 
                         <Column field="localization" header="Localização" />
 

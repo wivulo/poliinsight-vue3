@@ -75,9 +75,16 @@ export default {
             Taxa de inscrição
         </p>
         <div class="flex flex-col gap-2">
-            <div v-for="ticket in tickets.data" :key="ticket.id" class="flex items-center">
-                <RadioButton v-model="registrattion.registration_mode" inputId="mode1" name="mode1" :value="ticket.name" />
-                <label for="mode1" class="ml-2 text-sm">{{ticket.name}} - {{ currency(ticket.price) }}</label>
+            <div v-if="tickets.data.length">
+                <div v-for="ticket in tickets.data" :key="ticket.id" class="flex items-center">
+                    <RadioButton v-model="registrattion.registration_mode" inputId="mode1" name="mode1" :value="ticket.name" />
+                    <label for="mode1" class="ml-2 text-sm">{{ticket.name}} - {{ currency(ticket.price) }}</label>
+                </div>
+            </div>
+
+            <div v-else class="flex flex-col items-center justify-center">
+                <p class="text-sm text-gray-500">Não há Ingressos disponíveis</p>
+                <RouterLink :to="{name: 'gestao-eventos.tickets', query: {openmodalnewticket: true, eventid: event.id}}" class="text-sm text-primary-500">adicionar Ingressos</RouterLink>
             </div>
         </div>
 

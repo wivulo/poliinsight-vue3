@@ -20,7 +20,7 @@ import Registrations from "@/views/event/registrations/index.vue"
 import EventRegistrationsShow from "@/views/event/registrations/show.vue"
 import Tickets from "@/views/event/tickets/index.vue"
 import MyEvents from "@/views/event/my_events/index.vue"
-import RegistrationTable from "@/views/event/components/RegistrationTable.vue"
+import RegistrationTable from "@/views/event/components/RegistrationTableSingle.vue"
 import TicketsTable from "@/views/event/components/TicketsTable.vue"
 import Finaces from "@/views/event/finances/index.vue"
 import FinancesInvestiments from "@/views/event/finances/components/FinancesInvestiments.vue"
@@ -46,8 +46,6 @@ import Groups from "@/views/seguranca/groups/index.vue"
 import Profile from "@/views/profile/index.vue"
 
 import EventViewer from "@/views/event/show.vue"
-
-import InternalServerError from '@/views/error/InternalServerError.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

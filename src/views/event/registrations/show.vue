@@ -87,7 +87,9 @@ export default {
 
             <div class="flex flex-col gap-5" v-else>
                 <div class="text-slate-700">
-                    <p class="text-xl font-bold">{{event?.name}}</p>
+                    <RouterLink :to="{name: 'event.show', params: {id: event?.id}}" class="text-xl font-bold hover:text-primary-500">
+                        {{event?.name}}
+                    </RouterLink>
                     <p class="text-sm font-semibold">Boletim de inscrição</p>
                 </div>
 

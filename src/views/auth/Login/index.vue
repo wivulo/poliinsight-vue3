@@ -81,7 +81,7 @@ export default{
     <div class="flex w-[800px] h-[400px] justify-center items-center relative">
       <Card class="h-full flex justify-center items-center">
         <template #content>
-          <div class="absolute top-0 left-0 w-[400px] h-[400px] z-40 bg-red-500"></div>
+          <div class="absolute top-0 left-0 w-[400px] h-[400px] z-40 bg-primary-500"></div>
 
           <div class="flex gap-2 w-full justify-center items-center z-50 relative">
             <div class="flex flex-col basis-1/2 px-4 text-slate-50">
@@ -97,7 +97,7 @@ export default{
                 <AppLogo :textIsVisible="false" :width="60" :height="60" />
               </div>
 
-              <p class="text-sm text-center text-red-500 font-bold relative tracking-wide -top-4">
+              <p class="text-sm text-center text-primary-500 font-bold relative tracking-wide -top-4">
                   Poliinsights
               </p>
 

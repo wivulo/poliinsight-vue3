@@ -65,7 +65,7 @@ export default {
                 <p class="text-base">
                     Token inválido! Por favor, solicite um novo link de redefinição de senha.
                 </p>
-                <router-link :to="{name: 'forgot.password'}" class="text-red-500 ml-1">Clique aqui</router-link>
+                <router-link :to="{name: 'forgot.password'}" class="text-primary-500 ml-1">Clique aqui</router-link>
             </div>
         </template>
         

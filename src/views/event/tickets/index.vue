@@ -56,6 +56,11 @@ export default {
     created(){
         this.getTickets();
     },
+    mounted(){
+        if(this.$route.query.openmodalnewticket && this.$route.query.eventid){
+            this.$refs.ModalNewTicket?.show();
+        }
+    },
     computed: {
         ...mapGetters({
             user: 'auth/user',

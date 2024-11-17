@@ -73,7 +73,7 @@ export default {
             <img :alt="file.name" :src="file.objectURL" class="object-fill object-center max-h-[325px]"/>
         </div>
 
-        <div class="w-full bg-red-500 text-white p-2 absolute bottom-0 left-0">
+        <div class="w-full bg-primary-500 text-white p-2 absolute bottom-0 left-0">
             <p class="text-sm">{{ file.name }}</p>
             <p class="text-sm">{{ formatBytes(file.size) }}</p>
         </div>
@@ -88,6 +88,6 @@ export default {
         />
     </div>
 
-    <p v-if="error" class="text-red-500">{{ error }}</p>
+    <p v-if="error" class="text-primary-500">{{ error }}</p>
 </div> 
 </template>

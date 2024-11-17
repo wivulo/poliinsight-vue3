@@ -33,7 +33,7 @@ export default {
 <template>
     <DataTable :value="events" size="small" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]" :totalRecords="events.length"
         dataKey="id" scrollable scrollHeight="380px" :loading="busy" lazy
-        class="w-full" tableClass="text-[0.94rem]"
+        class="w-full" tableClass="text-[0.94rem]" stripedRows
     >                                        
         <Column field="name" header="Nome" />
         

@@ -122,13 +122,13 @@ export default {
                 // Danger Button
                 {
                     'text-white dark:text-surface-900': parent.props.severity === 'danger' && !parent.props.text && !parent.props.outlined && !parent.props.plain,
-                    'bg-red-500 dark:bg-red-400': parent.props.severity === 'danger' && !parent.props.text && !parent.props.outlined && !parent.props.plain,
-                    'border border-red-500 dark:border-red-400': parent.props.severity === 'danger' && !parent.props.text && !parent.props.outlined && !parent.props.plain
+                    'bg-primary-500 dark:bg-red-400': parent.props.severity === 'danger' && !parent.props.text && !parent.props.outlined && !parent.props.plain,
+                    'border border-primary-500 dark:border-red-400': parent.props.severity === 'danger' && !parent.props.text && !parent.props.outlined && !parent.props.plain
                 },
                 // Danger Text Button
-                { 'text-red-500 dark:text-red-400': parent.props.text && parent.props.severity === 'danger' && !parent.props.plain },
+                { 'text-primary-500 dark:text-red-400': parent.props.text && parent.props.severity === 'danger' && !parent.props.plain },
                 // Danger Outlined Button
-                { 'text-red-500 border border-red-500 hover:bg-red-300/20': parent.props.outlined && parent.props.severity === 'danger' && !parent.props.plain },
+                { 'text-primary-500 border border-primary-500 hover:bg-red-300/20': parent.props.outlined && parent.props.severity === 'danger' && !parent.props.plain },
 
                 // --- Severity Button States ---
                 'focus:outline-none focus:outline-offset-0 focus:ring',
@@ -307,13 +307,13 @@ export default {
                 // Danger Button
                 {
                     'text-white dark:text-surface-900': parent.props.severity === 'danger' && !parent.props.text && !parent.props.outlined && !parent.props.plain,
-                    'bg-red-500 dark:bg-red-400': parent.props.severity === 'danger' && !parent.props.text && !parent.props.outlined && !parent.props.plain,
-                    'border border-red-500 dark:border-red-400': parent.props.severity === 'danger' && !parent.props.text && !parent.props.outlined && !parent.props.plain
+                    'bg-primary-500 dark:bg-red-400': parent.props.severity === 'danger' && !parent.props.text && !parent.props.outlined && !parent.props.plain,
+                    'border border-primary-500 dark:border-red-400': parent.props.severity === 'danger' && !parent.props.text && !parent.props.outlined && !parent.props.plain
                 },
                 // Danger Text Button
-                { 'text-red-500 dark:text-red-400': parent.props.text && parent.props.severity === 'danger' && !parent.props.plain },
+                { 'text-primary-500 dark:text-red-400': parent.props.text && parent.props.severity === 'danger' && !parent.props.plain },
                 // Danger Outlined Button
-                { 'text-red-500 border border-red-500 hover:bg-red-300/20': parent.props.outlined && parent.props.severity === 'danger' && !parent.props.plain },
+                { 'text-primary-500 border border-primary-500 hover:bg-red-300/20': parent.props.outlined && parent.props.severity === 'danger' && !parent.props.plain },
 
                 // --- Severity Button States ---
                 'focus:outline-none focus:outline-offset-0 focus:ring',

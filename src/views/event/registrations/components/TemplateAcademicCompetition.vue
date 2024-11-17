@@ -107,7 +107,7 @@ export default {
     <form @submit.prevent="handleMakeRegistration" class="flex gap-2 flex-col px-3">
         <div>
             <label for="name" class="ml-2">
-                <i class="fas fa-users me-1 "></i> <small> Nome do Grupo </small> <span class="text-red-500">*</span>
+                <i class="fas fa-users me-1 "></i> <small> Nome do Grupo </small> <span class="text-primary-500">*</span>
             </label>
             <InputText id="name" v-model="team.name" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex.: We Solve Problems" />
         </div>

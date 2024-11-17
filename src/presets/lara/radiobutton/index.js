@@ -39,7 +39,7 @@ export default {
                 'bg-primary-500 dark:bg-primary-400': props.value == props.modelValue && props.value !== undefined
             },
             // Invalid State
-            { 'border-red-500 dark:border-red-400': props.invalid },
+            { 'border-primary-500 dark:border-red-400': props.invalid },
 
             // States
             {

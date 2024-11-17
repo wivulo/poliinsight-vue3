@@ -32,7 +32,7 @@ export default {
             },
 
             // Invalid State
-            { 'border-red-500 dark:border-red-400': props.invalid },
+            { 'border-primary-500 dark:border-red-400': props.invalid },
 
             // States
             {

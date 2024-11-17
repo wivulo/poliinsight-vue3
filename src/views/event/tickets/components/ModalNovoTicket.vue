@@ -8,6 +8,7 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import Dropdown from 'primevue/dropdown';
+import { event } from '@/store/modules/event';
 
 
 export default {
@@ -41,7 +42,11 @@ export default {
     methods : {
         async show(){
             this.visible = true;
-            await this.fetchEvents();
+            this.fetchEvents();
+
+            if(this.$route.query.openmodalnewticket && this.$route.query.eventid){
+                this.fetchEvent();
+            }
         },
 
         async fetchEvents(){
@@ -51,6 +56,19 @@ export default {
             this.events.data = response.data
             this.events.busy = false
         },
+
+        async fetchEvent(){
+            try {
+                this.events.busy = true
+                const response = await EventServices.show(this.$route.query.eventid)
+                this.ticket.eventId = response.data?.id
+            } catch (error) {
+                this.$toast.add({severity:'error', summary: 'Error', detail: 'Erro ao buscar os eventos', life: 3000})
+            } finally {
+                this.events.busy = false
+            }
+        },
+        
 
         async handleStore(){
             this.busy = true;

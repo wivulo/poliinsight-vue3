@@ -521,7 +521,7 @@ export default {
                     'rounded-md',
 
                     'bg-transparent border-transparent',
-                    'text-red-500 dark:text-red-400',
+                    'text-primary-500 dark:text-red-400',
                     'hover:bg-red-300/20',
 
                     // Transitions

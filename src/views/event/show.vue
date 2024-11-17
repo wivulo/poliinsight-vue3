@@ -10,13 +10,16 @@ import Dropdown from 'primevue/dropdown';
 import CCard from "@/components/PCard/index.js"
 import TabMenu from 'primevue/tabmenu';
 import ModalNewRegistration from './components/ModalNewRegistration.vue';
+import RegistrationTable from "@/views/event/components/RegistrationTable.vue"
+import TicketsTable from "@/views/event/components/TicketsTable.vue"
 
 export default {
     name: 'Event.viewer',
     components: {
         AutoComplete, Card, ModalNewRegistration,
         InputGroup, Button, TabMenu,
-        Image, Dropdown, CardRoot: CCard.Root
+        Image, Dropdown, CardRoot: CCard.Root,
+        RegistrationTable, TicketsTable
     },
     data(){
         return {
@@ -36,13 +39,13 @@ export default {
             },
 
             tabItems: [
-                { label: 'Incrições', icon: 'fa fa-pencil', route: 'event.show.registrations' },
-                { label: 'Ingressos', icon: 'fa fa-dolar', route: 'event.show.tickets' },
-            ]
+                { label: 'Incrições', component: 'RegistrationTable', icon: 'fa fa-pencil', route: 'event.show.registrations' },
+                { label: 'Ingressos', component: 'TicketsTable' , icon: 'fa fa-file', route: 'event.show.tickets' },
+            ],
+            tabICurrenttem: 'RegistrationTable',
         }
     },
     async created(){
-        this.$router.push({name: 'event.show.registrations'})
         this.getEvent()
     },
     computed: {
@@ -52,20 +55,27 @@ export default {
     },
     methods: {
         async getEvent(){
-            this.busy = true
-            const responde = await EventServices.show(this.$route.params.id)
-            .catch(() => this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar evento'}))
-            this.event = responde.data
-            this.busy = false
+            try {
+                this.busy = true
+                const responde = await EventServices.show(this.$route.params.id)
+                this.event = responde.data
+            } catch (error) {
+                this.handleError('Erro ao buscar evento')
+            } finally {
+                this.busy = false
+            }
         },
 
-        async getEvents(query){
-            console.log(query?.query)
-            this.events.busy = true
-            const responde = await EventServices.search(this.params)
-            .catch(() => this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar os eventos'}))
-            this.events.data = responde.data
-            this.events.busy = false
+        async getEvents(){
+            try {
+                this.events.busy = true
+                const responde = await EventServices.search(this.params)
+                this.events.data = responde.data
+            } catch (error) {
+                this.handleError('Erro ao buscar os eventos')
+            } finally {
+                this.events.busy = false
+            }
         },
 
         handleShowModalNewRegistration(){
@@ -75,6 +85,18 @@ export default {
         updateEvent(){
             this.getEvent()
             this.$refs.componentTabela.getData()
+        },
+
+        handleEventSelected(event){
+            this.$router.push({name: 'event.show', params: {id: event.id}})
+        },
+
+        handleChangeTable(component){
+            this.tabICurrenttem = component
+        },
+
+        handleError(error){
+            this.$toast.add({severity: 'error', summary: 'Erro', detail: error})
         }
     }
 }
@@ -90,7 +112,10 @@ export default {
                     <Button outlined class="h-9 w-9 border border-r-0 border-surface-300 bg-transparent hover:bg-transparent">
                         <i class="fa fa-search text-surface-700" />
                     </Button>
-                    <AutoComplete v-model="params.query" :suggestions="events.data" @complete="getEvents" placeholder="Escreva para pesquisar" class="w-full h-9" inputClass="w-full border-l-0" id="autocomplete-statistic-viewer" >
+                    <AutoComplete v-model="params.query" :suggestions="events.data" @complete="getEvents" 
+                        placeholder="Escreva para pesquisar" class="w-full h-9" inputClass="w-full border-l-0" 
+                        id="autocomplete-statistic-viewer" @item-select="handleEventSelected"
+                    >
                         <template #option="slotProps">
                             <div class="flex items-center">
                                 <div>{{ slotProps.option.name }}</div>
@@ -176,21 +201,31 @@ export default {
                    <div class="flex flex-col gap-5">
                         <TabMenu :model="tabItems">
                             <template #item="{ item, props }">
-                                <router-link v-slot="{ href, navigate }" :to="{name: item.route}" custom>
+                                <!-- <router-link v-slot="{ href, navigate }" :to="{name: item.route}" custom>
                                     <a v-ripple :href="href" v-bind="props.action" @click="navigate" class="text-sm">
                                         <span v-bind="props.icon" />
                                         <span v-bind="props.label">{{ item.label }}</span>
                                     </a>
-                                </router-link>
+                                </router-link> -->
+
+                                <div v-ripple @click="() => handleChangeTable(item.component)" class="px-3 py-[.5rem] text-sm border border-gray-400/40  hover:bg-red-700/50 cursor-pointer hover:text-white"
+                                    :class="{'bg-[#DA5551] text-white': item.component == tabICurrenttem}">
+                                    <span v-bind="props.icon" />
+                                    <span v-bind="props.label">{{ item.label }}</span>
+                                </div>
                             </template>
                         </TabMenu>
 
                         <div>
-                            <router-view v-slot="{ Component }">
+                            <!-- <router-view v-slot="{ Component }"> -->
                                 <transition>
-                                    <component :is="Component" ref="componentTabela" />
+                                    <component 
+                                        :is="tabICurrenttem" 
+                                        ref="componentTabela"
+                                        :eventType="event.category?.name"
+                                    />
                                 </transition>
-                            </router-view>
+                            <!-- </router-view> -->
                         </div>
                    </div>
                 </CardRoot>

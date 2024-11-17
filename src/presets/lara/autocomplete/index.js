@@ -46,7 +46,7 @@ export default {
             { 'border-surface-300 dark:border-surface-600': !props.invalid },
 
             // Invalid State
-            { 'border-red-500 dark:border-red-400': props.invalid },
+            { 'border-primary-500 dark:border-red-400': props.invalid },
 
             // States
             { 'hover:border-primary-500 dark:hover:border-primary-400': !props.invalid },
@@ -90,7 +90,7 @@ export default {
             },
 
             // Invalid State
-            { 'border-red-500 dark:border-red-400': props.invalid },
+            { 'border-primary-500 dark:border-red-400': props.invalid },
 
             // States
             { 'focus:outline-none focus:outline-offset-0': !props.multiple },

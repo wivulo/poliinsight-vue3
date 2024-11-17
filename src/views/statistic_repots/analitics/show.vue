@@ -259,9 +259,16 @@ export default {
                <div class="flex justify-between w-full border-b border-zinc-400/20 items-center">
                     <p class="text-xl font-bold uppercase">
                         <i class="fa fa-spinner animate-spin text-black text-base" v-if="busy" />
-                        <span v-else>
-                            {{ event?.name }}
-                        </span>
+                        <template v-else>
+                            <div class="flex gap-3 items-center">
+                                <RouterLink :to="{name: 'analise_relatorios.analitics'}" title="Voltar para lista">
+                                    <i class="fa fa-chevron-left text-sm p-2 cursor-pointer hover:bg-slate-200" />
+                                </RouterLink>
+                                <RouterLink :to="{name: 'event.show', params: {id: event?.id}}" class="text-xl font-bold hover:text-primary-500/70">
+                                    {{event?.name}}
+                                </RouterLink>
+                            </div>
+                        </template>
                     </p>
                     <p class="text-base font-semibold">Mapa do evento</p>
                </div>

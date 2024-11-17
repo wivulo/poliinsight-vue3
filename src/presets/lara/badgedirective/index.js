@@ -36,7 +36,7 @@ export default {
                 'bg-blue-500 dark:bg-blue-400': context.info,
                 'bg-orange-500 dark:bg-orange-400': context.warning,
                 'bg-purple-500 dark:bg-purple-400': context.help,
-                'bg-red-500 dark:bg-red-400': context.danger
+                'bg-primary-500 dark:bg-red-400': context.danger
             }
         ]
     })

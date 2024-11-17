@@ -7,7 +7,7 @@ export default {
                 'bg-blue-100/70 dark:bg-blue-500/20': props.severity == 'info',
                 'bg-green-100/70 dark:bg-green-500/20': props.severity == 'success',
                 'bg-orange-100/70 dark:bg-orange-500/20': props.severity == 'warn',
-                'bg-red-100/70 dark:bg-red-500/20': props.severity == 'error'
+                'bg-red-100/70 dark:bg-primary-500/20': props.severity == 'error'
             },
             {
                 'dark:border-blue-400': props.severity == 'info',

@@ -207,6 +207,10 @@ textarea {
   @apply text-[0.899rem];
 }
 
+table tbody tr[data-pc-section='bodyrow']:hover{
+  background-color: rgba(65, 60, 60, .05);
+}
+
 div:where(.swal2-container) {
   z-index: 1102 !important;
 }

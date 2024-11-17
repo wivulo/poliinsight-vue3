@@ -55,21 +55,21 @@ export default {
     <div class="flex flex-wrap gap-3">
         <div class="form-group">
             <label :for="'member-'+index" class="ml-2">
-                <i class="fas fa-user me-1 "></i> <small> Nome </small> <span class="text-red-500">*</span>
+                <i class="fas fa-user me-1 "></i> <small> Nome </small> <span class="text-primary-500">*</span>
             </label>
             <InputText :id="'member-'+index" v-model="member.name" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex.: João da Silva" />
         </div>
 
         <div class="form-group">
             <label :for="'member-'+index" class="ml-2">
-                <i class="fas fa-envelope me-1 "></i> <small> Email </small> <span class="text-red-500">*</span>
+                <i class="fas fa-envelope me-1 "></i> <small> Email </small> <span class="text-primary-500">*</span>
             </label>
             <InputText :id="'member-'+index" v-model="member.email" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex.: joaosilva@gmail.com" />
         </div>
 
         <div class="form-group">
             <label :for="'member-'+index" class="ml-2">
-                <i class="fas fa-phone me-1 "></i> <small> Telefone </small> <span class="text-red-500">*</span>
+                <i class="fas fa-phone me-1 "></i> <small> Telefone </small> <span class="text-primary-500">*</span>
             </label>
             <InputText :id="'member-'+index" v-model="member.phone" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex.: (244) 999xxxxxx" />
         </div>

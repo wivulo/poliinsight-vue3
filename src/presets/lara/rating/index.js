@@ -33,7 +33,7 @@ export default {
             'w-5 h-5',
 
             // Color
-            'text-red-500 dark:text-red-400',
+            'text-primary-500 dark:text-red-400',
 
             // State
             'hover:text-red-600 dark:hover:text-red-300',
