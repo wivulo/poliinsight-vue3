@@ -71,28 +71,40 @@ export default {
         
 
         async handleStore(){
-            this.busy = true;
-            // this.ticket.eventId = this.events.selected.id;
-            const response = await TicketsService.store(this.ticket)
-            .catch(() => this.handleErrorMessage())
+            try {
 
-            this.busy = false
+                if(!this.verifyRequiredFields()) {
+                    this.handleErrorMessage('Preencha todos os campos obrigatórios');
+                    return;
+                };
 
-            if(response.status == 201 && !response.data.error){
-                this.$toast.add({severity:'success', summary: 'Success', detail: 'Ingresso criado com sucesso', life: 3000});
-                this.$emit('created');
-                this.reset();
-                this.handlehidden();
-                return;
-            }else{
+                this.busy = true;
+                const response = await TicketsService.store(this.ticket)
+
+                if(response.status == 201 && !response.data.error){
+                    this.$toast.add({severity:'success', summary: 'Success', detail: 'Ingresso criado com sucesso', life: 3000});
+                    this.$emit('created');
+                    this.reset();
+                    this.handlehidden();
+                    return;
+                }else{
+                    this.handleErrorMessage();
+                }
+
                 this.handleErrorMessage();
+            } catch (error) {
+                this.handleErrorMessage()
+            } finally {
+                this.busy = false;
             }
-
-            this.handleErrorMessage();
         },
 
-        handleErrorMessage(){
-            this.$toast.add({severity:'error', summary: 'Error', detail: 'Erro ao criar o ticket', life: 3000});
+        verifyRequiredFields(){
+            return this.ticket.name && this.ticket.eventId && this.ticket.price && this.ticket.quantity;
+        },
+
+        handleErrorMessage(message = "Erro ao criar o ticket"){
+            this.$toast.add({severity:'error', summary: 'Error', detail: message, life: 3000});
         },
 
         reset(){

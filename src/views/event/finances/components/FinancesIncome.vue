@@ -53,6 +53,11 @@ export default {
 
         async storeIncome(){
             try {
+                if(!this.verifyRequiredFields()) {
+                    this.handleErrorMessage('Preencha todos os campos obrigatórios');
+                    return;
+                };
+
                 const result = await this.$swal.fire({
                     title: '',
                     text: 'Tem a certeza?',
@@ -84,11 +89,15 @@ export default {
             }
         },
 
-        handleErrorMessage(){
+        verifyRequiredFields(){
+            return this.income.source && this.income.amount > 0;
+        },
+
+        handleErrorMessage(message){
             this.$toast.add({
                 severity: 'error',
                 summary: 'Error', 
-                detail: 'Erro ao criar a receita', 
+                detail: message || 'Erro ao criar a receita', 
                 life: 2000
             })
         },

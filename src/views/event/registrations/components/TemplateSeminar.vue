@@ -31,6 +31,12 @@ export default {
 
         async handleMakeRegistration(){
             try {
+
+                if(!this.verifyRequiredFields()) {
+                    this.handleErrorMessage('Preencha todos os campos obrigatórios');
+                    return;
+                };
+
                 const result = await this.$swal.fire({
                     text: 'Tem a certeza?',
                     icon: 'warning',
@@ -65,7 +71,7 @@ export default {
                 this.$swal.fire('', 'Inscrição feita com sucesso', 'success')
                 this.reset()
             } catch (error) {
-                this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao fazer a inscrição', life: 3000})
+                this.handleErrorMessage(error)
             } finally {
                 this.registration.busy = false
             }
@@ -77,6 +83,18 @@ export default {
                 ...value
             }
         },
+
+        verifyRequiredFields(){
+            let result = true;
+            this.fields.forEach(field => {
+                if(field.required && !this.data[field.name]) result = false
+            })
+            return result
+        },
+
+        handleErrorMessage(message = 'Erro ao fazer a inscrição'){
+            this.$toast.add({severity: 'error', summary: 'Erro', detail: message, life: 3000})
+        }
 
     },
 }

@@ -48,6 +48,11 @@ export default {
 
         async storeFinance(){
             try {
+                if(!this.verifyRequiredFields()) {
+                    this.handleErrorMessage('Preencha todos os campos obrigatórios');
+                    return;
+                };
+
                 const result = await this.$swal.fire({
                     title: '',
                     text: 'Tem a certeza?',
@@ -79,11 +84,15 @@ export default {
             }
         },
 
-        handleErrorMessage(){
+        verifyRequiredFields(){
+            return this.investment.amount > 0 && this.investment.name
+        },
+
+        handleErrorMessage(message = 'Erro ao adicionar o investimento'){
             this.$toast.add({
                     severity: 'error',
                     summary: 'Error', 
-                    detail: 'Erro ao adicionar o investimento', 
+                    detail: message, 
                     life: 2000
             })
         },

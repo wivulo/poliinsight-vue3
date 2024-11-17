@@ -1,6 +1,7 @@
 <script>
 import EventServices from '@/services/EventServices';
 import CategoryService from '@/services/CategoryService';
+import DepartamentService from '@/services/DepartamentService';
 import { mapGetters } from 'vuex';
 import Button from 'primevue/button';
 import ProgressBar from 'primevue/progressbar';
@@ -29,10 +30,18 @@ export default {
                 busy: false,
                 selected: null
             },
+
+            departament: {
+                data: [],
+                busy: false,
+                selected: null
+            },
+
             event_type: [
                 {label: 'Gratuito', value: 'free'},
                 {label: 'Pago', value: 'paid'}
             ],
+
             eventTypeSelected: null,
             flayerName: null,
             event: {
@@ -61,39 +70,51 @@ export default {
     },
     created(){
         this.buscarCategorias()
+        this.fetchDepartaments()
     },
     methods: {
-        handleErrorMessage(){
+        handleErrorMessage(message){
             this.$toast.add({
                     severity: 'error',
                     summary: 'Error', 
-                    detail: 'Erro ao criar o evento', 
+                    detail: message, 
                     life: 2000
             })
         },
         
-        async handleCreateEvent(){ 
-            // console.log(this.event)      
+        async handleCreateEvent(){
+
+            if(!this.verifyRequiredFields()){
+                this.handleErrorMessage('Preencha todos os campos')
+                return
+            }
+
+            const result = await this.$swal.fire({
+                    text: 'Tem a certeza?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    cancelButtonText: 'Não',
+                    confirmButtonText: 'Sim, tenho',
+                    confirmButtonColor: '#EF4444',
+                    cancelButtonColor: '#CBD5E1',
+            })
+
+            if(!result.isConfirmed) return
+
             this.busy = true
             this.event.categoryId = this.categories.selected.id
             this.event.type = this.eventTypeSelected.value
-            // console.log(this.event)
             const response = await EventServices.createEvent({...this.event, organizerId: this.user.id})
             .catch(() => this.handleErrorMessage())
             this.busy = false
             
             if(response.error){
-                this.handleErrorMessage()
+                this.handleErrorMessage('Erro ao criar o evento')
                 return
             }
 
             this.$toast.add({severity: 'success', summary: 'Success', detail: 'Evento criado com sucesso', life: 2000})
-            this.$router.push({
-                    name: 'event.show',
-                    params: {
-                        id: response.data.id
-                    }
-            })
+            this.$router.push({name: 'event.show', params: { id: response.data.id } })
         },
         
         handleUploadedFile(file){
@@ -101,16 +122,41 @@ export default {
         },
 
         async buscarCategorias(){
-            this.categories.busy = true
-            const response = await CategoryService.index()
-            .finally(() => this.categories.busy = false)
+            try {
+                this.categories.busy = true
+                const response = await CategoryService.index()
             
-            if(response.error){
+                if(response && response?.error){
+                    throw new Error('Erro ao buscar as categorias')
+                }
+                
+                this.categories.data = response.data
+            } catch (error) {
                 this.$toast.add({severity: 'error', summary: 'Error', detail: 'Erro ao buscar as categorias', life: 2000})
-                return
+            } finally {
+                this.categories.busy = false
             }
-            
-            this.categories.data = response.data
+        },
+
+        async fetchDepartaments(){
+            try {
+                this.departament.busy = true
+                const response = await DepartamentService.index()
+                
+                if(response && response?.error){
+                    throw new Error('Erro ao buscar os departamentos')
+                }
+                
+                this.departament.data = response.data
+            } catch (error) {
+                this.$toast.add({severity: 'error', summary: 'Error', detail: 'Erro ao buscar os departamentos', life: 2000})
+            } finally {
+                this.departament.busy = false
+            }
+        },
+
+        verifyRequiredFields(){
+            return this.event.name && this.event.description && this.event.date && this.event.endDate && this.event.time && this.event.timeEnd && this.event.localization && this.event.departament && this.event.vacancies && this.event.categoryId && this.event.type
         }
     },
 }

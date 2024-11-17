@@ -58,6 +58,12 @@ export default {
 
         async storeExpense(){
             try {
+
+                if(!this.verifyRequiredFields()) {
+                    this.handleErrorMessage('Preencha todos os campos obrigatórios');
+                    return;
+                };
+
                 const result = await this.$swal.fire({
                     title: '',
                     text: 'Tem a certeza?',
@@ -89,11 +95,15 @@ export default {
             }
         },
 
-        handleErrorMessage(){
+        verifyRequiredFields(){
+            return this.expense.amount > 0 && this.expense.category
+        },
+
+        handleErrorMessage(message){
             this.$toast.add({
                 severity: 'error',
                 summary: 'Error', 
-                detail: 'Erro ao criar a despesa', 
+                detail: message || 'Ocorreu um erro ao processar a sua solicitação', 
                 life: 2000
             })
         },
