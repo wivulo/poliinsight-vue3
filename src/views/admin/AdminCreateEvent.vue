@@ -54,7 +54,7 @@ export default {
                 time: '',
                 timeEnd: '',
                 localization: '',
-                departament: '',
+                departamentId: '',
                 vacancies: 0,
                 type: '',
                 categoryId: null
@@ -92,11 +92,8 @@ export default {
             const result = await this.$swal.fire({
                     text: 'Tem a certeza?',
                     icon: 'warning',
-                    showCancelButton: true,
                     cancelButtonText: 'Não',
                     confirmButtonText: 'Sim, tenho',
-                    confirmButtonColor: '#EF4444',
-                    cancelButtonColor: '#CBD5E1',
             })
 
             if(!result.isConfirmed) return
@@ -212,7 +209,19 @@ export default {
                 <label for="departament" class="pl-3 text-surface-400">
                     <small> Departamento </small>
                 </label>
-                <InputText id="departament" v-model="event.departament" class="w-full border-slate-300 h-9" :required="true" placeholder="Ex:. Engenharia"/>
+                <!-- {{ event.departamentId }} -->
+                <!-- <InputText id="departament" v-model="event.departament" class="w-full border-slate-300 h-9" :required="true" placeholder="Ex:. Engenharia"/> -->
+                <Dropdown id="departament" v-model="event.departamentId"  :options="departament.data" optionLabel="name" option-value="id" placeholder="Selecione um departamento" class="h-9 w-[230px]">
+                    <template #value="slotProps">
+                        <div v-if="slotProps.value" class="flex items-center text-black">
+                            <!-- {{ slotProps.value }} -->
+                            {{ departament.data.find(departament => departament.id === slotProps.value).name }}
+                        </div>
+                        <div v-else>
+                            {{ slotProps.placeholder }}
+                        </div>
+                    </template>
+                </Dropdown>
             </div>
         </div>
 

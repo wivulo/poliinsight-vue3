@@ -41,11 +41,6 @@ const vueHtmlToPaperOptions = {
   autoClose: true // if false, the window will not close after printing
 }
 
-const options = {
-    confirmButtonColor: '#059669',
-    cancelButtonColor: '#ff7674',
-};
-
 
 export const app = createApp(App)
 
@@ -62,6 +57,13 @@ app.directive('ripple', Ripple);
 
 // app.use(BootstrapVue)
 // app.use(IconsPlugin)
+
+const options = {
+  reverseButtons: true,
+  showCancelButton: true,
+  confirmButtonColor: '#EF4444',
+  cancelButtonColor: '#CBD5E1',
+};
 app.use(VueSweetalert2, options);
 
 app.component("default-layout", DefaultLayout)
