@@ -56,6 +56,10 @@ export default {
                 this.busy = false
             }
         },
+
+        updateComponent(){
+            this.$refs.componentTabela.updateComponent()
+        }
     }
 }
 
@@ -73,7 +77,7 @@ export default {
         </div>
 
         <template v-if="activeTable">
-            <component :is="activeTable" />
+            <component ref="componentTabela" :is="activeTable" />
         </template>
 
         <template v-else>

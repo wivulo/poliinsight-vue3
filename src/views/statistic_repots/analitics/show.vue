@@ -61,11 +61,11 @@ export default {
         },
 
         old_fullname(){
-            return `${this.statistic?.oldestParticipantInfo.name} ${this.statistic?.oldestParticipantInfo.nickname}`
+            return `${this.statistic?.oldestParticipantInfo.name}`
         },
 
         new_fullname(){
-            return `${this.statistic?.youngestParticipantInfo.name} ${this.statistic?.youngestParticipantInfo.nickname}`
+            return `${this.statistic?.youngestParticipantInfo.name}`
         },
 
         totalInvestiments(){

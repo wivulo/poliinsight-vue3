@@ -34,7 +34,7 @@ export default {
             this.busy = false
         },
 
-        getData(){
+        updateComponent(){
             this.getEventRegistrations()
         },
 

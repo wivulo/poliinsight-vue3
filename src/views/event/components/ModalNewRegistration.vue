@@ -16,6 +16,10 @@ import RadioButton from 'primevue/radiobutton';
 import SingleInformation from '@/views/event/registrations/components/SingleInformation.vue';
 import GroupInformation from '@/views/event/registrations/components/GroupInformation.vue';
 import CompanyInformation from '@/views/event/registrations/components/CompanyInformation.vue';
+import FloatLabel from 'primevue/floatlabel';
+import templateSeminar from '@/views/event/registrations/components/TemplateSeminar.vue';
+import templateAcademicCompetition from '@/views/event/registrations/components/TemplateAcademicCompetition.vue';
+import PaidEvent from '@/views/event/registrations/components/PaidEvent.vue';
 
 
 export default {
@@ -24,25 +28,18 @@ export default {
         Dialog, ProgressSpinner, Button,
         InputText, InputNumber, Dropdown, Checkbox,
         Calendar, RadioButton, SingleInformation,
-        GroupInformation, CompanyInformation
+        GroupInformation, CompanyInformation, FloatLabel, templateSeminar,
+        templateAcademicCompetition, PaidEvent, 
     },
     data(){
         return {
             visible: false,
             busy: false,
-            registration: {
-                data: {},
-                busy: false
-            },
-            payment_modes: [
-                {label: 'Transferência Bancária', value: 'bank_transfer'},
-                {label: 'Depósito Bancário', value: 'bank_deposit'},
-                {label: 'Dinheiro em mão', value: 'cash'},
-            ],
             eventConfig: {
                 data: {},
                 busy: false
-            }
+            },
+            modalWidth: '35rem',
         }
     },
     computed: {
@@ -67,46 +64,18 @@ export default {
         },
 
         async getEventConfig(eventType){
-            const responde = await EventConfigServices.showByEventType(eventType)
-            .catch(() => this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar configuração do evento', life: 3000}))
-            this.eventConfig.data = responde.data
-            this.eventConfig.busy = false
-        },
-
-        async handleStore(){
             try {
-                this.registration.data = this.$refs.SingleInformation.data
-
-                this.registration.busy = true
-                let response = await ParticipantServices.store(this.registration.data)
-
-                if(response.data?.error || response.status > 299) throw new Error('Error')
-
-                const participante = response.data
-
-                response = await RegistrationServices.store({
-                    eventId: this.event?.id,
-                    userId: null,
-                    participantId: participante?.id,
-                    ticketId: null
-                })
-
-                if(response.data?.error || response.status > 299) throw new Error('Error')
-
-
-                this.$swal.fire('Sucesso', 'Inscrição feita com sucesso', 'success')
-                this.$emit('created')
-                this.handleReset()
-                this.handlehidden()
+                const responde = await EventConfigServices.showByEventType(eventType)
+                this.eventConfig.data = responde.data
             } catch (error) {
-                this.handleErrorMessage()
+                this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar configuração do evento', life: 3000})
             } finally {
-                this.registration.busy = false
-            }
-        },
+                this.eventConfig.busy = false
 
-        handleReset(){
-            this.$refs.SingleInformation.reset()
+                if(this.eventConfig?.data.template === 'templateAcademicCompetition'){
+                    this.modalWidth = '50rem'
+                }
+            }
         },
 
         handleErrorMessage(){
@@ -119,50 +88,32 @@ export default {
 
         handleCancel(){
             this.handlehidden()
-            this.handleReset()
         },
+
+        handleRegistrationCompleted(){
+            this.$emit('created:registration')
+        }
     }
 }
 </script>
 
 <template>
-    <Dialog v-model:visible="visible" modal header="Boletim de inscrição" :style="{ width: '35rem' }">
+    <Dialog v-model:visible="visible" modal header="Boletim de inscrição" :style="{ width: modalWidth }">
 
         <div v-if="eventConfig.busy" class="w-full h-full flex justify-center items-center">
             <i class="fas fa-spinner animate-spin" />
         </div>
 
         <div class="flex flex-col gap-5" v-else>
-            <form @submit.prevent="handleMakeRegistration" class="flex gap-2 flex-col px-3">
-                <SingleInformation 
-                    v-if="eventConfig?.data.registrationType == 'single'" 
-                    :fields="eventConfig?.data.fields"
-                    ref="SingleInformation"
-                />
-                <GroupInformation v-else :fields="eventConfig?.data.fields" />
-
-                <div class="flex flex-col gap-3 mt-4 mb-2 text-sm" v-if="event?.type === 'paid'">
-                    <p class="ml-2">Taxa de inscrição</p>
-                    <div class="flex flex-col gap-2">
-                        <div class="flex align-items-center">
-                            <RadioButton v-model="data.registration_mode" inputId="mode1" name="mode1" value="single" />
-                            <label for="mode1" class="ml-2">Individual - 5000 Kz</label>
-                        </div>
-                        <div class="flex align " >
-                            <RadioButton v-model="data.registration_mode" inputId="mode2" name="mode2" value="group" />
-                            <label for="mode2" class="ml-2">Grupo - 10000 Kz</label>
-                        </div>
-                    </div>
-
-                    <p class="mt-2 ml-2">Método de pagamento</p>
-                    <div class="flex flex-col gap-2">
-                        <Dropdown id="payment" v-model="data.payment_mode" :options="payment_modes" optionLabel="label" placeholder="Selecione um método de pagamento" class="h-9 w-full"  />
-                    </div>
-                </div>
-            </form>
+            <component 
+                :is="eventConfig?.data.template" 
+                :fields="eventConfig?.data.fields"
+                :event="event"
+                @created:registration="handleRegistrationCompleted"
+            />
         </div>
 
-        <template #footer>
+        <!-- <template #footer>
             <div class="flex gap-3 justify-end">
                 <Button severity="secondary" text @click="handleCancel" size="small" class="h-9">
                     <i class="fa fa-times mr-1"/> Cancelar
@@ -172,6 +123,6 @@ export default {
                     <i class="fa fa-save mr-1"/> {{ registration.busy ? 'Inscrevendo...' : 'Inscrever' }}
                 </Button>
             </div>
-        </template>
+        </template> -->
     </Dialog>
 </template>

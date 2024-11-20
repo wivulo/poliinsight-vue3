@@ -82,9 +82,9 @@ export default {
             this.$refs.ModalNewRegistration.show()
         },
 
-        updateEvent(){
+        handleRegistrationCompleted(){
             this.getEvent()
-            this.$refs.componentTabela.getData()
+            this.$refs.componentTabela.updateComponent()
         },
 
         handleEventSelected(event){
@@ -103,10 +103,13 @@ export default {
 </script>
 
 <template>
-    <div id="eventShow" class="flex px-5 py-7 w-full">
-        <ModalNewRegistration ref="ModalNewRegistration" @created="updateEvent" />
+    <div id="eventShow" class="flex flex-col px-5 pt-7 pb-5 gap-5 w-full flex-auto">
+        <ModalNewRegistration 
+            ref="ModalNewRegistration" 
+            @created:registration="handleRegistrationCompleted" 
+        />
 
-        <div class="flex flex-col gap-5 items-center w-full">
+        <!-- <div class="flex flex-col gap-5 w-full"> -->
             <CardRoot class="w-full shadow-sm cardroot">
                 <InputGroup>
                     <Button outlined class="h-9 w-9 border border-r-0 border-surface-300 bg-transparent hover:bg-transparent">
@@ -135,8 +138,8 @@ export default {
                 </p>
             </div>
     
-            <div class="flex gap-5 w-full h-full" v-else>
-                <CardRoot class="w-[30%] h-[600px]">
+            <div class="flex gap-5 w-full" v-else>
+                <CardRoot class="w-[30%]">
                     <div class="flex flex-col gap-3">
     
                         <div class="w-full h-[218px] border overflow-hidden">
@@ -197,17 +200,10 @@ export default {
                     </div>
                 </CardRoot>
     
-                <CardRoot class="w-[70%] h-[600px]">
+                <CardRoot class="w-[70%]">
                    <div class="flex flex-col gap-5">
                         <TabMenu :model="tabItems">
                             <template #item="{ item, props }">
-                                <!-- <router-link v-slot="{ href, navigate }" :to="{name: item.route}" custom>
-                                    <a v-ripple :href="href" v-bind="props.action" @click="navigate" class="text-sm">
-                                        <span v-bind="props.icon" />
-                                        <span v-bind="props.label">{{ item.label }}</span>
-                                    </a>
-                                </router-link> -->
-
                                 <div v-ripple @click="() => handleChangeTable(item.component)" class="px-3 py-[.5rem] text-sm border border-gray-400/40  hover:bg-red-700/50 cursor-pointer hover:text-white"
                                     :class="{'bg-[#DA5551] text-white': item.component == tabICurrenttem}">
                                     <span v-bind="props.icon" />
@@ -230,7 +226,7 @@ export default {
                    </div>
                 </CardRoot>
             </div>
-        </div>
+        <!-- </div> -->
     </div>
 </template>
 

@@ -69,6 +69,7 @@ export default {
 
 
                 this.$swal.fire('', 'Inscrição feita com sucesso', 'success')
+                this.$emit('created:registration')
                 this.reset()
             } catch (error) {
                 this.handleErrorMessage(error)

@@ -44,6 +44,7 @@ export default {
 
 .application-body{
   height: calc(100% - 55px);
+  position: relative;
 }
 
 @media (min-width: 1500px){
