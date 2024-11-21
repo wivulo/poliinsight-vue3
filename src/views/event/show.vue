@@ -165,7 +165,7 @@ export default {
                                 </li>
                                 <li>
                                     <p><b>Departamento</b>:</p>
-                                    <p>{{ event?.departament }}</p>
+                                    <p>{{ event?.department.name }}</p>
                                 </li>
                                 <li>
                                     <p><b>Vagas</b>:</p>

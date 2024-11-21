@@ -7,13 +7,15 @@ import PaidEvent from './PaidEvent.vue';
 import ParticipantServices from '@/services/ParticipantServices.js'
 import RegistrationServices from '@/services/RegistrationServices.js'
 import Button from 'primevue/button';
+import TemplateAcademicCompetitionTeamMember from './TemplateAcademicCompetitionTeamMember.vue';
 
 export default {
     name: 'Registration.template.seminar',
     props: ['fields', 'event'],
     components: {
         InputText, InputNumber, Button,
-        Dropdown, Calendar, PaidEvent
+        Dropdown, Calendar, PaidEvent,
+        TemplateAcademicCompetitionTeamMember
     },
     data(){
         return {
@@ -52,6 +54,8 @@ export default {
                 this.registration.data = this.data
 
                 this.registration.busy = true
+
+                console.log(this.registration.data)
                 
                 const response = await RegistrationServices.store({
                     eventId: this.$route.params.id,
@@ -95,7 +99,11 @@ export default {
 
         handleErrorMessage(message = 'Erro ao fazer a inscrição'){
             this.$toast.add({severity: 'error', summary: 'Erro', detail: message, life: 3000})
-        }
+        },
+
+        handlerAddParticipant(member){
+            this.data = member
+        },
 
     },
 }
@@ -103,7 +111,7 @@ export default {
 
 <template>
     <form @submit.prevent="handleMakeRegistration" class="flex gap-3 flex-col px-3">
-        <div class="flex flex-wrap gap-3">
+        <!-- <div class="flex flex-wrap gap-3">
             <template v-for="field in fields" :key="field.name">
                 <template v-if="field.type === 'text' || field.type === 'email'">
                     <div class="form-group">
@@ -142,7 +150,13 @@ export default {
                 </template>
 
             </template>
-        </div>
+        </div> -->
+
+        <TemplateAcademicCompetitionTeamMember
+            ref="TemplateAcademicCompetitionTeamMember"
+            :index="1" 
+            @update:member="handlerAddParticipant"
+        />
 
         <PaidEvent
             v-if="event?.type === 'paid'" 

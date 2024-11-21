@@ -60,7 +60,9 @@ export default {
                 categoryId: null
             },
 
-            busy: false
+            busy: false,
+
+            fieldInvalid: {},
         }
     },
     computed: {
@@ -76,16 +78,19 @@ export default {
         handleErrorMessage(message){
             this.$toast.add({
                     severity: 'error',
-                    summary: 'Error', 
+                    summary: 'Erro', 
                     detail: message, 
                     life: 2000
             })
         },
         
         async handleCreateEvent(){
+            const [ valid, names ] = this.verifyRequiredFields()
+            if(!valid){
+                names.forEach(name => {
+                    this.handleErrorMessage(`O campo ${name} é obrigatório`)
+                })
 
-            if(!this.verifyRequiredFields()){
-                this.handleErrorMessage('Preencha todos os campos')
                 return
             }
 
@@ -99,13 +104,13 @@ export default {
             if(!result.isConfirmed) return
 
             this.busy = true
-            this.event.categoryId = this.categories.selected.id
-            this.event.type = this.eventTypeSelected.value
+            // this.event.categoryId = this.categories.selected.id
+            // this.event.type = this.eventTypeSelected.value
             const response = await EventServices.createEvent({...this.event, organizerId: this.user.id})
             .catch(() => this.handleErrorMessage())
             this.busy = false
             
-            if(response.error){
+            if(response.status < 200 || response.status >= 300){
                 this.handleErrorMessage('Erro ao criar o evento')
                 return
             }
@@ -152,9 +157,22 @@ export default {
             }
         },
 
-        verifyRequiredFields(){
-            return this.event.name && this.event.description && this.event.date && this.event.endDate && this.event.time && this.event.timeEnd && this.event.localization && this.event.departament && this.event.vacancies && this.event.categoryId && this.event.type
-        }
+        verifyRequiredFields() {
+            let fieldInvalidName = [];
+
+            this.fieldInvalid = Object.entries(this.event).reduce((acc, [key, value]) => {
+                if (value === '' || value === null) {
+                    acc[key] = value;
+                    fieldInvalidName.push(key);
+                }
+                return acc;
+            }, {});
+
+            const count = fieldInvalidName.length;
+            const valid = count === 0;
+
+            return [valid, fieldInvalidName];
+        },
     },
 }
 </script>
@@ -170,10 +188,10 @@ export default {
                 <label for="category" class="flex-grow pl-3 text-surface-400">
                     <small>Catégoria</small>
                 </label>
-                <Dropdown id="category" v-model="categories.selected"  :options="categories.data" optionLabel="name" placeholder="Selecione uma categória" class="h-9 w-[290px]">
+                <Dropdown id="category" v-model="event.categoryId" optionLabel="name" option-value="id"  :options="categories.data" placeholder="Selecione uma categória" class="h-9 w-[290px]">
                     <template #value="slotProps">
                         <div v-if="slotProps.value" class="flex items-center text-black">
-                            {{ slotProps.value.name }}
+                            {{ categories.data.find(cat => cat.id === slotProps.value).name }}
                         </div>
                         <div v-else>
                             {{ slotProps.placeholder }}
@@ -193,10 +211,10 @@ export default {
                 <label for="freeOrPaid" class="pl-3 text-surface-400">
                     <small> Acesso ao evento </small>
                 </label>
-                <Dropdown id="freeOrPaid" v-model="eventTypeSelected"  :options="event_type" optionLabel="label" placeholder="Selecione a forma de acesso ao evento" class="h-9 w-[290px]">
+                <Dropdown id="freeOrPaid" v-model="event.type"  :options="event_type" optionLabel="label" optionValue="value" placeholder="Selecione a forma de acesso ao evento" class="h-9 w-[290px]">
                     <template #value="slotProps">
                         <div v-if="slotProps.value" class="flex items-center text-black">
-                            {{ slotProps.value.label }}
+                            {{ slotProps.value === 'free' ? 'Gratuito' : 'Pago' }}
                         </div>
                         <div v-else>
                             {{ slotProps.placeholder }}
@@ -214,7 +232,6 @@ export default {
                 <Dropdown id="departament" v-model="event.departamentId"  :options="departament.data" optionLabel="name" option-value="id" placeholder="Selecione um departamento" class="h-9 w-[230px]">
                     <template #value="slotProps">
                         <div v-if="slotProps.value" class="flex items-center text-black">
-                            <!-- {{ slotProps.value }} -->
                             {{ departament.data.find(departament => departament.id === slotProps.value).name }}
                         </div>
                         <div v-else>
