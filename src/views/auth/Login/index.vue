@@ -65,6 +65,10 @@ export default{
           if(window.history.length > 0)
             this.$router.go(-1);
       },
+
+      focusPassword() {
+        this.$refs.password.$el.querySelector('input').focus();
+      }
     },
 }
 </script>
@@ -121,9 +125,9 @@ export default{
 
                 <div class="my-2 float-label relative">
                   <Password toggleMask id="password" v-model="user.password" class="w-full border-zinc-300 h-9" :required="true"
-                    :feedback="false" />
+                    :feedback="false" ref="password"/>
 
-                    <label for="password" class="text-zinc-500" >
+                    <label for="password" class="text-zinc-500" @click="focusPassword">
                       <i class="fa fa-lock mr-1" /> <small>Ex.: Exemplo12$</small>
                     </label>
                 </div>
