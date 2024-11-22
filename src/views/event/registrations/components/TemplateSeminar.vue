@@ -7,7 +7,7 @@ import PaidEvent from './PaidEvent.vue';
 import ParticipantServices from '@/services/ParticipantServices.js'
 import RegistrationServices from '@/services/RegistrationServices.js'
 import Button from 'primevue/button';
-import TemplateAcademicCompetitionTeamMember from './TemplateAcademicCompetitionTeamMember.vue';
+import { data } from 'autoprefixer';
 
 export default {
     name: 'Registration.template.seminar',
@@ -15,14 +15,31 @@ export default {
     components: {
         InputText, InputNumber, Button,
         Dropdown, Calendar, PaidEvent,
-        TemplateAcademicCompetitionTeamMember
     },
     data(){
         return {
-            data: {},
+            data: {
+                name: null,
+                email: null,
+                phone: null,
+                birthdate: null,
+                gender: null
+            },
             registration: {
                 data: {},
                 busy: false
+            },
+            genders: [
+                { label: 'Masculino', value: 'male' },
+                { label: 'Feminino', value: 'female' }
+            ],
+
+            validation: {
+                data: {
+                    name: {required: true},
+                    email: {required: true},
+                    phone: {required: true},
+                }
             },
         }
     },
@@ -33,8 +50,8 @@ export default {
 
         async handleMakeRegistration(){
             try {
-
-                if(!this.verifyRequiredFields()) {
+                const [valid, names] = this.verifyRequiredFields(this.data)
+                if(!valid) {
                     this.handleErrorMessage('Preencha todos os campos obrigatórios');
                     return;
                 };
@@ -51,11 +68,14 @@ export default {
 
                 if(!result.isConfirmed) return
 
-                this.registration.data = this.data
+                this.registration.data = {
+                    ...this.registration.data,
+                    ...this.data
+                }
 
                 this.registration.busy = true
 
-                console.log(this.registration.data)
+                // console.log(this.registration.data)
                 
                 const response = await RegistrationServices.store({
                     eventId: this.$route.params.id,
@@ -63,10 +83,15 @@ export default {
                         name: this.registration.data?.name,
                         email: this.registration.data?.email,
                         phone: this.registration.data?.phone,
-                        birthdate: this.registration.data?.birthday,
+                        birthdate: this.registration.data?.birthdate,
                         gender: this.registration.data?.gender
                     },
-                    team: null
+                    team: null,
+                    ticketId: this.registration.data?.ticket.ticketId ?? null,
+                    data: {
+                        ...this.registration.data?.data,
+                        paymentMode: this.registration.data?.ticket.payment_mode ?? null,
+                    }
                 })
 
                 if(response.data?.error || response.status > 299) throw new Error('Erro ao fazer a inscrição')
@@ -85,32 +110,84 @@ export default {
         handleRegistrationUpdate(value){
             this.registration.data = {
                 ...this.registration.data,
-                ...value
+                ticket: value
             }
         },
 
-        verifyRequiredFields(){
-            let result = true;
-            this.fields.forEach(field => {
-                if(field.required && !this.data[field.name]) result = false
-            })
-            return result
+        verifyRequiredFields(fields){
+            let fieldInvalidName = [];
+
+            const fieldInvalid = Object.entries(fields).reduce((acc, [key, value]) => {
+                if (this.validation.data[key]?.required && (value === '' || value === null)) {
+                    acc[key] = value;
+                    fieldInvalidName.push(key);
+                }
+                return acc;
+            }, {});
+
+            const count = fieldInvalidName.length;
+            const valid = count === 0;
+
+            return [valid, fieldInvalidName];
         },
 
         handleErrorMessage(message = 'Erro ao fazer a inscrição'){
             this.$toast.add({severity: 'error', summary: 'Erro', detail: message, life: 3000})
         },
 
-        handlerAddParticipant(member){
-            this.data = member
-        },
-
-    },
+    }
 }
 </script>
 
 <template>
     <form @submit.prevent="handleMakeRegistration" class="flex gap-3 flex-col px-3">
+        <div class="flex flex-wrap gap-3">
+            <div class="form-group w-full">
+                <label for="name" class="ml-2">
+                    <i class="fas fa-user me-1 "></i> <small> Nome </small> <span class="text-primary-500">*</span>
+                </label>
+                <InputText id="name" v-model="data.name" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex.: João da Silva" />
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="ml-2">
+                    <i class="fas fa-envelope me-1 "></i> <small> Email </small> <span class="text-primary-500">*</span>
+                </label>
+                <InputText id="email" v-model="data.email" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex.: joaosilva@gmail.com" />
+            </div>
+
+            <div class="form-group">
+                <label for="phone" class="ml-2">
+                    <i class="fas fa-phone me-1 "></i> <small> Telefone </small> <span class="text-primary-500">*</span>
+                </label>
+                <InputText id="phone" v-model="data.phone" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex.: (244) 999xxxxxx" />
+            </div>
+
+            <div class="form-group">
+                <label for="birthdate" class="ml-2">
+                    <i class="fas fa-calendar me-1 "></i> <small> Data de Nascimento </small>
+                </label>
+                <Calendar id="birthdate" v-model="data.birthdate" dateFormat="dd/mm/yy" class="w-full border-zinc-300 hover:border-zinc-400 h-9" :required="true" placeholder="Ex.: 01/01/2000" />
+            </div>
+
+            <div class="form-group">
+                <label for="gender" class="ml-2">
+                    <i class="fas fa-venus-mars me-1 "></i> <small> Gênero </small>
+                </label>
+
+                <Dropdown id="gender" v-model="data.gender" :options="genders" optionLabel="label" optionValue="value" class="w-full border-zinc-300 h-9" placeholder="Ex.: Masculino">
+                    <template #value="slotProps">
+                        <div v-if="slotProps.value" class="flex items-center text-slate-800">
+                            {{ genders.find(gn => gn.value === slotProps.value).label }}
+                        </div>
+                        <span v-else>
+                            {{ slotProps.placeholder }}
+                        </span>
+                    </template>
+                </Dropdown>
+            </div>
+        </div>
+
         <!-- <div class="flex flex-wrap gap-3">
             <template v-for="field in fields" :key="field.name">
                 <template v-if="field.type === 'text' || field.type === 'email'">
@@ -151,12 +228,6 @@ export default {
 
             </template>
         </div> -->
-
-        <TemplateAcademicCompetitionTeamMember
-            ref="TemplateAcademicCompetitionTeamMember"
-            :index="1" 
-            @update:member="handlerAddParticipant"
-        />
 
         <PaidEvent
             v-if="event?.type === 'paid'" 

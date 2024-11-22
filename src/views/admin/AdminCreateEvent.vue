@@ -31,7 +31,7 @@ export default {
                 selected: null
             },
 
-            departament: {
+            department: {
                 data: [],
                 busy: false,
                 selected: null
@@ -54,7 +54,7 @@ export default {
                 time: '',
                 timeEnd: '',
                 localization: '',
-                departamentId: '',
+                departmentId: '',
                 vacancies: 0,
                 type: '',
                 categoryId: null
@@ -72,7 +72,7 @@ export default {
     },
     created(){
         this.buscarCategorias()
-        this.fetchDepartaments()
+        this.fetchDepartments()
     },
     methods: {
         handleErrorMessage(message){
@@ -140,20 +140,20 @@ export default {
             }
         },
 
-        async fetchDepartaments(){
+        async fetchDepartments(){
             try {
-                this.departament.busy = true
+                this.department.busy = true
                 const response = await DepartamentService.index()
                 
                 if(response && response?.error){
                     throw new Error('Erro ao buscar os departamentos')
                 }
                 
-                this.departament.data = response.data
+                this.department.data = response.data
             } catch (error) {
                 this.$toast.add({severity: 'error', summary: 'Error', detail: 'Erro ao buscar os departamentos', life: 2000})
             } finally {
-                this.departament.busy = false
+                this.department.busy = false
             }
         },
 
@@ -229,10 +229,10 @@ export default {
                 </label>
                 <!-- {{ event.departamentId }} -->
                 <!-- <InputText id="departament" v-model="event.departament" class="w-full border-slate-300 h-9" :required="true" placeholder="Ex:. Engenharia"/> -->
-                <Dropdown id="departament" v-model="event.departamentId"  :options="departament.data" optionLabel="name" option-value="id" placeholder="Selecione um departamento" class="h-9 w-[230px]">
+                <Dropdown id="department" v-model="event.departmentId"  :options="department.data" optionLabel="name" option-value="id" placeholder="Selecione um departamento" class="h-9 w-[230px]">
                     <template #value="slotProps">
                         <div v-if="slotProps.value" class="flex items-center text-black">
-                            {{ departament.data.find(departament => departament.id === slotProps.value).name }}
+                            {{ department.data.find(department => department.id === slotProps.value).name }}
                         </div>
                         <div v-else>
                             {{ slotProps.placeholder }}

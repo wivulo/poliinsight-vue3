@@ -18,7 +18,7 @@ export default {
     <div id="page-wrapper" class="h-full">
       <ApplicationHeader class="bg-zinc-50 application-header"/>
 
-      <div class="flex w-full overflow-x-hidden fadeInRight bg-zinc-50 application-body">
+      <div class="flex w-full overflow-x-hidden fadeInRight bg-gray-100 application-body">
         <router-view v-slot="{ Component }">
           <transition>
             <component :is="Component" />
