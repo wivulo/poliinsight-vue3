@@ -53,7 +53,7 @@ export default {
                     { name: 'Investimentos', value: 'investiments' },
                     { name: 'Despesas', value: 'expenses' },
                     { name: 'Receitas', value: 'incomes' },
-                ]
+                ],
             },
         }
     },
@@ -69,22 +69,25 @@ export default {
         },
 
         async handlePreviewGenerate(){
-            this.busy = true;
-            this.report.tables = this.tables.selected.map(table => table.value);
-            const response = await ReportsServices.generate(this.report)
-            .catch(() => this.handleErrorMessage())
+            try {
+                this.busy = true;
+                this.report.tables = this.tables.selected.map(table => table.value);
+                const response = await ReportsServices.generate(this.report)
 
-            this.busy = false
+                if(response.status == 201 && !response.data.error){
+                    this.$toast.add({severity:'success', summary: 'Success', detail: 'Pré visualização do Relatório gerado com sucesso', life: 3000});
+                    this.generated_report = response.data;
+                    return;
+                }else{
+                    this.handleErrorMessage();
+                }
 
-            if(response.status == 201 && !response.data.error){
-                this.$toast.add({severity:'success', summary: 'Success', detail: 'Pré visualização do Relatório gerado com sucesso', life: 3000});
-                this.generated_report = response.data;
-                return;
-            }else{
                 this.handleErrorMessage();
+            } catch (error) {
+                this.handleErrorMessage();
+            } finally {
+                this.busy = false
             }
-
-            this.handleErrorMessage();
         },
 
         async handleExportReport(format){
@@ -94,27 +97,8 @@ export default {
                 this.export_report.report = this.generated_report;
                 this.export_report.format = format;
 
-                const response = await ReportsServices.export(this.export_report)
-                .catch(() => this.handleErrorMessage())
-
-                if(response.status == 201 && !response.data.error){
-                    const response2 = await ReportsServices.getReportFile(response.data.downloadURL)
-                    const link= window.document.createElement('a');
-                    link.href = window.URL.createObjectURL(response2.data);
-                    link.download = response.data.name;
-                    link.click();
-                    window.URL.revokeObjectURL(link.href);
-
-                    this.$toast.add({severity:'success', summary: 'Success', detail: 'Relatório exportado com sucesso', life: 3000});
-                    this.$emit('created');
-                    this.reset();
-                    this.handlehidden();
-                    return;
-                }else{
-                    this.handleErrorMessage();
-                }
-
-                this.handleErrorMessage();
+                
+                return;
             } finally {
                 this.busy = false
             }
@@ -152,7 +136,7 @@ export default {
 </script>
 
 <template>
-    <Dialog v-model:visible="visible" modal header="Relatório Geral do evento" :style="{ width: '794px' }">
+    <Dialog v-model:visible="visible" modal header="Relatório Financeiro" :style="{ width: '794px' }">
         <div class="flex gap-5 items-center">
             <div class="flex flex-col my-2 w-[30%]">
                 <label for="name">Tipo de relatório</label>

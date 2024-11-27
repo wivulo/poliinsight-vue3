@@ -1,32 +1,80 @@
 <script>
 import currency from '@/helpers/currency';
+import ISPBLogo from './ISPBLogo.vue';
 
 export default {
     name: "ReportEventFinancial",
+    components: {
+        ISPBLogo
+    },
     props: {
         event: {
             type: Object,
             required: true
-        }
-    },
-    data() {
-        return {
-            incomes: [],
-            expenses: []
+        },
+        incomes: {
+            type: Array,
+            required: false,
+            default: () => []
+        },
+        expenses: {
+            type: Array,
+            required: false,
+            default: () => []
+        },
+        investiments: {
+            type: Array,
+            required: false,
+            default: () => []
         }
     },
     computed: {
-        totalIncomes() {
-            return this.incomes.reduce((acc, income) => acc + income.value, 0)
-        },
-        totalExpense() {
-            return this.expenses.reduce((acc, expense) => acc + expense.value, 0)
-        },
-        netProfit() {
-            return this.totalIncomes - this.totalExpense
+        filtered_finances(){
+            let _investiments, _incomes, _expenses = new Array();
+
+            _investiments = this.investiments.map((item) => {
+                return {
+                    ...item,
+                    input: item.amount,
+                    output: 0
+                }
+            });
+
+            _incomes = this.incomes.map((item) => {
+                return {
+                    ...item,
+                    name: item.source,
+                    input: item.amount,
+                    output: 0
+                }
+            });
+
+            _expenses = this.expenses.map((item) => {
+                return {
+                    ...item,
+                    name: item.category,
+                    input: 0,
+                    output: item.amount
+                }
+            });
+
+            return [..._investiments, ..._incomes, ..._expenses];
         }
     },
     methods: {
+        totalFinances(values = new Array()) {
+            return values.reduce((acc, income) => acc + income.amount, 0)
+        },
+        netProfit() {
+            return this.diference(this.totalFinances(this.incomes), this.totalFinances(this.expenses));
+        },
+        diference(a, b){
+            return a > b ? a - b : b - a;
+        },
+        sum(array){
+            return array.reduce((acc, curr) => acc + curr.amount, 0);
+        },
+
         toKwanza(value){
             return currency.KWAZA.format(value)
         },
@@ -38,86 +86,81 @@ export default {
 </script>
 
 <template>
-    <div class="flex flex-col gap-4 text-sm w-full h-full">
-        <div class="flex flex-col align-center mb-2">
-            <img src="https://ispbenguela.com/front/img/logo/ispb.svg" width="150" height="150" alt="ispb logo" />
-            <h3 class="text-center">Instituto Superior Politécnico de Benguela</h3>
-            <h3 class="text-center">Departamento de Engenharia</h3>
-            <h3 class="text-center">Relatório Financeiro do Evento</h3>
+    <div class="flex flex-col gap-4 text-sm w-full h-full pt-[85px] pr-[85px] pl-[70px] pb-[70px]">
+        <div class="flex flex-col items-center mb-6">
+            <ISPBLogo />
+
+            <div class="text-center text-lg">
+                <p >Instituto Superior Politécnico de Benguela</p>
+                <p>Departamento de {{event.department.name ?? 'Engenharia'}}</p>
+                <p>Relatório Financeiro</p>
+            </div>
         </div>
 
        <div>
-            <h3 class="mb-0">{{event.name}}</h3>
+            <p class="mb-0">
+               <strong> {{event.name}}</strong>
+            </p>
             <p class="mb-1">
                 {{event.description}}
             </p>
        </div>
 
-        <div>
-            <div class="flex items-center gap-1">
-                <p><strong>Data:</strong> {{DDMMMYYYY (event.date)}}</p>
-                <span>-</span>
-                <p>{{DDMMMYYYY (event.endDate)}}</p>
-            </div>
-
-            <p><strong>Local:</strong> {{event.localization}}</p>
-            <p class="mb-2"><strong>Departamento:</strong> {{event.departament}}</p>
-        </div>
-
-        <section class="summary my-5">
-            <div>
-                <h2>Resumo Financeiro</h2>
-            </div>
-
+        <section class="summary my-3">
             <div class="flex gap-5 justify-between w-full mt-2">
-                <div class="flex flex-col w-[30%] h-[120px] border p-2 shadow-sm shadow-black/30">
+                <div class="flex flex-col w-30 h-120 border p-2 shadow-sm shadow-black/30">
                     <p><strong>Receita Total</strong></p>
                     <div class="w-full flex justify-end grow items-end">
-                        {{toKwanza(totalIncomes)}}
+                        {{toKwanza(totalFinances(incomes))}}
                     </div>
                 </div>
 
-                <div class="flex flex-col w-[30%] h-[120px] border p-2 shadow-sm shadow-black/30">
+                <div class="flex flex-col w-30 h-120 border p-2 shadow-sm shadow-black/30">
                     <p><strong>Despesa Total</strong></p>
                     <div class="w-full flex justify-end grow items-end">
-                        {{toKwanza(totalExpense)}}
+                        {{toKwanza(totalFinances(expenses))}}
                     </div>
                 </div>
 
-                <div class="flex flex-col w-[30%] h-[120px] border p-2 shadow-sm shadow-black/30">
+                <div class="flex flex-col w-30 h-120 border p-2 shadow-sm shadow-black/30">
                     <p><strong>Lucro Líquido</strong></p>
                     <div class="w-full flex justify-end grow items-end">
-                        {{toKwanza(netProfit)}}
+                        {{toKwanza(netProfit())}}
                     </div>
                 </div>
             </div>
         </section>
+
+        <section class="summary">
+            <div class="mb-3" v-if="filtered_finances">
+                <p><strong> Resumo Financeiro</strong></p>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Entrada</th>
+                        <th>Saída</th>
+                    </tr>
+                    </thead>
+                    <tbody v-if="filtered_finances.length">
+                        <tr v-for="finance in filtered_finances">
+                            <td>{{finance.name}}</td>
+                            <td>{{finance.description}}</td>
+                            <td>{{finance.input === 0 ? ' --- ' : toKwanza(finance.input)}}</td>
+                            <td>{{finance.output === 0 ? ' --- ' :  toKwanza(finance.output)}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <td></td>
+                            <td>{{toKwanza(sum(filtered_finances.filter(finance => finance.input)))}}</td>
+                            <td>{{toKwanza(sum(filtered_finances.filter(finance => finance.output)))}}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </section>
     </div>
 </template>
-
-<style>
-    h1 {
-      color: #333;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    table {
-      border-bottom: 1px solid #e0e0e0d0;
-      border-left: 1px solid #e0e0e0d0;
-      border-right: 1px solid #e0e0e0d0;
-    }
-    th, td {
-      padding: 10px;
-      text-align: left;
-    }
-    tbody tr, tbody tr td{
-      border-bottom: 1px solid #e0e0e0d0;
-    }
-    th {
-      background-color: rgb(218, 85, 81);
-      color: white;
-    }
-</style>

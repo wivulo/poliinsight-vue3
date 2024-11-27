@@ -1,5 +1,6 @@
 <script>
 import currency from '@/helpers/currency';
+import ISPBLogo from './ISPBLogo.vue';
 
 export default {
     name: "ReportEventOverviewPreview",
@@ -53,7 +54,7 @@ export default {
             return finances.reduce((acc, curr) => acc + curr.amount, 0);
         },
         
-        toKwaza(value){
+        toKwanza(value){
             return currency.KWAZA.format(value)
         }
     }
@@ -63,13 +64,13 @@ export default {
 <template>
     <div class="flex flex-col gap-4 text-sm w-full h-full pt-[85px] pr-[85px] pl-[70px] pb-[70px]">
         <div class="flex flex-col items-center mb-6">
-            <div class="logo-container">
-                <img src="/images/ispb logo.svg" />
-            </div>
+            <ISPBLogo />
 
-            <p class="text-center text-lg">Instituto Superior Politécnico de Benguela</p>
-            <p class="text-center text-lg">Departamento de Engenharia</p>
-            <p class="text-center text-lg">Relatório Geral do Evento</p>
+            <div class="text-center text-lg">
+                <p >Instituto Superior Politécnico de Benguela</p>
+                <p>Departamento de {{event.department.name ?? 'Engenharia'}}</p>
+                <p>Relatório Geral do Evento</p>
+            </div>
         </div>
 
         <div class="mb-1">
@@ -113,7 +114,7 @@ export default {
             </tr>
             <tr v-if="investiments">
                 <td>Investimento</td>
-                <td>{{toKwaza(sum(investiments))}}</td>
+                <td>{{toKwanza(sum(investiments))}}</td>
             </tr>
             <tr>
                 <td>Participantes do gênero Masculino</td>
@@ -176,10 +177,10 @@ export default {
                     <th>Quantidade</th>
                 </tr>
                 </thead>
-                <tbody v-if="tickets">
+                <tbody v-if="tickets.length">
                     <tr v-for="ticket in tickets">
                         <td>{{ticket.name}}</td>
-                        <td>{{toKwaza(ticket.price)}}</td>
+                        <td>{{toKwanza(ticket.price)}}</td>
                         <td>{{ticket.quantity}}</td>
                     </tr>                
                 </tbody>
@@ -192,7 +193,7 @@ export default {
         </div>
 
         <div class="mb-3" v-if="investiments">
-            <h4>Investimentos</h4>
+            <h4 class="font-semibold">Investimentos</h4>
             <table>
                 <thead>
                 <tr>
@@ -201,11 +202,11 @@ export default {
                     <th>Montante</th>
                 </tr>
                 </thead>
-                <tbody v-if="investiments">
+                <tbody v-if="investiments.length">
                     <tr v-for="investiment in investiments">
                         <td>{{investiment.name}}</td>
                         <td>{{investiment.description}}</td>
-                        <td>{{toKwaza(investiment.amount)}}</td>
+                        <td>{{toKwanza(investiment.amount)}}</td>
                     </tr>
                 </tbody>
                 <tbody v-else>
@@ -217,14 +218,14 @@ export default {
                     <tr>
                         <td><strong>Total</strong></td>
                         <td></td>
-                        <td>{{toKwaza(totalFinances(investiments))}}</td>
+                        <td>{{toKwanza(totalFinances(investiments))}}</td>
                     </tr>
                 </tfoot>
             </table>
         </div>
 
         <div v-if="incomes">
-            <h4>Receitas</h4>
+            <h4 class="font-semibold">Receitas</h4>
             <table>
                 <thead>
                 <tr>
@@ -233,11 +234,11 @@ export default {
                     <th>Montante</th>
                 </tr>
                 </thead>
-                <tbody v-if="incomes">
+                <tbody v-if="incomes.length">
                     <tr v-for="income in incomes" :key="income.id">
                         <td>{{income?.source}}</td>
                         <td>{{income?.description}}</td>
-                        <td>{{toKwaza(income?.amount)}}</td>
+                        <td>{{toKwanza(income?.amount)}}</td>
                     </tr>
                 </tbody>
 
@@ -251,14 +252,14 @@ export default {
                     <tr>
                         <td><strong>Total</strong></td>
                         <td></td>
-                        <td>{{toKwaza(totalFinances(incomes))}}</td>
+                        <td>{{toKwanza(totalFinances(incomes))}}</td>
                     </tr>
                 </tfoot>
             </table>
         </div>
 
         <div v-if="expenses">
-            <h4>Despesas</h4>
+            <h4 class="font-semibold">Despesas</h4>
             <table>
                 <thead>
                 <tr>
@@ -271,7 +272,7 @@ export default {
                     <tr v-for="expense in expenses" :key="expense.id">
                         <td>{{expense?.category}}</td>
                         <td>{{expense?.description}}</td>
-                        <td>{{toKwaza(expense?.amount)}}</td>
+                        <td>{{toKwanza(expense?.amount)}}</td>
                     </tr>
                 </tbody>
 
@@ -285,7 +286,7 @@ export default {
                     <tr>
                         <td><strong>Total</strong></td>
                         <td></td>
-                        <td>{{toKwaza(totalFinances(expenses))}}</td>
+                        <td>{{toKwanza(totalFinances(expenses))}}</td>
                     </tr>
                 </tfoot>
             </table>
