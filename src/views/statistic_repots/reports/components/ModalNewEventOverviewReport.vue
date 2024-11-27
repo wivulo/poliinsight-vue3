@@ -13,7 +13,6 @@ import { useVuelidate } from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
 import ReportEventOverviewPreview from "./ReportEventOverviewPreview.vue";
 
-
 async function getUserIP() {
     try {
         const response = await fetch('https://api.ipify.org?format=json');
@@ -125,25 +124,34 @@ export default {
         },
 
         async handlePreviewGenerate(){
-            this.busy = true;
-            this.report.tables = this.tables.selected.map(table => table.value);
-            const response = await ReportsServices.generate(this.report)
-            .catch(() => this.handleErrorMessage())
+            try {
+                this.busy = true;
+                this.report.tables = this.tables.selected.map(table => table.value);
+                const response = await ReportsServices.generate(this.report)
 
-            this.busy = false
+                if(response?.status == 201 && !response?.data.error){
+                    this.$toast.add({severity:'success', summary: 'Success', detail: 'Pré visualização do Relatório gerado com sucesso', life: 3000});
+                    this.generated_report = response.data;
+                    return;
+                }
 
-            if(response.status == 201 && !response.data.error){
-                this.$toast.add({severity:'success', summary: 'Success', detail: 'Pré visualização do Relatório gerado com sucesso', life: 3000});
-                this.generated_report = response.data;
-                return;
-            }else{
                 this.handleErrorMessage();
+            } catch (error) {
+                this.handleErrorMessage()
+            } finally {
+                this.busy = false
             }
-
-            this.handleErrorMessage();
         },
 
         async handleExportReport(format){
+            if(format == 'PDF'){
+                this.exportToPDF();
+            }else{
+                this.exportBackend(format);
+            }
+        },
+
+        async exportBackend(format){
             try {
                 this.busy = true;
                 this.export_report.operatorId = this.user.id;
@@ -173,6 +181,55 @@ export default {
                 this.handleErrorMessage();
             } finally {
                 this.busy = false
+            }
+        },
+
+        async exportToPDF() {
+            try {
+                const modalContent = document.getElementById('report-content');
+
+                if (!modalContent) {
+                    this.handleErrorMessage();
+                    return;
+                }
+                
+                let iframe = document.createElement('iframe')
+                document.body.appendChild(iframe)
+
+                iframe.contentDocument.open()
+                iframe.contentDocument.write(`
+                    <html>
+                        <head>
+                            <link rel="stylesheet" href="/css/report.css" />
+
+                            <style>
+                                @media print {
+                                    table thead tr th {
+                                        -webkit-print-color-adjust: exact; /* Para navegadores baseados em WebKit */
+                                        print-color-adjust: exact;       /* Para navegadores compatíveis */
+                                        background-color: rgb(218, 85, 81) !important;  /* Garantir que o fundo do cabeçalho seja aplicado */
+                                        color: white !important;  /* Garantir que a cor do texto seja branca */
+                                    }
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            ${modalContent.innerHTML}
+                        </body>
+                    </html>
+                `);
+                iframe.contentDocument.close()
+
+                // iframe.onload = () => {
+                setTimeout(() => {
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                    // iframe.remove();
+                }, 900);
+                // };
+            
+            } catch (error) {
+                console.error('Erro ao gerar PDF:', error);
             }
         },
 
@@ -233,10 +290,14 @@ export default {
             <div v-else class="w-full h-full flex flex-col">
                 <ReportEventOverviewPreview
                     ref="reportPreview"
+                    id="report-content"
                     :event="generated_report.event"
                     :statistic="generated_report.statistic"
-                    :finances="generated_report.finances"
                     :tickets="generated_report.tickets"
+                    :registrations="generated_report.registrations"
+                    :incomes="generated_report.incomes"
+                    :expenses="generated_report.expenses"
+                    :investiments="generated_report.investiments"
                 />
             </div>
         </div>

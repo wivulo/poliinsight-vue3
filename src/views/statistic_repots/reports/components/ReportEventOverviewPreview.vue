@@ -1,9 +1,42 @@
 <script>
+import currency from '@/helpers/currency';
+
 export default {
     name: "ReportEventOverviewPreview",
-    props: ['event', 'statistic', 'registrations' ,'finances', 'tickets'],
-    data(){
-        return {
+    // props: ['event', 'statistic', 'registrations' ,'incomes', 'expenses', 'investiments', 'tickets'],
+    props: {
+        event: {
+            type: Object,
+            required: true
+        },
+        statistic: {
+            type: Object,
+            required: true
+        },
+        registrations: {
+            type: Array,
+            required: false,
+            default: () => []
+        },
+        incomes: {
+            type: Array,
+            required: false,
+            default: () => []
+        },
+        expenses: {
+            type: Array,
+            required: false,
+            default: () => []
+        },
+        investiments: {
+            type: Array,
+            required: false,
+            default: () => []
+        },
+        tickets: {
+            type: Array,
+            required: false,
+            default: () => []
         }
     },
     methods: {
@@ -16,18 +49,24 @@ export default {
         sum(array){
             return array.reduce((acc, curr) => acc + curr.amount, 0);
         },
-        totalRevenues(revenues){
-            return 0
-            // return revenues.reduce((acc, curr) => acc + curr.value, 0);
+        totalFinances(finances){
+            return finances.reduce((acc, curr) => acc + curr.amount, 0);
         },
+        
+        toKwaza(value){
+            return currency.KWAZA.format(value)
+        }
     }
 }
 </script>
 
 <template>
-    <div class="flex flex-col gap-4 text-sm w-full h-full">
+    <div class="flex flex-col gap-4 text-sm w-full h-full pt-[85px] pr-[85px] pl-[70px] pb-[70px]">
         <div class="flex flex-col items-center mb-6">
-            <img src="https://ispbenguela.com/front/img/logo/ispb.svg" width="150" height="150" alt="ispb logo" />
+            <div class="logo-container">
+                <img src="/images/ispb logo.svg" />
+            </div>
+
             <p class="text-center text-lg">Instituto Superior Politécnico de Benguela</p>
             <p class="text-center text-lg">Departamento de Engenharia</p>
             <p class="text-center text-lg">Relatório Geral do Evento</p>
@@ -47,7 +86,7 @@ export default {
                 <p>{{DDMMMYYYY(event.endDate)}}</p>
             </div>
             <p><strong>Local:</strong> {{event.localization}}</p>
-            <p class="mb-2"><strong>Departamento:</strong> {{event.departament}}</p>
+            <p class="mb-2"><strong>Departamento:</strong> {{event.department?.name}}</p>
         </div>
 
         <div class="mb-3">
@@ -72,16 +111,9 @@ export default {
                 <td>Vagas Restantes</td>
                 <td>{{diference(event.vacancies, statistic.totalParticipants)}}</td>
             </tr>
-            <tr>
-                <td>Participantes Confirmados</td>
-                <td v-if="statistic.confirmedParticipants">
-                    {{statistic.confirmedParticipants}}
-                </td>
-                <td v-else>0</td>
-            </tr>
-            <tr v-if="finances && finances.investiments">
+            <tr v-if="investiments">
                 <td>Investimento</td>
-                <td>{{sum(finances.investiments)}}</td>
+                <td>{{toKwaza(sum(investiments))}}</td>
             </tr>
             <tr>
                 <td>Participantes do gênero Masculino</td>
@@ -90,40 +122,40 @@ export default {
             </tr>
             <tr>
                 <td>Participantes do gênero Feminino</td>
-                <td v-if="statistic.genderDistribution">{{statistic.genderDistribution.female}}</td>
+                <td v-if="statistic.genderDistribution.female">{{statistic.genderDistribution.female}}</td>
                 <td v-else>0</td>
             </tr>
             <tr>
                 <td>Idade do participante mais velho</td>
-                <td>{{statistic.oldestParticipant}} anos de idade</td>
+                <td>{{statistic.oldestParticipant}} anos</td>
             </tr>
             <tr>
                 <td>Idade do participante mais novo</td>
-                <td>{{statistic.youngestParticipant}} anos de idade</td>
+                <td>{{statistic.youngestParticipant}} anos</td>
             </tr>
             <tr>
                 <td>Idade mais frequente</td>
-                <td>{{statistic.averageAge}}</td>
+                <td>{{statistic.averageAge}} anos</td>
             </tr>
             </tbody>
         </table>
         </div>
 
-        <div class="mb-3" v-if="registrations && registrations.participant">
-            <h4>Participantes:</h4>
+        <div class="mb-3" v-if="registrations">
+            <h4>Participantes inscritos:</h4>
             <table>
                 <thead>
                     <tr>
                         <th>Nome</th>
                         <th>Email</th>
-                        <th>data de inscrição</th>
+                        <th>Contacto</th>
                     </tr>
                 </thead>
-                <tbody v-if="registrations?.participant">
-                    <tr v-for="participant in registrations.participant" :key="participant.id">
-                            <td>{{participant?.name}}</td>
-                            <td>{{participant?.email}}</td>
-                            <!-- <td>{{participant?.registration}}</td> -->
+                <tbody v-if="registrations?.length">
+                    <tr v-for="registration in registrations" :key="registration.id">
+                        <td>{{registration.participant?.name}}</td>
+                        <td>{{registration.participant?.email}}</td>
+                        <td>{{registration?.participant.phone}}</td>
                     </tr>
                 </tbody>
                 <tbody v-else>
@@ -147,7 +179,7 @@ export default {
                 <tbody v-if="tickets">
                     <tr v-for="ticket in tickets">
                         <td>{{ticket.name}}</td>
-                        <td>{{ticket.price}}</td>
+                        <td>{{toKwaza(ticket.price)}}</td>
                         <td>{{ticket.quantity}}</td>
                     </tr>                
                 </tbody>
@@ -159,63 +191,39 @@ export default {
             </table>
         </div>
 
-        <div class="mb-3" v-if="finances && finances.investiments">
-            <h4>Investimentos e Custos</h4>
+        <div class="mb-3" v-if="investiments">
+            <h4>Investimentos</h4>
             <table>
                 <thead>
                 <tr>
                     <th>Nome</th>
-                    <th>Montante</th>
-                </tr>
-                </thead>
-                <tbody v-if="finances.investiments">
-                    <tr v-for="investiments in finances.investiments">
-                        <td>{{investiments.name}}</td>
-                        <td>{{investiments.amount}}</td>
-                    </tr>
-                </tbody>
-                <tbody v-else>
-                    <tr>
-                        <td colspan="2" class="text-center">Nenhum investimento cadastrado</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div v-if="finances && finances.incomes">
-            <h4>Receitas</h4>
-            <table>
-                <thead>
-                <tr>
-                    <th>Fonte</th>
                     <th>Descrição</th>
                     <th>Montante</th>
                 </tr>
                 </thead>
-                <tbody v-if="finances.incomes">
-                    <tr v-for="revenue in finances.incomes">
-                        <td>{{revenue?.source}}</td>
-                        <td>{{revenue?.description}}</td>
-                        <td>{{revenue?.amount}}</td>
+                <tbody v-if="investiments">
+                    <tr v-for="investiment in investiments">
+                        <td>{{investiment.name}}</td>
+                        <td>{{investiment.description}}</td>
+                        <td>{{toKwaza(investiment.amount)}}</td>
                     </tr>
                 </tbody>
-
                 <tbody v-else>
                     <tr>
-                        <td colspan="2" class="text-center">Nenhuma receita cadastrada</td>
+                        <td colspan="3" class="text-center">Nenhum investimento cadastrado</td>
                     </tr>
                 </tbody>
-
                 <tfoot>
                     <tr>
                         <td><strong>Total</strong></td>
-                        <td>{{totalRevenues(finances.incomes)}}</td>
+                        <td></td>
+                        <td>{{toKwaza(totalFinances(investiments))}}</td>
                     </tr>
                 </tfoot>
             </table>
         </div>
 
-        <div v-if="finances && finances.expanses">
+        <div v-if="incomes">
             <h4>Receitas</h4>
             <table>
                 <thead>
@@ -225,24 +233,59 @@ export default {
                     <th>Montante</th>
                 </tr>
                 </thead>
-                <tbody v-if="finances.expanses">
-                    <tr v-for="revenue in finances.expanses">
-                        <td>{{revenue?.source}}</td>
-                        <td>{{revenue?.description}}</td>
-                        <td>{{revenue?.amount}}</td>
+                <tbody v-if="incomes">
+                    <tr v-for="income in incomes" :key="income.id">
+                        <td>{{income?.source}}</td>
+                        <td>{{income?.description}}</td>
+                        <td>{{toKwaza(income?.amount)}}</td>
                     </tr>
                 </tbody>
 
                 <tbody v-else>
                     <tr>
-                        <td colspan="2" class="text-center">Nenhuma despesa cadastrada</td>
+                        <td colspan="3" class="text-center">Nenhuma receita cadastrada</td>
                     </tr>
                 </tbody>
 
                 <tfoot>
                     <tr>
                         <td><strong>Total</strong></td>
-                        <td>{{totalRevenues(finances.expanses)}}</td>
+                        <td></td>
+                        <td>{{toKwaza(totalFinances(incomes))}}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div v-if="expenses">
+            <h4>Despesas</h4>
+            <table>
+                <thead>
+                <tr>
+                    <th>Categoria</th>
+                    <th>Descrição</th>
+                    <th>Montante</th>
+                </tr>
+                </thead>
+                <tbody v-if="expenses.length">
+                    <tr v-for="expense in expenses" :key="expense.id">
+                        <td>{{expense?.category}}</td>
+                        <td>{{expense?.description}}</td>
+                        <td>{{toKwaza(expense?.amount)}}</td>
+                    </tr>
+                </tbody>
+
+                <tbody v-else>
+                    <tr>
+                        <td colspan="3" class="text-center">Nenhuma despesa cadastrada</td>
+                    </tr>
+                </tbody>
+
+                <tfoot>
+                    <tr>
+                        <td><strong>Total</strong></td>
+                        <td></td>
+                        <td>{{toKwaza(totalFinances(expenses))}}</td>
                     </tr>
                 </tfoot>
             </table>
@@ -250,41 +293,3 @@ export default {
 
     </div>
 </template>
-
-<style>
-    h1 {
-      color: #333;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-
-    table {
-      border-bottom: 1px solid #e0e0e0d0;
-      border-left: 1px solid #e0e0e0d0;
-      border-right: 1px solid #e0e0e0d0;
-    }
-
-    th, td {
-      padding: 10px;
-      text-align: left;
-    }
-
-    tbody tr, tbody tr td{
-      border-bottom: 1px solid #e0e0e0d0;
-    }
-
-    th {
-      background-color: rgb(218, 85, 81);
-      color: white;
-    }
-
-    .flex-2{flex: 2;}
-    .flex-3{flex: 3;}
-    .flex-4{flex: 4;}
-    .flex-5{flex: 5;}
-    .flex-6{flex: 6;}
-</style>

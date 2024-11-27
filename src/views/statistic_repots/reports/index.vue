@@ -11,12 +11,13 @@ import Dropdown from 'primevue/dropdown';
 import TableReports from './components/TableReports.vue';
 import ModalNewEventOverviewReport from './components/ModalNewEventOverviewReport.vue';
 import ModalNewEventFinancialreport from './components/ModalNewEventFinancialreport.vue';
-import { EventImpl } from '@fullcalendar/core/internal';
+import Marquee from '@/components/Marquee/index.vue';
+
 export default {
     name: "statistic_repots.reports",
     mixins: [setDocumentTitleMixin],
     components: {
-        Button, CardRoot: CCard.Root,
+        Button, CardRoot: CCard.Root, Marquee,
         InputText, InputGroup, Dropdown, TableReports,
         ModalNewEventOverviewReport, ModalNewEventFinancialreport,
     },
@@ -202,7 +203,7 @@ export default {
                     </div>
 
                     <div v-else class="flex flex-col gap-3">
-                        <div v-for="eventi in events.data" :key="eventi.id" class="flex justify-between border-l-4 items-center bg-gray-400/30 hover:bg-gray-400/40 p-2 rounded-md cursor-pointer relative overflow-hidden"
+                        <div v-for="eventi in events.data" :key="eventi.id" class="h-16 flex justify-between border-l-4 items-center bg-gray-400/30 hover:bg-gray-400/40 p-2 rounded-md cursor-pointer relative overflow-hidden"
                             @click="handleSelectEvent(eventi)"
                             :class="{'bg-gray-400/50 border-primary-500': $route.query.eventId == eventi.id}"
                         >
@@ -213,12 +214,14 @@ export default {
                             </div>
 
                             <div class="flex items-center gap-3 z-10">
-                                <div class="w-[3.7rem] h-12 rounded-full overflow-hidden">
-                                    <img :src="eventi.imageURL" :alt="eventi.name" class="object-fill w-full h-full" />
+                                <div class="image-container">
+                                    <img :src="eventi.imageURL" :alt="eventi.name" class="image" />
                                 </div>
-                                <div>
-                                    <p class="text-slate-600 text-sm">{{ eventi.name }}</p>
-                                    <p class="text-slate-400 text-xs">{{ eventi.description }}</p>
+                                <div class="overflow-hidden">
+                                    <Marquee class="text-slate-600 text-sm whitespace-nowrap">
+                                        {{ eventi.name }}
+                                    </Marquee>
+                                    <p class="text-slate-400 text-xs truncate w-[210px]">{{ eventi.description }}</p>
                                 </div>
                             </div>
                         </div>
@@ -230,5 +233,21 @@ export default {
 </template>
 
 <style>
-    
+.image-container {
+  width: 50px;
+  height: 50px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 </style>

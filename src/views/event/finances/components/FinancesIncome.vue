@@ -176,7 +176,7 @@ export default {
                 <div class="flex grow-0 h-full items-end">
                     <Button size="small" class="h-9 border border-surface-300 border-l-0" @click="storeIncome" :loading="incomes.busy">
                         <i class="fas fa-spinner animate-spin mr-1" v-if="incomes.busy" />
-                        <i class="fa fa-save mr-1"/> {{ busy ? 'Salvando...' : 'Salvar' }}                    
+                        <i class="fa fa-save mr-1"/> {{ incomes.busy ? 'Salvando...' : 'Salvar' }}                    
                     </Button>
                 </div>
             </div>
@@ -188,8 +188,6 @@ export default {
             dataKey="id" class="ctable"
             :loading="incomes.busy" lazy :rowsPerPageOptions="[5, 10, 20, 50]"
         >                        
-            <Column field="name" header="Nome"></Column>
-
             <Column field="amount" header="Montante">
                 <template #body="props">
                     {{ toKwanza(props.data.amount) }}

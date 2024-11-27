@@ -150,7 +150,7 @@ export default {
                 <div class="flex grow-0 h-full items-end">
                     <Button size="small" class="h-9 border border-surface-300 border-l-0" @click="storeFinance" :loading="investments.busy">
                         <i class="fas fa-spinner animate-spin mr-1" v-if="investments.busy" />
-                        <i class="fa fa-save mr-1"/> {{ busy ? 'Salvando...' : 'Salvar' }}                    
+                        <i class="fa fa-save mr-1"/> {{ investments.busy ? 'Salvando...' : 'Salvar' }}                    
                     </Button>
                 </div>
             </div>

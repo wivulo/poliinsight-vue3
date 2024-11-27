@@ -183,7 +183,7 @@ export default {
                 <div class="flex grow-0 h-full items-end">
                     <Button size="small" class="h-9 border border-surface-300 border-l-0" @click="storeExpense" :loading="expenses.busy">
                         <i class="fas fa-spinner animate-spin mr-1" v-if="expenses.busy" />
-                        <i class="fa fa-save mr-1"/> {{ busy ? 'Salvando...' : 'Salvar' }}
+                        <i class="fa fa-save mr-1"/> {{ expenses.busy ? 'Salvando...' : 'Salvar' }}
                     </Button>
                 </div>
             </div>
@@ -194,16 +194,14 @@ export default {
         <DataTable :value="expenses.data" size="small" paginator :rows="5" :totalRecords="expenses.data.length"
             dataKey="id" class="ctable"
             :loading="expenses.busy" lazy :rowsPerPageOptions="[5, 10, 20, 50]"
-        >                        
-            <Column field="name" header="Nome"></Column>
+        >
+            <Column field="category" header="Categoria" />
 
             <Column field="amount" header="Montante">
                 <template #body="props">
                     {{ toKwanza(props.data.amount) }}
                 </template>
             </Column>
-
-            <Column field="category" header="Categoria"></Column>
             
             <Column field="createdAt" header="Data de Criação">
                 <template #body="props">
