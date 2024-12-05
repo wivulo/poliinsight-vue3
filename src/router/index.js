@@ -16,6 +16,7 @@ import DashboardGeral from "@/views/dashboad/index.vue"
 
 import Calendar from "@/views/event/calendar/index.vue"
 import Speakers from "@/views/event/speakers/index.vue"
+import SpeakersAdmin from '@/views/event/speakers/index.admin.vue'
 import Registrations from "@/views/event/registrations/index.vue"
 import EventRegistrationsShow from "@/views/event/registrations/show.vue"
 import Tickets from "@/views/event/tickets/index.vue"
@@ -51,17 +52,13 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: HomeView,
+      path: '/', name: 'home', component: HomeView,
       meta: {
         layout: 'navbar-layout'
       }
     },
     {
-      path: '/login',
-      name: 'login',
-      component: Login,
+      path: '/login', name: 'login', component: Login,
       meta: {
         layout: 'empty-layout'
       }
@@ -156,8 +153,23 @@ const router = createRouter({
     },
     // "gestao-eventos.speakers",
     {
+      path: '/gestao-de-eventos/admin_palestrantes', name: 'gestao-eventos.admin_speakers',
+      component: SpeakersAdmin,
+      meta: {
+        layout: 'default-layout'
+      }
+    },
+    {
       path: '/gestao-de-eventos/palestrantes',
       name: 'gestao-eventos.speakers',
+      component: Speakers,
+      meta: {
+        layout: 'default-layout'
+      }
+    },
+    {
+      path: '/gestao-de-eventos/palestrantes/:id?',
+      name: 'gestao-eventos.speakers.show',
       component: Speakers,
       meta: {
         layout: 'default-layout'

@@ -8,13 +8,14 @@ import CCard from "@/components/PCard/index.js"
 import InputText from 'primevue/inputtext';
 import InputGroup from 'primevue/inputgroup';
 import TabMenu from 'primevue/tabmenu';
+import VueToPrintGlobalWrapper from '@/components/VueToPrintGlobalWrapper.vue';
 
 export default {
     name: "event.finances",
     mixins: [setDocumentTitleMixin],
     components: {
         Dropdown, Button, CardRoot: CCard.Root,
-        InputText, InputGroup, TabMenu
+        InputText, InputGroup, TabMenu, VueToPrintGlobalWrapper
     },
     data(){
         return {

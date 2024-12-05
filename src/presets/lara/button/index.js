@@ -135,7 +135,7 @@ export default {
             { 'hover:bg-primary-300/20': (props.text || props.outlined) && props.severity === null && !props.plain },
 
             // Secondary
-            { 'hover:bg-surface-600 dark:hover:bg-surface-300 hover:border-surface-600 dark:hover:border-surface-300': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain },
+            { 'hover:bg-surface-300 dark:hover:bg-surface-300 hover:border-surface-300 dark:hover:border-surface-300': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain },
             // { 'focus:ring-surface-400/50 dark:focus:ring-surface-300/50': props.severity === 'secondary' },
             // Text & Outlined Button
             { 'hover:bg-surface-300/20': (props.text || props.outlined) && props.severity === 'secondary' && !props.plain },

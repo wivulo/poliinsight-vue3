@@ -1,52 +1,64 @@
 <script>
-import TicketsService from '@/services/TicketsService.js';
-import { mapGetters } from 'vuex';
+import SpeakerServices from '@/services/SpeakerServices';
+import CCard from "@/components/PCard/index.js"
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import InputGroup from 'primevue/inputgroup';
 import Dropdown from 'primevue/dropdown';
+import dayjs from 'dayjs'
 
 export default {
-    name: "event.show.tickets",
+    name: "event.speakers.table",
     components: {
+        CardRoot: CCard.Root,
         DataTable, Column, Button, InputText, InputGroup, Dropdown
     },
     data(){
         return {
+            speakers: [],
             busy: false,
-            tickets: [],
             totalRecods: 0,
             filter: null,
         }
     },
     created(){
-        this.getEventtickets();
+        this.fetchSpeakers()
     },
     methods: {
-        async getEventtickets(){
-            this.busy = true
-            console.log(this.$route.params.id)
-            const response = await TicketsService.getByEventId(this.$route.params.id)
-            .catch(error => {
-                this.$toast.add({severity:'error', summary:'Erro', detail: 'Erro ao buscar os tickets', life: 3000});
-            });
-            this.tickets = response.data;
-            this.totalRecods = this.tickets.length ?? 0;
-            this.busy = false
+        async fetchSpeakers(){
+            try {
+                this.busy = true
+                const response = await SpeakerServices.index()
+
+                if(response.status == 200){
+                    this.speakers = response.data
+                    return
+                }
+
+                this.handleErrorMessage()
+            } catch (error) {
+                console.error(error)
+                this.handleErrorMessage(error)
+            } finally {
+                this.busy = false
+            }
         },
 
-        getData(){
-            this.getEventtickets()
+        handleErrorMessage(message = 'Erro ao buscar os palestrantes'){
+            this.$toast.add({severity:'error', summary: 'Error', detail: message, life: 3000});
         },
-    }
+
+        dateFormater(date) {
+            return dayjs(date).format('D MMMM, YYYY')
+        },
+    },
 }
-
 </script>
 
 <template>
-    <div class="flex flex-col gap-3">
+    <div class="flex flex-col mt-2">
         <div class="flex">
             <InputGroup>
                 <Button size="small" class="h-9 bg-transparent border border-surface-300 border-r-0">
@@ -56,19 +68,21 @@ export default {
             </InputGroup>
         </div>
 
-        <DataTable :value="tickets" size="small" paginator :rows="5" :totalRecords="totalRecods"
+        <DataTable :value="speakers" size="small" paginator :rows="5" :totalRecords="totalRecods"
             dataKey="id" class="ctable" :loading="busy" lazy :rowsPerPageOptions="[5, 10, 20, 50]"
         >
 
             <Column field="name" header="Nome" />
 
-            <Column field="price" header="Preço">
+            <Column field="email" header="Email" />
+
+            <Column field="phone" header="Contacto" />
+
+            <Column field="createdAt" header="Criado em">
                 <template #body="props">
-                    <span>{{ props.data.price }} ,00 KZ</span>
+                    <p>{{ dateFormater(props.data.createdAt) }}</p>
                 </template>
             </Column>
-
-            <Column field="quantity" header="Quantidade" />
 
             <Column field="actions" header="Ações" class="relative">
                 <template #body="props">

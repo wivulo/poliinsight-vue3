@@ -87,10 +87,10 @@ export default {
                         gender: this.registration.data?.gender
                     },
                     team: null,
-                    ticketId: this.registration.data?.ticket.ticketId ?? null,
+                    ticketId: this.registration.data?.ticket ? this.registration.data?.ticket?.ticketId : null,
                     data: {
                         ...this.registration.data?.data,
-                        paymentMode: this.registration.data?.ticket.payment_mode ?? null,
+                        paymentMode: this.registration.data?.ticket ? this.registration.data?.ticket.payment_mode : null,
                     }
                 })
 

@@ -11,13 +11,15 @@ import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
 import Textarea from 'primevue/textarea'
 import dayjs from 'dayjs'
+import ModalNewIncome from './ModalNewIncome.vue';
+import { mapActions } from "vuex";
 
 export default {
     name: "Finance.Income",
     props: ['eventId'],
     components: {
         Button, InputText, InputGroup, InputNumber,
-        DataTable, Column, Dropdown, Textarea,
+        DataTable, Column, Dropdown, Textarea, ModalNewIncome,
     },
     data(){
         return {
@@ -117,7 +119,7 @@ export default {
         },
 
         dateFormater(date) {
-            return dayjs(date).format('DD/MM/YYYY')
+            return dayjs(date).format('D MMMM, YYYY')
         },
 
         handleEditIncome(income){
@@ -126,7 +128,13 @@ export default {
 
         handleDeleteIncome(income){
             console.log('handleDeleteIncome', income);
-        }
+        },
+
+        handleShowModalNewIcome(){
+            this.$refs.ModalNewIncome.visible = true;
+        },
+
+        ...mapActions("printer", ["handlePrint"]),
     },
     watch: {
         $route(){
@@ -138,51 +146,22 @@ export default {
 
 <template>
     <div class="w-full flex flex-col gap-5 py-5">
-        <div class="flex flex-col gap-1">
-            <label for="investiment">
-                Receita
-            </label>
 
-            <div class="flex gap-2 items-end">
-                <div class="flex flex-col gap-1 grow">
-                    <label for="source">
-                        Fonte
-                    </label>
-                    <InputText size="small" v-model="income.source" id="source" placeholder="Ex:. Instituição XY " class="w-full h-9" />
-                </div>
-                
-                <div class="flex flex-col gap-1 grow">
-                    <label for="value">
-                        Valor
-                    </label>
+        <ModalNewIncome ref="ModalNewIncome" @created="fetchIncomes"/>
 
-                    <InputNumber size="small" v-model="income.amount" id="value" placeholder="Ex:. 100 000 kz" class="w-full h-9" 
-                    mode="currency" currency="AOA" locale="pt-AO" :min="0" :max="1000000"
-                />
-                </div>
+        <div class="flex flex-col gap-1 no-print">
+            <div class="flex justify-end gap-2">
+                <Button severity="secondary" size="small" class="h-8" @click="handleShowModalNewIcome">
+                    <span class="text-black text-sm"><i class="fa fa-plus mr-1"/> Adicionar</span>
+                </Button>
+
+                <Button severity="secondary" size="small" class="h-8" @click="handlePrint">
+                    <span class="text-black text-sm"><i class="fa fa-print mr-1"/> Imprimir</span>
+                </Button>
             </div>
 
-            <div class="flex gap-2 items-end mt-2">
-                <div class="flex flex-col gap-1 grow">
-                    <label for="description">
-                        Descrição
-                    </label>
-
-                    <Textarea v-model="income.description" id="description" rows="2"
-                        placeholder="Ex:. Doação feita pela Intituição XY" class="w-full hover:border-slate-400" 
-                    />
-                </div>
-
-                <div class="flex grow-0 h-full items-end">
-                    <Button size="small" class="h-9 border border-surface-300 border-l-0" @click="storeIncome" :loading="incomes.busy">
-                        <i class="fas fa-spinner animate-spin mr-1" v-if="incomes.busy" />
-                        <i class="fa fa-save mr-1"/> {{ incomes.busy ? 'Salvando...' : 'Salvar' }}                    
-                    </Button>
-                </div>
-            </div>
+            <hr />
         </div>
-
-        <hr />
 
         <DataTable :value="incomes.data" size="small" paginator :rows="5" :totalRecords="incomes.data.length"
             dataKey="id" class="ctable"
@@ -202,7 +181,7 @@ export default {
                 </template>
             </Column>
 
-            <Column field="actions" header="Ações" class="relative">
+            <Column field="actions" header="Ações" class="relative no-print">
                 <template #body="props">
                     <Dropdown 
                         :options="[

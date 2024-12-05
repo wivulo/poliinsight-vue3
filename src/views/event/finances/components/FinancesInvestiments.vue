@@ -9,13 +9,15 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
 import dayjs from 'dayjs'
+import { mapActions } from "vuex";
+import ModalNewInvestiment from './ModalNewInvestiment.vue';
 
 export default {
     name: "Finance.Investments",
     props: ['eventId'],
     components: {
         Button, InputText, InputGroup, InputNumber,
-        DataTable, Column, Dropdown
+        DataTable, Column, Dropdown, ModalNewInvestiment
     },
     data(){
         return {
@@ -117,16 +119,27 @@ export default {
         },
 
         dateFormater(date) {
-            return dayjs(date).format('DD/MM/YYYY')
+            return dayjs(date).format('D MMMM, YYYY')
+        },
+
+        ...mapActions("printer", ["handlePrint"]),
+        print() {
+            this.handlePrint();
+        },
+
+        handleShowModalNewInvestiment(){
+            this.$refs.modalNewInvestiment.show();
         }
     },
 }
 </script>
 
 <template>
-    <div class="w-full flex flex-col gap-5 py-5">
-        <div class="flex flex-col gap-1">
-            <label for="investiment">
+    <div class="w-full flex flex-col gap-3 py-5">
+        <ModalNewInvestiment ref="modalNewInvestiment" @created="fetchInvestiments" />
+
+        <div class="flex flex-col gap-1 no-print">
+            <!-- <label for="investiment">
                 Investimento
             </label>
             <div class="flex gap-2 items-end">
@@ -153,10 +166,21 @@ export default {
                         <i class="fa fa-save mr-1"/> {{ investments.busy ? 'Salvando...' : 'Salvar' }}                    
                     </Button>
                 </div>
-            </div>
-        </div>
+            </div> -->
 
-        <hr />
+            <div class="flex justify-end gap-2">
+                <Button severity="secondary" size="small" class="h-8" @click="handleShowModalNewInvestiment">
+                    <span class="text-black text-sm"><i class="fa fa-plus mr-1"/> Adicionar</span>
+                </Button>
+
+                <Button severity="secondary" size="small" class="h-8" @click="handlePrint">
+                    <span class="text-black text-sm"><i class="fa fa-print mr-1"/> Imprimir</span>
+                </Button>
+            </div>
+
+            <hr />
+
+        </div>
 
         <DataTable :value="investments.data" size="small" paginator :rows="5" :totalRecords="investments.data.length"
             dataKey="id" class="ctable"
@@ -176,7 +200,7 @@ export default {
                 </template>
             </Column>
 
-            <Column field="actions" header="Ações" class="relative">
+            <Column field="actions" header="Ações" class="relative no-print">
                 <template #body="props">
                     <Dropdown 
                         :options="[

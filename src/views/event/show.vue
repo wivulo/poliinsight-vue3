@@ -12,6 +12,7 @@ import TabMenu from 'primevue/tabmenu';
 import ModalNewRegistration from './components/ModalNewRegistration.vue';
 import RegistrationTable from "@/views/event/components/RegistrationTable.vue"
 import TicketsTable from "@/views/event/components/TicketsTable.vue"
+import SpeakersTable from './components/SpeakersTable.vue';
 
 export default {
     name: 'Event.viewer',
@@ -19,7 +20,7 @@ export default {
         AutoComplete, Card, ModalNewRegistration,
         InputGroup, Button, TabMenu,
         Image, Dropdown, CardRoot: CCard.Root,
-        RegistrationTable, TicketsTable
+        RegistrationTable, TicketsTable, SpeakersTable,
     },
     data(){
         return {
@@ -41,6 +42,7 @@ export default {
             tabItems: [
                 { label: 'Incrições', component: 'RegistrationTable', icon: 'fa fa-pencil', route: 'event.show.registrations' },
                 { label: 'Ingressos', component: 'TicketsTable' , icon: 'fa fa-file', route: 'event.show.tickets' },
+                { label: 'Palestrantes', component: 'SpeakersTable', icon: 'fa fa-users', route: 'event.show.speakers' },
             ],
             tabICurrenttem: 'RegistrationTable',
         }

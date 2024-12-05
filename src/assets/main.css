@@ -214,3 +214,29 @@ table tbody tr[data-pc-section='bodyrow']:hover{
 div:where(.swal2-container) {
   z-index: 1102 !important;
 }
+
+.text-ellipsis-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; /* Número de linhas permitidas */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.print-only {
+  display: none !important;
+}
+
+@media print {
+  .no-print {
+    display: none;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+}
+
+@page {
+  margin: 1.5cm;
+}

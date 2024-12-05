@@ -15,13 +15,15 @@ import InputIcon from 'primevue/inputicon';
 import FileUploader from '@/components/FileUploader.vue';
 import Dropdown from 'primevue/dropdown';
 import InputNumber from 'primevue/inputnumber';
+import CCard from "@/components/PCard/index.js"
 
 export default {
     name: 'Admin.CreateEvent',
     components: {
         FileUploader, Button, ProgressBar, Badge,
         InputText, FloatLabel, Textarea, Calendar,
-        IconField, InputIcon, Dropdown, InputNumber
+        IconField, InputIcon, Dropdown, InputNumber,
+        CardRoot: CCard.Root,
     },
     data(){
         return {
@@ -178,128 +180,130 @@ export default {
 </script>
 
 <template>
-    <div class="p-4 px-5 w-full flex flex-col gap-5">
-        <div>
-            <p class="text-surface-600 font-semibold text-lg">Criar Evento</p>
-        </div>
-
-        <div class="flex w-full my-3 gap-5 justify-between">
-            <div class="flex flex-col">
-                <label for="category" class="flex-grow pl-3 text-surface-400">
-                    <small>Catégoria</small>
-                </label>
-                <Dropdown id="category" v-model="event.categoryId" optionLabel="name" option-value="id"  :options="categories.data" placeholder="Selecione uma categória" class="h-9 w-[290px]">
-                    <template #value="slotProps">
-                        <div v-if="slotProps.value" class="flex items-center text-black">
-                            {{ categories.data.find(cat => cat.id === slotProps.value).name }}
-                        </div>
-                        <div v-else>
-                            {{ slotProps.placeholder }}
-                        </div>
-                    </template>
-                </Dropdown>
+    <CardRoot class="w-full">
+        <div class="w-full flex flex-col gap-3">
+            <div>
+                <p class="text-surface-600 font-semibold text-lg">Criar Evento</p>
             </div>
 
-            <div class="flex flex-col">
-                <label for="vacancies" class="pl-3 text-surface-400">
-                    <small> Número de vagas </small>
-                </label>
-                <InputNumber id="vacancies" v-model="event.vacancies" class="w-full border-slate-300 h-9" :required="true"/>
-            </div>
-
-            <div class="flex flex-col">
-                <label for="freeOrPaid" class="pl-3 text-surface-400">
-                    <small> Acesso ao evento </small>
-                </label>
-                <Dropdown id="freeOrPaid" v-model="event.type"  :options="event_type" optionLabel="label" optionValue="value" placeholder="Selecione a forma de acesso ao evento" class="h-9 w-[290px]">
-                    <template #value="slotProps">
-                        <div v-if="slotProps.value" class="flex items-center text-black">
-                            {{ slotProps.value === 'free' ? 'Gratuito' : 'Pago' }}
-                        </div>
-                        <div v-else>
-                            {{ slotProps.placeholder }}
-                        </div>
-                    </template>
-                </Dropdown>
-            </div>
-
-            <div class="flex flex-col">
-                <label for="departament" class="pl-3 text-surface-400">
-                    <small> Departamento </small>
-                </label>
-                <!-- {{ event.departamentId }} -->
-                <!-- <InputText id="departament" v-model="event.departament" class="w-full border-slate-300 h-9" :required="true" placeholder="Ex:. Engenharia"/> -->
-                <Dropdown id="department" v-model="event.departmentId"  :options="department.data" optionLabel="name" option-value="id" placeholder="Selecione um departamento" class="h-9 w-[230px]">
-                    <template #value="slotProps">
-                        <div v-if="slotProps.value" class="flex items-center text-black">
-                            {{ department.data.find(department => department.id === slotProps.value).name }}
-                        </div>
-                        <div v-else>
-                            {{ slotProps.placeholder }}
-                        </div>
-                    </template>
-                </Dropdown>
-            </div>
-        </div>
-
-        <div class="flex flex-col gap-3">
-            <div class="flex gap-3 flex-grow">
-
-                <div class="flex flex-grow max-w-[439px] max-h-[326px]">
-                    <FileUploader @uploaded="handleUploadedFile"/>
+            <div class="flex w-full my-3 gap-5 justify-between">
+                <div class="flex flex-col">
+                    <label for="category" class="flex-grow pl-3 text-surface-400">
+                        <small>Catégoria</small>
+                    </label>
+                    <Dropdown id="category" v-model="event.categoryId" optionLabel="name" option-value="id"  :options="categories.data" placeholder="Selecione uma categória" class="h-9 w-[290px]">
+                        <template #value="slotProps">
+                            <div v-if="slotProps.value" class="flex items-center text-black">
+                                {{ categories.data.find(cat => cat.id === slotProps.value).name }}
+                            </div>
+                            <div v-else>
+                                {{ slotProps.placeholder }}
+                            </div>
+                        </template>
+                    </Dropdown>
                 </div>
 
-                <div class="flex flex-col gap-4 flex-grow">
-                    <FloatLabel>
-                        <InputText id="name" v-model="event.name" class="w-full border-slate-300 h-9" :required="true"/>
-                        <label for="name" class="text-slate-400">
-                            <small class="text-slate-400"> Nome do evento </small>
-                        </label>
-                    </FloatLabel>
+                <div class="flex flex-col">
+                    <label for="vacancies" class="pl-3 text-surface-400">
+                        <small> Número de vagas </small>
+                    </label>
+                    <InputNumber id="vacancies" v-model="event.vacancies" class="w-full border-slate-300 h-9" :required="true"/>
+                </div>
 
-                    <Textarea v-model="event.description" rows="5" cols="30" placeholder="Descrição do evento" class="hover:border-slate-400"/>
+                <div class="flex flex-col">
+                    <label for="freeOrPaid" class="pl-3 text-surface-400">
+                        <small> Acesso ao evento </small>
+                    </label>
+                    <Dropdown id="freeOrPaid" v-model="event.type"  :options="event_type" optionLabel="label" optionValue="value" placeholder="Selecione a forma de acesso ao evento" class="h-9 w-[290px]">
+                        <template #value="slotProps">
+                            <div v-if="slotProps.value" class="flex items-center text-black">
+                                {{ slotProps.value === 'free' ? 'Gratuito' : 'Pago' }}
+                            </div>
+                            <div v-else>
+                                {{ slotProps.placeholder }}
+                            </div>
+                        </template>
+                    </Dropdown>
+                </div>
 
-                    <FloatLabel class="mt-2">
-                        <InputText id="localization" v-model="event.localization" class="w-full border-slate-300 h-9" :required="true"/>
-                        <label for="localization" class="text-slate-400">
-                            <small class="text-slate-400"> Localização </small>
-                        </label>
-                    </FloatLabel>
-
-                    <div class="flex gap-3">
-                        <Calendar v-model="event.date" placeholder="Data de inicio" :showIcon="true" :readonlyInput="true" :showOnFocus="true" :minDate="new Date()" :maxDate="new Date(2025, 12, 31)" iconDisplay="input" class="flex-grow border-slate-300 h-9 focus:outline-slate-400" inputClass="hover:border-slate-400"/>
-
-                        <Calendar v-model="event.endDate" placeholder="Data de fim" :showIcon="true" :readonlyInput="true" :showOnFocus="true" :minDate="new Date()" :maxDate="new Date(2025, 12, 31)"  iconDisplay="input" class="flex-grow border-slate-300 h-9 focus:outline-slate-400" inputClass="hover:border-slate-400"/>
-                    </div>
-
-                    <div class="flex gap-3">
-                        <IconField class="border border-surface-300 rounded-md h-10 flex-grow">
-                            <InputIcon>
-                                <i class="fa fa-clock" />
-                            </InputIcon>
-
-                            <Calendar id="calendar-timeonly" v-model="event.time" timeOnly class="remove-border h-9 w-full" placeholder="Hora de inicio"/>
-                        </IconField>
-
-                        <IconField class="border border-surface-300 rounded-md h-10 flex-grow">
-                            <InputIcon>
-                                <i class="fa fa-clock" />
-                            </InputIcon>
-
-                            <Calendar id="calendar-timeonly" v-model="event.timeEnd" timeOnly class="remove-border h-9 w-full" placeholder="Hora de termino"/>
-                        </IconField>
-                    </div>
+                <div class="flex flex-col">
+                    <label for="departament" class="pl-3 text-surface-400">
+                        <small> Departamento </small>
+                    </label>
+                    <!-- {{ event.departamentId }} -->
+                    <!-- <InputText id="departament" v-model="event.departament" class="w-full border-slate-300 h-9" :required="true" placeholder="Ex:. Engenharia"/> -->
+                    <Dropdown id="department" v-model="event.departmentId"  :options="department.data" optionLabel="name" option-value="id" placeholder="Selecione um departamento" class="h-9 w-[230px]">
+                        <template #value="slotProps">
+                            <div v-if="slotProps.value" class="flex items-center text-black">
+                                {{ department.data.find(department => department.id === slotProps.value).name }}
+                            </div>
+                            <div v-else>
+                                {{ slotProps.placeholder }}
+                            </div>
+                        </template>
+                    </Dropdown>
                 </div>
             </div>
 
-            <div class="w-full flex justify-end">
-                <Button @click="handleCreateEvent" class=" text-black" size="small" :disabled="busy">
-                    <i class="fas fa-spinner animate-spin mr-1" v-if="busy" />
-                   {{ busy ? 'Criando o evento...' : ' Criar evento' }}
-                </Button>
+            <div class="flex flex-col gap-3">
+                <div class="flex gap-3 flex-grow">
+
+                    <div class="flex flex-grow max-w-[439px] max-h-[326px]">
+                        <FileUploader @uploaded="handleUploadedFile"/>
+                    </div>
+
+                    <div class="flex flex-col gap-4 flex-grow">
+                        <FloatLabel>
+                            <InputText id="name" v-model="event.name" class="w-full border-slate-300 h-9" :required="true"/>
+                            <label for="name" class="text-slate-400">
+                                <small class="text-slate-400"> Nome do evento </small>
+                            </label>
+                        </FloatLabel>
+
+                        <Textarea v-model="event.description" rows="5" cols="30" placeholder="Descrição do evento" class="hover:border-slate-400"/>
+
+                        <FloatLabel class="mt-2">
+                            <InputText id="localization" v-model="event.localization" class="w-full border-slate-300 h-9" :required="true"/>
+                            <label for="localization" class="text-slate-400">
+                                <small class="text-slate-400"> Localização </small>
+                            </label>
+                        </FloatLabel>
+
+                        <div class="flex gap-3">
+                            <Calendar v-model="event.date" placeholder="Data de inicio" :showIcon="true" :readonlyInput="true" :showOnFocus="true" :minDate="new Date()" :maxDate="new Date(2025, 12, 31)" iconDisplay="input" class="flex-grow border-slate-300 h-9 focus:outline-slate-400" inputClass="hover:border-slate-400"/>
+
+                            <Calendar v-model="event.endDate" placeholder="Data de fim" :showIcon="true" :readonlyInput="true" :showOnFocus="true" :minDate="new Date()" :maxDate="new Date(2025, 12, 31)"  iconDisplay="input" class="flex-grow border-slate-300 h-9 focus:outline-slate-400" inputClass="hover:border-slate-400"/>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <IconField class="border border-surface-300 rounded-md h-10 flex-grow">
+                                <InputIcon>
+                                    <i class="fa fa-clock" />
+                                </InputIcon>
+
+                                <Calendar id="calendar-timeonly" v-model="event.time" timeOnly class="remove-border h-9 w-full" placeholder="Hora de inicio"/>
+                            </IconField>
+
+                            <IconField class="border border-surface-300 rounded-md h-10 flex-grow">
+                                <InputIcon>
+                                    <i class="fa fa-clock" />
+                                </InputIcon>
+
+                                <Calendar id="calendar-timeonly" v-model="event.timeEnd" timeOnly class="remove-border h-9 w-full" placeholder="Hora de termino"/>
+                            </IconField>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full flex justify-end">
+                    <Button @click="handleCreateEvent" class=" text-black" size="small" :disabled="busy">
+                        <i class="fas fa-spinner animate-spin mr-1" v-if="busy" />
+                    {{ busy ? 'Criando o evento...' : ' Criar evento' }}
+                    </Button>
+                </div>
             </div>
         </div>
-    </div>
+    </CardRoot>
 </template>
 
 <style>

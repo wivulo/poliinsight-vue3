@@ -1,12 +1,14 @@
 <script>
 import ApplicationHeader from './components/ApplicationHeader.vue';
 import ApplicationSidebar from './components/ApplicationSidebar.vue';
+import VueToPrintGlobalWrapper from '@/components/VueToPrintGlobalWrapper.vue';
 
 export default {
   name: 'MainLayout',
   components: {
     ApplicationHeader,
     ApplicationSidebar,
+    VueToPrintGlobalWrapper,
   },
 };
 </script>
@@ -19,11 +21,13 @@ export default {
       <ApplicationHeader class="bg-zinc-50 application-header"/>
 
       <div class="flex w-full overflow-x-hidden fadeInRight bg-gray-100 application-body">
-        <router-view v-slot="{ Component }">
-          <transition>
-            <component :is="Component" />
-          </transition>
-        </router-view>
+        <VueToPrintGlobalWrapper class="w-full">
+          <router-view v-slot="{ Component }">
+            <transition>
+              <component :is="Component" />
+            </transition>
+          </router-view>
+        </VueToPrintGlobalWrapper>
       </div>
     </div>
   </div>

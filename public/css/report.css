@@ -214,4 +214,11 @@ th {
     background-color: rgb(218, 85, 81) !important;  /* Garantir que o fundo do cabeçalho seja aplicado */
     color: white !important;  /* Garantir que a cor do texto seja branca */
   }
+
+  .no-print {
+    display: none;
+  }
+  .print-only {
+    display: block !important;
+  }
 }

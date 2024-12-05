@@ -4,7 +4,7 @@ export default {
     props: {
         src: {
             type: String,
-            required: true,
+            required: false,
             default: '/images/ispb logo.svg'
         }
     }

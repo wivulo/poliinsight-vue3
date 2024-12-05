@@ -11,6 +11,7 @@ import PChart from 'primevue/chart';
 import { dateFormatter } from "@/utils/dateFormatter"
 import { emptyDataPlugin } from "@/helpers/chartjs.plugins.js";
 import CCard from "@/components/PCard/index.js"
+import { mapActions } from "vuex";
 
 export default {
     name: 'Statistic_repots.analitics.show',
@@ -38,12 +39,22 @@ export default {
                 busy: false,
                 data: []
             },
+            incomes: {
+                busy: false,
+                data: []
+            },
+            expenses: {
+                busy: false,
+                data: []
+            },
         }
     },
     async created(){
         this.getEvent()
         this.getStatistic()
         this.fetchInvestiments()
+        this.fetchIncomes()
+        this.fetchExpenses()
     },
     mounted() {
         if (this.$refs.chart && this.$refs.chart.chart) {
@@ -70,6 +81,14 @@ export default {
 
         totalInvestiments(){
             return this.investments.data.reduce((acc, curr) => acc + curr.amount, 0)
+        },
+
+        totalIncomes(){
+            return currency.KWAZA.format(this.incomes.data.reduce((acc, curr) => acc + curr.amount, 0))
+        },
+
+        totalExpenses(){
+            return currency.KWAZA.format(this.expenses.data.reduce((acc, curr) => acc + curr.amount, 0))
         }
     },
     methods: {
@@ -242,6 +261,33 @@ export default {
                 this.investments.busy = false;
             }
         },
+
+        async fetchIncomes(){
+            try {
+                this.incomes.busy = true;
+                const response = await FinancesServices.findIncomes(this.$route.params.id);
+                this.incomes.data = response.data;
+            } catch (error) {
+                console.error(error);
+            } finally {
+                this.incomes.busy = false;
+            }
+        },
+
+        async fetchExpenses(){
+            try {
+                this.expenses.busy = true;
+                const response = await FinancesServices.findExpenses(this.$route.params.id);
+                this.expenses.data = response.data;
+            } catch (error) {
+                console.error(error);
+            } finally {
+                this.expenses.busy = false;
+            }
+        },
+
+        ...mapActions("printer", ["handlePrint"]),
+
     },
     watch: {
         statistic() {
@@ -261,16 +307,24 @@ export default {
                         <i class="fa fa-spinner animate-spin text-black text-base" v-if="busy" />
                         <template v-else>
                             <div class="flex gap-3 items-center">
-                                <RouterLink :to="{name: 'analise_relatorios.analitics'}" title="Voltar para lista">
+                                <RouterLink :to="{name: 'analise_relatorios.analitics'}" title="Voltar para lista" class="no-print">
                                     <i class="fa fa-chevron-left text-sm p-2 cursor-pointer hover:bg-slate-200" />
                                 </RouterLink>
-                                <RouterLink :to="{name: 'event.show', params: {id: event?.id}}" class="text-xl font-bold hover:text-primary-500/70">
-                                    {{event?.name}}
-                                </RouterLink>
+                                <div class="flex flex-col gap-1">
+                                    <p class="text-xs opacity-30">Mapa do evento</p>
+                                    <RouterLink :to="{name: 'event.show', params: {id: event?.id}}" class="text-xl font-bold hover:text-primary-500/70">
+                                        {{event?.name}}
+                                    </RouterLink>
+                                </div>
                             </div>
                         </template>
                     </p>
-                    <p class="text-base font-semibold">Mapa do evento</p>
+
+                    <div class="no-print">
+                        <Button severity="secondary" size="small" class="h-8" @click="handlePrint" title="Imprimir mapa do evento">
+                            <i class="fa fa-print text-black"/>
+                        </Button>
+                    </div>
                </div>
 
                <div class="flex justify-between gap-7 min-h-[14rem] mb-4">
@@ -316,104 +370,204 @@ export default {
                     </CardRoot>
 
                     <CardRoot class="h-48">
-                        <CardValue>
-                            <CardValue class="flex gap-3 relative h-40">
+                        <CardValue class="flex gap-3 relative h-40">
                             <p class="font-semibold">Investimento</p>
+                                
                             <div class="self-end">
                                 <p class="text-xl">
                                     <i class="fa fa-spinner animate-spin text-black text-base" v-if="investments.busy"></i>
                                     <span v-else>{{ toKwanza(totalInvestiments) }}</span>
                                 </p>
                             </div>
-                            </CardValue>
                         </CardValue>
                     </CardRoot>
                </div>
 
-               <div>
-                    <p>Dados demográficos</p>
-               </div>
+                <section class="flex flex-col gap-4">
+                    <div>
+                        <p>Dados demográficos</p>
+                    </div>
 
-               <template v-if="statistic_busy">
-                    <div class="flex justify-between gap-7">
-                        <CardRoot class="cardroot flex justify-center items-center" style="width: 350px;height: 300px;">
-                            <i class="fa fa-spinner animate-spin text-black text-base" />
-                        </CardRoot>
-
-                        <CardRoot class="cardroot flex justify-center items-center" style="width: 350px;height: 300px;">
-                            <i class="fa fa-spinner animate-spin text-black text-base" />
-                        </CardRoot>
-
-                        <div class="flex flex-col gap-5">
-                            <CardRoot class="h-[86px] flex justify-center items-center w-56">
+                    <template v-if="statistic_busy">
+                        <div class="flex justify-between gap-7">
+                            <CardRoot class="cardroot flex justify-center items-center" style="width: 350px;height: 300px;">
                                 <i class="fa fa-spinner animate-spin text-black text-base" />
                             </CardRoot>
 
-                            <CardRoot class="h-[86px] flex justify-center items-center w-56">
+                            <CardRoot class="cardroot flex justify-center items-center" style="width: 350px;height: 300px;">
                                 <i class="fa fa-spinner animate-spin text-black text-base" />
                             </CardRoot>
 
-                            <CardRoot class="h-[86px] flex justify-center items-center w-56">
-                                <i class="fa fa-spinner animate-spin text-black text-base" />
+                            <div class="flex flex-col gap-5">
+                                <CardRoot class="h-[86px] flex justify-center items-center w-56">
+                                    <i class="fa fa-spinner animate-spin text-black text-base" />
+                                </CardRoot>
+
+                                <CardRoot class="h-[86px] flex justify-center items-center w-56">
+                                    <i class="fa fa-spinner animate-spin text-black text-base" />
+                                </CardRoot>
+
+                                <CardRoot class="h-[86px] flex justify-center items-center w-56">
+                                    <i class="fa fa-spinner animate-spin text-black text-base" />
+                                </CardRoot>
+                            </div>
+                        </div>
+                    </template>
+
+                    <div v-else id="demografic-blocks" class="flex gap-8 justify-between min-h-[19rem] pb-2 mb-5">
+                        <CardRoot id="demografic-block-1" class="flex justify-center items-center avoid-break">
+                            <figure class="flex flex-col gap-1">
+                                <PChart ref="chart" type="pie" :data="dataGenderDistribuition" :options="dataGenderDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" class="w-full md:w-30rem" />
+                                <figcaption class="print-only">
+                                    <div class="flex">
+                                        <div class="flex flex-col gap-2 border border-zinc-300 grow p-2">
+                                            <p>Masculino:</p>
+                                            <p class="text-center">{{ statistic?.genderDistribution?.male }}</p>
+                                        </div>
+                                        <div class="flex flex-col gap-2 border border-zinc-300 grow p-2">
+                                            <p>Feminino:</p>
+                                            <p class="text-center">{{ statistic?.genderDistribution?.female ?? 0}}</p>
+                                        </div>
+                                    </div>
+                                </figcaption>
+                            </figure>
+                        </CardRoot>
+                        
+                        <CardRoot id="demografic-block-2" class="flex justify-center items-center avoid-break">
+                            <PChart ref="chart" type="bar" :data="ageDistribuition" :options="ageDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" :canvas-props="{width: 350, height: 300}" />
+                        </CardRoot>
+
+                        <div id="demografic-block-3" class="flex flex-col gap-5 avoid-break">
+                            <CardRoot class="blocks h-28">
+                                <CardHeader>
+                                    <p>Participante Mais velho</p>
+                                </CardHeader>
+                                <CardValue class="mt-2 text-sm" v-if="statistic?.oldestParticipantInfo">
+                                    <p><b>Nome:</b> {{ old_fullname }}</p>
+                                    <p><b>Idade: </b> {{ statistic.oldestParticipant }} anos</p>
+                                </CardValue>
+                                <CardInformation v-else class="mt-2">
+                                    <p>Nenhum dado disponível</p>
+                                </CardInformation>
+                            </CardRoot>
+
+                            <CardRoot class="blocks h-38">
+                                <CardHeader>
+                                    <p>Participante Mais novo</p>
+                                </CardHeader>
+                                <CardValue class="mt-2 text-sm" v-if="statistic?.oldestParticipantInfo">
+                                    <p><b>Nome:</b> {{ new_fullname }}</p>
+                                    <p><b>Idade: </b> {{ statistic?.youngestParticipant }} anos</p>
+                                </CardValue>
+                                <CardInformation v-else class="mt-2">
+                                    <p>Nenhum dado disponível</p>
+                                </CardInformation>
+                            </CardRoot>
+
+                            <CardRoot class="blocks h-38">
+                                <CardValue class="flex gap-3 justify-between relative h-16">
+                                    <p class="font-semibold">Moda</p>
+                                    <div class="self-end">
+                                        <p class="text-base">
+                                            {{ `${statistic?.averageAge} anos` ?? 0 }}
+                                        </p>
+                                    </div>
+                                </CardValue>
                             </CardRoot>
                         </div>
                     </div>
-                </template>
+               </section>
 
-                <div v-else class="flex gap-8 justify-between min-h-[19rem] pb-2 mb-5">
-                    <CardRoot class="flex justify-center items-center">
-                        <PChart ref="chart" type="pie" :data="dataGenderDistribuition" :options="dataGenderDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" class="w-full md:w-30rem" />
-                    </CardRoot>
+                <section class="flex flex-col gap-4">
+                    <div>
+                        <p>Dados financeiros</p>
+                    </div>
 
-                    <CardRoot class="flex justify-center items-center">
-                        <PChart ref="chart" type="bar" :data="ageDistribuition" :options="ageDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" :canvas-props="{width: 350, height: 300}" />
-                    </CardRoot>
-
-                    <div class="flex flex-col gap-5">
-                        <CardRoot class="h-28">
-                            <CardHeader>
-                                <p>Participante Mais velho</p>
-                            </CardHeader>
-                            <CardValue class="mt-2 text-sm" v-if="statistic?.oldestParticipantInfo">
-                                <p><b>Nome:</b> {{ old_fullname }}</p>
-                                <p><b>Idade: </b> {{ statistic.oldestParticipant }} anos</p>
-                            </CardValue>
-                            <CardInformation v-else class="mt-2">
-                                <p>Nenhum dado disponível</p>
-                            </CardInformation>
-                        </CardRoot>
-
-                        <CardRoot class="h-38">
-                            <CardHeader>
-                                <p>Participante Mais novo</p>
-                            </CardHeader>
-                            <CardValue class="mt-2 text-sm" v-if="statistic?.oldestParticipantInfo">
-                                <p><b>Nome:</b> {{ new_fullname }}</p>
-                                <p><b>Idade: </b> {{ statistic?.youngestParticipant }} anos</p>
-                            </CardValue>
-                            <CardInformation v-else class="mt-2">
-                                <p>Nenhum dado disponível</p>
-                            </CardInformation>
-                        </CardRoot>
-
-                        <CardRoot class="h-38 w-full">
-                            <CardValue class="flex gap-3 justify-between relative h-16">
-                                <p class="font-semibold">Moda</p>
+                    <div class="flex justify-between gap-7 min-h-[14rem] mb-4">
+                        <CardRoot class="h-48">
+                            <CardValue class="flex gap-3 relative h-40">
+                                <p class="font-semibold">Total de Receitas</p>
                                 <div class="self-end">
                                     <p class="text-xl">
-                                        {{ statistic?.averageAge ?? 0 }}
+                                        <i class="fa fa-spinner animate-spin text-black text-base" v-if="incomes.busy"></i>
+                                        <span v-else>{{ totalIncomes }}</span>
                                     </p>
                                 </div>
                             </CardValue>
                         </CardRoot>
+
+                        <CardRoot class="h-48">
+                            <CardValue class="flex gap-3 relative h-40">
+                                <p class="font-semibold">Total de Despesas</p>
+                                <div class="self-end">
+                                    <p class="text-xl">
+                                        <i class="fa fa-spinner animate-spin text-black text-base" v-if="expenses.busy"></i>
+                                        <span v-else>{{ totalExpenses }}</span>
+                                    </p>
+                                </div>
+                            </CardValue>
+                        </CardRoot>
+
+                        <CardRoot class="h-48">
+                            <CardValue>
+                                <CardValue class="flex gap-3 relative h-40">
+                                <p class="font-semibold">Total de Investimento</p>
+                                <div class="self-end">
+                                    <p class="text-xl">
+                                        <i class="fa fa-spinner animate-spin text-black text-base" v-if="investments.busy"></i>
+                                        <span v-else>{{ toKwanza(totalInvestiments) }}</span>
+                                    </p>
+                                </div>
+                                </CardValue>
+                            </CardValue>
+                        </CardRoot>
                     </div>
-               </div>
-
-               <div>
-                    <p>Dados financeiros</p>
-               </div>
-
+               </section>
             </div>
         </div>
     </div>
 </template>
+
+<style>
+@media print {
+    #demografic-blocks {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 5px;
+
+        #demografic-block-1 {
+            width: 47%;
+        }
+
+        #demografic-block-2 {
+            width: 47%;
+        }
+
+        #demografic-block-3 {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 10px;
+
+            .blocks {
+                width: 35%;
+            }
+
+            .blocks:nth-child(3) {
+                width: 20%;
+            }
+        }
+    }
+
+    .break-inside-avoid-page {
+        break-inside: avoid-page;
+    }
+
+    .avoid-break {
+        page-break-inside: avoid;
+    }
+}
+</style>

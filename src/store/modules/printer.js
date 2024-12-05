@@ -1,24 +1,50 @@
-import Cookies from 'js-cookie'
-import { databaseURL } from "@/config"
-import axios from 'axios'
+import { useVueToPrint } from "vue-to-print";
 
-export const printer = { 
-    namespaced: true,   
-    // state
-    state: {
-        content: null,
-        cssRulesPath: null,
-        busy: false,
-    },
-    // getters
-    getters: {
-        content: state => state.content,
-    },
-  
-    // mutations
-    mutations: {
-        content (state, { content }) {
-            state.content = content
-        },
-    },
-}
+const state = () => ({
+  componentRef: null,
+  isPrinting: false,
+});
+
+const getters = {
+  isPrinting: (state) => state.isPrinting,
+};
+
+const mutations = {
+  SET_COMPONENT_REF(state, ref) {
+    state.componentRef = ref;
+  },
+  SET_PRINTING_STATE(state, isPrinting) {
+    state.isPrinting = isPrinting;
+  },
+};
+
+const actions = {
+  async handlePrint({ state, commit }) {
+    if (!state.componentRef) {
+      console.error("Referência do componente não está definida.");
+      return;
+    }
+
+    const { handlePrint } = useVueToPrint({
+      content: () => state.componentRef,
+      documentTitle: "Document",
+      onBeforePrint: () => commit("SET_PRINTING_STATE", true),
+      onAfterPrint: () => commit("SET_PRINTING_STATE", false),
+    });
+
+    try {
+      await handlePrint();
+    } catch (error) {
+      console.error("Erro ao imprimir:", error);
+      commit("SET_PRINTING_STATE", false);
+    }
+  },
+};
+
+export default {
+  namespaced: true,
+  state,
+  getters,
+  mutations,
+  actions,
+};

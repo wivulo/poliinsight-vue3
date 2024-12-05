@@ -63,8 +63,8 @@ export default {
         },
 
         dateFormater(date) {
-            return dayjs(date).format('DD/MM/YYYY')
-        }
+            return dayjs(date).format('D MMMM, YYYY')
+        },
     }
 }
 </script>
@@ -94,12 +94,12 @@ export default {
                     <div v-for="event in filtered_events" :key="event.id" class="event-block">
                         <div class="flex flex-col gap-2 p-3 h-full justify-between">
                             <div class="mb-2">
-                                <div class="text-surface-700 font-semibold text-base">{{ event.name }}</div>
-                                <div class="text-surface-500 font-light text-sm">
+                                <p class="text-surface-700 font-semibold text-base text-ellipsis-2">{{ event.name }}</p>
+                                <p class="text-surface-500 font-light text-sm text-ellipsis-2">
                                     {{ event.description }}
-                                </div>
+                                </p>
                             </div>
-                            <Button size="small" @click="handleViewEstatisticEvent(event)" class="w-full h-9 text-white bg-slate-500 border-0">
+                            <Button size="small" @click="handleViewEstatisticEvent(event)" class="w-full h-8 bg-gray-400 border-0">
                                 Ver mapa
                             </Button>
                         </div>

@@ -1,6 +1,5 @@
 <script>
-import TicketsService from '@/services/TicketsService.js';
-import { mapGetters } from 'vuex';
+import SpeakerServices from '@/services/SpeakerServices';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
@@ -9,36 +8,37 @@ import InputGroup from 'primevue/inputgroup';
 import Dropdown from 'primevue/dropdown';
 
 export default {
-    name: "event.show.tickets",
+    name: "event.show.speakers",
     components: {
         DataTable, Column, Button, InputText, InputGroup, Dropdown
     },
     data(){
         return {
             busy: false,
-            tickets: [],
+            speakers: [],
             totalRecods: 0,
             filter: null,
         }
     },
     created(){
-        this.getEventtickets();
+        this.findEventspeakers();
     },
     methods: {
-        async getEventtickets(){
-            this.busy = true
-            console.log(this.$route.params.id)
-            const response = await TicketsService.getByEventId(this.$route.params.id)
-            .catch(error => {
-                this.$toast.add({severity:'error', summary:'Erro', detail: 'Erro ao buscar os tickets', life: 3000});
-            });
-            this.tickets = response.data;
-            this.totalRecods = this.tickets.length ?? 0;
-            this.busy = false
+        async findEventspeakers(){
+            try {
+                this.busy = true
+                const response = await SpeakerServices.showByEvent(this.$route.params.id)
+                this.speakers = response.data;
+                this.totalRecods = this.speakers.length ?? 0;
+            } catch (error) {
+                this.$toast.add({severity:'error', summary:'Erro', detail: 'Erro ao buscar os speakers', life: 3000});
+            } finally {
+                this.busy = false
+            }
         },
 
-        getData(){
-            this.getEventtickets()
+        findData(){
+            this.findEventspeakers()
         },
     }
 }
@@ -56,19 +56,15 @@ export default {
             </InputGroup>
         </div>
 
-        <DataTable :value="tickets" size="small" paginator :rows="5" :totalRecords="totalRecods"
+        <DataTable :value="speakers" size="small" paginator :rows="5" :totalRecords="totalRecods"
             dataKey="id" class="ctable" :loading="busy" lazy :rowsPerPageOptions="[5, 10, 20, 50]"
         >
 
             <Column field="name" header="Nome" />
 
-            <Column field="price" header="Preço">
-                <template #body="props">
-                    <span>{{ props.data.price }} ,00 KZ</span>
-                </template>
-            </Column>
+            <Column field="email" header="Email" />
 
-            <Column field="quantity" header="Quantidade" />
+            <Column field="phone" header="Telefone" />
 
             <Column field="actions" header="Ações" class="relative">
                 <template #body="props">
