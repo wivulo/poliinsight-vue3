@@ -296,7 +296,7 @@ export default {
                 </div>
 
                 <div class="w-full flex justify-end">
-                    <Button @click="handleCreateEvent" class=" text-black" size="small" :disabled="busy">
+                    <Button @click="handleCreateEvent" class="h-8 text-black" size="small" :disabled="busy">
                         <i class="fas fa-spinner animate-spin mr-1" v-if="busy" />
                     {{ busy ? 'Criando o evento...' : ' Criar evento' }}
                     </Button>

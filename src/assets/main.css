@@ -212,7 +212,7 @@ table tbody tr[data-pc-section='bodyrow']:hover{
 }
 
 div:where(.swal2-container) {
-  z-index: 1102 !important;
+  z-index: 3102 !important;
 }
 
 .text-ellipsis-2 {

@@ -37,13 +37,11 @@ const vueHtmlToPaperOptions = {
     'scrollbars=yes'
   ],
   styles: [
-    'https://cdn.tailwindcss.com',
     '/css/report.css'
   ],
   timeout: 1000, // default timeout before the print window appears
   autoClose: false // if false, the window will not close after printing
 }
-
 
 export const app = createApp(App)
 
@@ -73,7 +71,6 @@ app.component("default-layout", DefaultLayout)
 app.component("error-layout", ErrorLayout)
 app.component("empty-layout", EmptyLayout)
 app.component("navbar-layout", NavbarLayout)
-
 
 //vuelidate
 app.use(Vuelidate)

@@ -100,7 +100,7 @@ export default {
                                     command: this.handleShowModalImportFinancialData
                                 },
                             ]" 
-                            class="p-0 bg-gray-400/70"
+                            class="p-0 bg-gray-300/60"
                             option-label="label"
                         >
                             <template #value>

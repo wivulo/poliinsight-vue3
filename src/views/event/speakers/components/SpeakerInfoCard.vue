@@ -17,9 +17,9 @@ export default {
 </script>
 
 <template>
-    <div class="flex gap-2 border border-zinc-200 rounded-md p-2 bg-zinc-200/80 hover:bg-gray-300/80 cursor-pointer min-w-[230px] max-w-[250px]">
+    <div class="flex flex-col items-center gap-2 border border-zinc-200 rounded-md p-2 bg-zinc-200/80 hover:bg-gray-300/80 cursor-pointer min-w-[180px] max-w-[250px]">
         <div>
-            <img :src="speaker_event.speaker.imageURL" alt="avatar" class="w-12 h-12 rounded-full" />
+            <img :src="speaker_event.speaker.imageURL" :alt="speaker_event.speaker.imageURL" class="w-14 h-14 rounded-full" />
         </div>
         <div class="flex flex-col justify-center">
             <div class="text-sm font-semibold">
@@ -27,9 +27,6 @@ export default {
             </div>
             <div class="text-xs text-gray-500">
                 {{ speaker_event.speaker.email }}
-            </div>
-            <div class="text-xs text-gray-500">
-                {{ speaker_event.speaker.phone }}
             </div>
         </div>
     </div>

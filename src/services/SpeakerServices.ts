@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { databaseURL } from "@/config"
-import { Speaker } from "@/model/Speaker.model"
+import { Speaker, CreateSpeaker } from "@/model/Speaker.model"
+
 const source = databaseURL + '/speakers'
 
 export default {
@@ -8,7 +9,7 @@ export default {
         return axios.get(source)
     },
 
-    store(speaker: Speaker): Promise<AxiosResponse<Speaker>>{
+    store(speaker: CreateSpeaker): Promise<AxiosResponse<Speaker>>{
         const formData = new FormData();
         
         for(let p in speaker){
@@ -21,7 +22,7 @@ export default {
         return axios.post(source, formData)
     },
 
-    addSpeakerToEvent(eventId: string, speakerId: string){
+    addSpeakerToEvent(eventId: any, speakerId: string){
         return axios.post(`${source}/event/${eventId}/speaker/${speakerId}`)
     },
 
@@ -34,7 +35,7 @@ export default {
     },
 
     update(id: string, speaker: any){
-        return axios.put(`${source}/${id}`, speaker)
+        return axios.put(`${source}/${id}`, { speaker })
     },
 
     delete(id: string){

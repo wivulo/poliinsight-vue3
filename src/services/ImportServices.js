@@ -1,9 +1,11 @@
 import axios from "axios"
 import { databaseURL } from "@/config"
 
+const source = databaseURL + '/imports'
+
 export default {
     index() {
-        return axios.get(`${databaseURL}/import`)
+        return axios.get(source)
     },
 
     importParticipants(import_data){
@@ -16,18 +18,18 @@ export default {
                 formData.append(p, import_data[p]);
         }
 
-        return axios.post(`${databaseURL}/import/participants`, formData)
+        return axios.post(`${source}/participants`, formData)
     },
 
     show(id){
-        return axios.get(`${databaseURL}/import/${id}`)
+        return axios.get(`${source}/${id}`)
     },
 
     destroy(id){
-        return axios.delete(`${databaseURL}/import/${id}`)
+        return axios.delete(`${source}/${id}`)
     },
 
     getByOperator(userId){
-        return axios.get(`${databaseURL}/import/organizer/${userId}`)
+        return axios.get(`${source}/organizer/${userId}`)
     }
 }

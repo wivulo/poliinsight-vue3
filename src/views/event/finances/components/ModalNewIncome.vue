@@ -157,10 +157,10 @@ export default {
 
         <template #footer>
                 <div class="flex gap-3 justify-end">
-                    <Button severity="secondary" text @click="handleCancel" size="small" class="h-9">
+                    <Button severity="secondary" text @click="handleCancel" size="small" class="h-8">
                         <i class="fa fa-times mr-1"/> Cancelar
                     </Button>
-                    <Button @click="handleStore" size="small" class="h-9" :loading="busy">
+                    <Button @click="handleStore" size="small" class="h-8" :loading="busy">
                         <i class="fas fa-spinner animate-spin mr-1" v-if="busy" />
                         <i class="fa fa-save mr-1"/> {{ busy ? 'Salvando...' : 'Salvar' }}
                     </Button>

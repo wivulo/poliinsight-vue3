@@ -67,6 +67,7 @@ export default {
         async fetchEvent(eventId){
             try {
                 this.event.busy = true
+                console.log(eventId)
                 const responde = await EventServices.show(eventId)
 
                 if(responde.status == 200){
@@ -94,14 +95,18 @@ export default {
         ...mapActions("printer", ["handlePrint"]),
 
         handleShowModalNewSpeaker(){
-            this.$refs.ModalNewSpeaker.show()
-        }
+            this.$refs.ModalNewSpeaker.show(this.event.data.id)
+        },
+
+        handleRefresSpeakerList(){
+            this.$refs.SpeakersListInfoCard.fetchSpeakers()
+        },
     },
     watch: {
-        '$route.params.id': {
-            handler: function(eventId){
-                if(eventId){
-                    this.fetchEvent(eventId)
+        '$route': {
+            handler: function(route){
+                if(route && route.params?.id){
+                    this.fetchEvent(route.params?.id)
                 }
             },
             immediate: true
@@ -112,11 +117,11 @@ export default {
 
 <template>
     <div class="w-full py-3 px-5">
-        <ModalNewSpeaker ref="ModalNewSpeaker" />
+        <ModalNewSpeaker ref="ModalNewSpeaker" @created="handleRefresSpeakerList" />
 
         <div class="mt-4 flex gap-5">
             <div class="flex grow">
-                <CardRoot class="w-full h-full">
+                <CardRoot class="w-full min-h-[500px]">
                     <div class="flex justify-between items-end mb-1">
                         <div class="flex flex-col">
                             <p class="text-base font-semibold">Palestrantes</p>
@@ -136,7 +141,7 @@ export default {
 
                     <hr />
 
-                    <div v-if="event.data" class="my-3 flex flex-wrap gap-5">
+                    <div v-if="event.data" class="my-4 flex flex-wrap gap-5">
                         <SpeakersListInfoCard ref="SpeakersListInfoCard" />
                     </div>
 

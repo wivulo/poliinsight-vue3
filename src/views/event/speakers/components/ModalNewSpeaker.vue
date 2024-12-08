@@ -9,6 +9,7 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
 import EventServices from '@/services/EventServices';
+import { ConfirmSwal } from '@/helpers/fireSwal';
 
 const $route = useRoute();
 const emit = defineEmits(['created']);
@@ -16,7 +17,7 @@ const $toast = useToast();
 
 let visible = ref(false);
 let busy = ref(false);
-let eventId = $route.params.id;
+let eventId = ref(null);
 let event = ref({
     data: {
         name: null
@@ -26,7 +27,7 @@ let event = ref({
 
 let speaker_event = ref({
     speakerId: null,
-    eventId: $route.params.id.toString()
+    eventId: eventId.value
 });
 
 let speakers = ref({
@@ -34,16 +35,17 @@ let speakers = ref({
     busy: false,
 });
 
-const show = () => {
+const show = (id) => {
     visible.value = true;
-    fetchEvent();
+    speaker_event.value.eventId = id;
+    fetchEvent(id);
     fetchSpeakers();
 }
 
-const fetchEvent = async () => {
+const fetchEvent = async (id) => {
     try {
         event.value.busy = true
-        const response = await EventServices.show(eventId)
+        const response = await EventServices.show(id)
 
         if(response.status == 200){
             event.value.data = response.data
@@ -85,18 +87,7 @@ const handleStore = async () => {
             return;
         };
 
-        const result = await Swal.fire({
-            title: '',
-            text: 'Tem a certeza?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sim, Tenho',
-            cancelButtonText: 'Cancelar',
-            confirmButtonColor: '#EF4444',
-            cancelButtonColor: '#CBD5E1',
-            reverseButtons: true,
-        })
-
+        const result = await ConfirmSwal()
         if(!result.isConfirmed) return;
 
         busy.value = true;
@@ -186,10 +177,10 @@ defineExpose({ show });
 
         <template #footer>
             <div class="flex gap-3 justify-end">
-                <Button severity="secondary" text @click="handleCancel" size="small" class="h-9">
+                <Button severity="secondary" text @click="handleCancel" size="small" class="h-8">
                     <i class="fa fa-times mr-1"/> Cancelar
                 </Button>
-                <Button @click="handleStore" size="small" class="h-9" :loading="busy">
+                <Button @click="handleStore" size="small" class="h-8" :loading="busy">
                     <i class="fas fa-spinner animate-spin mr-1" v-if="busy" />
                     <i class="fa fa-save mr-1"/> {{ busy ? 'Salvando...' : 'Salvar' }}
                 </Button>

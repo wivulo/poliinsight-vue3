@@ -93,11 +93,11 @@ export default {
 
         <template #footer>
                 <div class="flex gap-3 justify-end">
-                    <Button text @click="handleCancel" class="w-auto h-9" size="small">
+                    <Button text @click="handleCancel" class="w-auto h-8" size="small">
                             <i class="fa fa-close mr-1" /> <span>Cancelar</span>
                         </Button>
 
-                        <Button class="text-white w-auto h-9" @click="handleDeleteTicket" size="small">
+                        <Button class="text-white w-auto h-8" @click="handleDeleteTicket" size="small">
                             <i class="fas fa-spinner animate-spin mr-1" v-if="busy" />
                             <i class="fa fa-trash mr-1"  v-else/> <span>{{ busy ? 'Eliminando' : 'Eliminar' }}</span>
                         </Button>

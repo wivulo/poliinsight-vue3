@@ -6,17 +6,17 @@ export default {
 </script>
 
 <template lang="">
-    <template v-if="status?.name === 'closed' ">
+    <template v-if="status?.name === 'happened' ">
         <div class="text-slate-500">
             Encerrado
         </div>
     </template>
-    <template v-else-if="status?.name === 'draft' ">
+    <template v-else-if="status?.name === 'upcoming' ">
         <div class="text-yellow-500">
             Brevemente
         </div>
     </template>
-    <template v-else-if="status?.name === 'open' ">
+    <template v-else-if="status?.name === 'happening' ">
         <div class="text-green-500">
             Aberto
         </div>

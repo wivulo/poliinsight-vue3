@@ -304,17 +304,17 @@ export default {
 
         <template #footer>
             <div class="flex gap-3 justify-end">
-                <Button severity="secondary" text @click="handleCancel" size="small" class="h-9">
+                <Button severity="secondary" text @click="handleCancel" size="small" class="h-8">
                     <i class="fa fa-times mr-1"/> Cancelar
                 </Button>
 
-                <Button @click="handlePreviewGenerate" size="small" class="h-9" :loading="busy" v-if="!generated_report">
+                <Button @click="handlePreviewGenerate" size="small" class="h-8" :loading="busy" v-if="!generated_report">
                     <i class="fas fa-spinner animate-spin mr-1" v-if="busy" />
                     <i class="fa fa-save mr-1"/> {{ busy ? 'Gerando...' : 'Gerar relatório' }}
                 </Button>
 
                 <div v-else class="flex gap-3">
-                    <Button severity="secondary" text @click="handleCleanGeneratedReport" size="small" class="h-9" :loading="busy">
+                    <Button severity="secondary" text @click="handleCleanGeneratedReport" size="small" class="h-8" :loading="busy">
                         <i class="fa fa-broom mr-1"/> Limpar
                     </Button>
 

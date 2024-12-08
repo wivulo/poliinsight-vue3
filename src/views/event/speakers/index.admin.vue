@@ -1,5 +1,4 @@
 <script>
-import EventServices from '@/services/EventServices';
 import { setDocumentTitleMixin } from "@/config/document.title.js"
 import { mapGetters } from 'vuex';
 import Button from 'primevue/button';
@@ -8,8 +7,9 @@ import InputText from 'primevue/inputtext';
 import InputGroup from 'primevue/inputgroup';
 import Marquee from '@/components/Marquee/index.vue';
 import { mapActions } from "vuex";
-import ModalNewSpeaker from './components/ModalNewSpeaker.vue';
 import SpeakersTable from './components/SpeakersTable.vue';
+import ModalAdminNewSpeaker from "./components/ModalAdminNewSpeaker.vue";
+import Dropdown from 'primevue/dropdown';
 
 export default {
     name: "event.speakers.admin",
@@ -17,9 +17,9 @@ export default {
     components: {
         Button,
         CardRoot: CCard.Root, Marquee,
-        InputText,
+        InputText, Dropdown,
         InputGroup,
-        ModalNewSpeaker, SpeakersTable
+        SpeakersTable, ModalAdminNewSpeaker,
     },
     data(){
         return {
@@ -48,18 +48,18 @@ export default {
 
 <template>
     <div class="w-full py-3 px-5">
-        <ModalNewSpeaker ref="ModalNewSpeaker" @created="handleRefresTableSpeakers" />
+        <ModalAdminNewSpeaker ref="ModalNewSpeaker" @created="handleRefresTableSpeakers" />
 
         <div class="mt-4 flex gap-5">
             <div class="flex grow">
-                <CardRoot class="w-full h-full">
+                <CardRoot class="w-full min-h-[500px]">
                     <div class="flex justify-between items-end mb-1">
                         <div class="flex flex-col">
                             <p class="text-base font-semibold">Palestrantes</p>
                             <p class="text-sm">Gestão de Palestrantes aqui</p>
                         </div>
 
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 no-print">
                             <Button size="small" class="h-8" @click="handleShowModalNewSpeaker" title="criar lista de palestrantes">
                                <span class="text-xs"> <i class="fa fa-plus font-light mr-1"/>adicionar</span>
                             </Button>

@@ -13,6 +13,7 @@ import ModalNewRegistration from './components/ModalNewRegistration.vue';
 import RegistrationTable from "@/views/event/components/RegistrationTable.vue"
 import TicketsTable from "@/views/event/components/TicketsTable.vue"
 import SpeakersTable from './components/SpeakersTable.vue';
+import dayjs from 'dayjs';
 
 export default {
     name: 'Event.viewer',
@@ -45,6 +46,8 @@ export default {
                 { label: 'Palestrantes', component: 'SpeakersTable', icon: 'fa fa-users', route: 'event.show.speakers' },
             ],
             tabICurrenttem: 'RegistrationTable',
+
+            showMoreDetails: false
         }
     },
     async created(){
@@ -99,6 +102,10 @@ export default {
 
         handleError(error){
             this.$toast.add({severity: 'error', summary: 'Erro', detail: error})
+        },
+
+        timeFormatter(time){
+            return dayjs(time).format('HH:mm')
         }
     }
 }
@@ -155,7 +162,7 @@ export default {
                             <p>{{ event.localization }}</p>
                         </div>
 
-                        <div class="mt-2">
+                        <div class="mt-2 min-h-160 relative">
                             <ul class="flex flex-col gap-2 text-sm">
                                 <li>
                                     <p><b>Tipo:</b></p>
@@ -182,17 +189,46 @@ export default {
                                     <p>{{ date_formatter(event.endDate) }}</p>
                                 </li>
                             </ul>
+
+                            <ul v-show="showMoreDetails" class="flex flex-col gap-2 text-sm mt-2">
+                                <li>
+                                    <p><b>Hora de inicio</b>:</p>
+                                    <p>{{ timeFormatter(event.time) }}</p>
+                                </li>
+                                <li>
+                                    <p><b>Hora de Fim</b>:</p>
+                                    <p>{{ timeFormatter(event.timeEnd) }}</p>
+                                </li>
+                                <li>
+                                    <p><b>Estado</b>:</p>
+                                    <p>{{ event.status?.name }}</p>
+                                </li>
+                            </ul>
+
+                            <div class="flex justify-end my-1">
+                                <Button text severity="secondary" size="small" @click="showMoreDetails = !showMoreDetails"
+                                    class="h-8 bg-gray-400/80 hover:bg-gray-400 border-0"
+                                >
+                                    <span class="text-slate-700 text-xs" v-if="!showMoreDetails">
+                                        <i class="fa fa-plus text-sm " /> Ver mais
+                                    </span>
+
+                                    <span class="text-slate-700 text-xs" v-else>
+                                        <i class="fa fa-minus text-sm " /> Ver menos
+                                    </span>
+                                </Button>
+                            </div>
                         </div>
 
                         <div class="flex flex-col gap-3 border-t border-zinc-200 py-2">
-                            <Button severity="secondary" size="small" class="h-9 bg-gray-400/80 hover:bg-gray-400 border-0 w-full" @click="handleShowModalNewRegistration">
+                            <Button severity="secondary" size="small" class="h-8 bg-gray-400/80 hover:bg-gray-400 border-0 w-full" @click="handleShowModalNewRegistration">
                                 <span class="text-black">
                                     <i class="fa fa-file-signature text-sm " /> Fazer inscrição
                                 </span>
                             </Button>
 
                             <router-link v-slot="{ navigate }" :to="{name: 'analise_relatorios.analitics.show', params: {id: event.id}}" custom>
-                                <Button severity="secondary" v-ripple size="small" class="h-9 bg-gray-400/80 border-0 hover:bg-gray-400 w-full p-ripple" @click="navigate">
+                                <Button severity="secondary" v-ripple size="small" class="h-8 bg-gray-400/80 border-0 hover:bg-gray-400 w-full p-ripple" @click="navigate">
                                     <span class="text-black">
                                         <i class="fa fa-map text-sm " /> Mapa do evento
                                     </span>

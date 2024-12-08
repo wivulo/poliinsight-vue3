@@ -149,17 +149,17 @@ export default {
         <div class="my-3">
             <div class="flex">
                 <InputGroup>
-                    <Button size="small" class="h-9 bg-transparent border border-surface-300 border-r-0">
+                    <Button size="small" class="h-8 bg-transparent border border-surface-300 border-r-0">
                         <i class="fa fa-search text-black" />
                      </Button>
-                    <InputText size="small" v-model="filter" id="search" type="text" placeholder="Pesquisar..." class="w-full rounded-none h-9 border-l-0" />
+                    <InputText size="small" v-model="filter" id="search" type="text" placeholder="Pesquisar..." class="w-full rounded-none h-8 border-l-0" />
 
-                    <Button size="small" class="h-9 bg-surface-500 border-none text-black hover:bg-surface-600">
+                    <Button size="small" class="h-8 bg-surface-500 border-none text-black hover:bg-surface-600">
                         <i class="fa fa-filter mr-2"></i>
                         Filtro
                     </Button>
 
-                    <SplitButton :model="searchActions" severity="secondary" size="small" />
+                    <SplitButton :model="searchActions" severity="secondary" size="small" class="h-8" />
                 </InputGroup>
             </div>
         </div>

@@ -7,13 +7,16 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import InputGroup from 'primevue/inputgroup';
 import Dropdown from 'primevue/dropdown';
+import ModalAdminDeleteSpeaker from "./ModalAdminDeleteSpeaker.vue";
+import ModalEditSpeaker from './ModalEditSpeaker.vue';
 import dayjs from 'dayjs'
 
 export default {
     name: "event.speakers.table",
     components: {
-        CardRoot: CCard.Root,
-        DataTable, Column, Button, InputText, InputGroup, Dropdown
+        CardRoot: CCard.Root, ModalAdminDeleteSpeaker,
+        DataTable, Column, Button, InputText, InputGroup, Dropdown,
+        ModalEditSpeaker
     },
     data(){
         return {
@@ -53,13 +56,25 @@ export default {
         dateFormater(date) {
             return dayjs(date).format('D MMMM, YYYY')
         },
+
+        handleEditSpeaker(speaker){
+            this.$refs.ModalEditSpeaker.show(speaker.id)
+        },
+
+        handleDeleteSpeaker(speaker){
+            this.$refs.ModalDeleteSpeaker.show(speaker.id)
+        },
+
     },
 }
 </script>
 
 <template>
     <div class="flex flex-col mt-2">
-        <div class="flex">
+        <ModalAdminDeleteSpeaker ref="ModalDeleteSpeaker" @deleted="fetchSpeakers" />
+        <ModalEditSpeaker ref="ModalEditSpeaker" @updated="fetchSpeakers" />
+
+        <div class="flex no-print">
             <InputGroup>
                 <Button size="small" class="h-9 bg-transparent border border-surface-300 border-r-0">
                     <i class="fa fa-search text-black" />
@@ -84,11 +99,41 @@ export default {
                 </template>
             </Column>
 
-            <Column field="actions" header="Ações" class="relative">
+            <Column field="actions" header="Ações" class="relative no-print">
                 <template #body="props">
-                    <Button severity="transparent" size="small" class="h-9">
-                        <i class="fa fa-eye mr-1 text-sm" />
-                    </Button>
+                    <Dropdown 
+                        :options="[
+                            {
+                                label: 'Editar',
+                                icon: 'fa fa-pencil',
+                                command: () => handleEditSpeaker(props.data)
+                            },
+                            {
+                                label: 'Eliminar',
+                                icon: 'fa fa-trash',
+                                command: () => handleDeleteSpeaker(props.data)
+                            },
+                        ]" 
+                        class="p-0 bg-primary-500"
+                        icon
+                        option-label="label"
+                    >
+                        <template #value>
+                            <div class="flex justify-center items-center text-white">
+                                <i class="fa fa-cog mr-1"/> Opções
+                            </div>
+                        </template>
+
+                        <template #option="{ option }">
+                            <div class="h-2 text-sm flex items-center text-zinc-700 py-2 w-full" @click="option.command">
+                                <i :class="option.icon" class="mr-1" /> {{ option.label }}
+                            </div>
+                        </template>
+
+                        <template #dropdownicon>
+                            <i class="fa fa-chevron-down text-white"/>
+                        </template>
+                    </Dropdown>
                 </template>
             </Column>
 

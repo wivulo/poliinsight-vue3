@@ -60,11 +60,11 @@ export default {
             dataKey="id" class="ctable" :loading="busy" lazy :rowsPerPageOptions="[5, 10, 20, 50]"
         >
 
-            <Column field="name" header="Nome" />
+            <Column field="speaker.name" header="Nome" />
 
-            <Column field="email" header="Email" />
+            <Column field="speaker.email" header="Email" />
 
-            <Column field="phone" header="Telefone" />
+            <Column field="speaker.phone" header="Telefone" />
 
             <Column field="actions" header="Ações" class="relative">
                 <template #body="props">
