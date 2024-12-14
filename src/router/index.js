@@ -304,12 +304,43 @@ const router = createRouter({
     },
     // "configuracoes.settings",
     {
-      path: '/configuracoes',
-      name: 'configuracoes.settings',
+      path: '/configuracoes/gerais',
+      name: 'setting.general',
       component: Settings,
       meta: {
         layout: 'default-layout'
       }
+    },
+
+    {
+      path: '/configuracoes/eventos',
+      name: 'setting.event',
+      component: Settings,
+      meta: {
+        layout: 'default-layout'
+      },
+      children: [
+        {
+          path: 'gerais',
+          name: 'setting.event.general',
+          component: Settings,
+        },
+        {
+          path: 'Categoria',
+          name: 'setting.event.categories',
+          component: Settings,
+        },
+        {
+          path: 'Departamentos',
+          name: 'setting.event.departments',
+          component: Settings,
+        },
+        {
+          path: 'Relatorios',
+          name: 'setting.event.reports',
+          component: Settings,
+        }
+      ]
     },
     // "configuracoes.logs",
     // {
@@ -321,11 +352,6 @@ const router = createRouter({
     //   }
     // },
 
-    {
-      path: '/configuracoes/redefinir_minha_senha',
-      name: 'configuracoes.reset_my_password',
-      component: ResetMyPassword,
-    },
     // "profile.geral",
     {
       path: '/perfil',

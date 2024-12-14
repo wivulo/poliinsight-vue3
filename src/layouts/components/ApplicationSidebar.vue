@@ -167,15 +167,17 @@ export default {
 
                             <Transition :css="false" @enter="onEnter" @leave="onLeave" :duration="{enter: 10, leave: 0}">
                                 <ul class="flex flex-col gap-3 h-0 overflow-hidden" v-if="nav.show"  @click.stop>
-                                    <li v-for="rule in nav.rules" :key="rule.code" @click.stop>
-                                        <router-link :to="{name: rule.route}" class="app-sidebar-nav-link pl-8" @click.stop>
-                                            <span class="app-sidebar-nav-link-text hover:text-black hover:font-semibold"
-                                                :class="{'text-zinc-950 font-semibold': $route.fullPath.includes(rule.link)}"
-                                            >
-                                                {{rule.name}}
-                                            </span>
-                                        </router-link>
-                                    </li>
+                                    <template v-for="rule in nav.rules" :key="rule.code">
+                                        <li v-if="rule.visible"  @click.stop>
+                                            <router-link :to="{name: rule.route}" class="app-sidebar-nav-link pl-8" @click.stop>
+                                                <span class="app-sidebar-nav-link-text hover:text-black hover:font-semibold"
+                                                    :class="{'text-zinc-950 font-semibold': $route.fullPath.includes(rule.link)}"
+                                                >
+                                                    {{rule.name}}
+                                                </span>
+                                            </router-link>
+                                        </li>
+                                    </template>
                                 </ul>
                             </Transition>
                         </li>
