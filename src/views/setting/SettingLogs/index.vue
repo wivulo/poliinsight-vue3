@@ -1,6 +1,6 @@
 <script>
 export default {
-    name: "setting.settings",
+    name: "setting.logs",
 }
 </script>
 

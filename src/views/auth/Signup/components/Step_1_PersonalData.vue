@@ -64,7 +64,7 @@ export default {
             <label for="birthDate" class="flex-grow pl-3">
                 <i class="fas fa-calendar me-1 text-zinc-500" /> <small> Data de nascimento </small>
             </label>
-            <Calendar id="birthDate" v-model="user.birthDate" class="flex-grow border-zinc-300 h-9 focus:outline-zinc-400" inputClass="hover:border-zinc-400" placeholder="ex.: 10/12/1998" />
+            <Calendar id="birthDate" v-model="user.birthDate" class="flex-grow border-zinc-300 h-9 focus:outline-zinc-400" inputClass="hover:border-zinc-400" placeholder="ex.: 10/12/1998" dateFormat="dd/mm/yyy" />
         </div>
         
         <div class="flex gap-2 items-center mb-3">

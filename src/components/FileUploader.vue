@@ -12,7 +12,11 @@ export default {
         minh: {
             type: Number,
             default: 400
-        }
+        },
+        custom: {
+            type: Boolean,
+            default: false
+        },
     },
     components: {
         Button,
@@ -66,7 +70,7 @@ export default {
 </script>
 
 <template>
-<div class="flex items-center w-full max-w-[439px] max-h-[326px] min-w-[269px] min-h-[326px]">
+<div class="flex items-center min-w-[269px] min-h-[326px]" :class="{'max-w-[439px] max-h-[326px]': !custom}">
     <label v-if="!file" for="dropzone-file" class="flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600" @dragover.prevent @drop="onDrop">
         <div class="flex flex-col items-center justify-center pt-5 pb-6 px-2">
             <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">

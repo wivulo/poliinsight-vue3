@@ -4,12 +4,12 @@ import Toast from 'primevue/toast';
 import { useRouter } from 'vue-router';
 import { mapGetters } from 'vuex';
 import { useVuelidate } from '@vuelidate/core'
-
+import ConfirmDialog from 'primevue/confirmdialog';
 
 export default defineComponent({
   name: "App",
   components: {
-    Toast,
+    Toast, ConfirmDialog
   },
   setup() {
     const router = useRouter();
@@ -47,6 +47,7 @@ export default defineComponent({
   <div class="h-screen overflow-y-auto">
     <Toast />
     <!-- <RouterView /> -->
+    <ConfirmDialog></ConfirmDialog>
     <transition name="page" mode="out-in">
       <component :is="layout" v-if="layout" :key="layout" />
     </transition>

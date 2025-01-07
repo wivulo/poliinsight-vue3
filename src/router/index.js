@@ -36,8 +36,8 @@ import Reports from "@/views/statistic_repots/reports/index.vue"
 import Import from "@/views/data/import/index.vue"
 import Export from "@/views/data/export/index.vue"
 
-import Settings from "@/views/setting/settings/index.vue"
-// import Logs from "@/views/setting/logs/index.vue"
+import Settings from "@/views/setting/general/index.vue"
+import SettingLogs from "@/views/setting/SettingLogs/index.vue"
 import ResetMyPassword from "@/views/setting/password/index.vue"
 
 import Users from "@/views/seguranca/users/index.vue"
@@ -47,6 +47,12 @@ import Groups from "@/views/seguranca/groups/index.vue"
 import Profile from "@/views/profile/index.vue"
 
 import EventViewer from "@/views/event/show.vue"
+
+import ProfileSettings from "@/views/setting/general/components/ProfileSettings.vue"
+import AppearanceSettings from '@/views/setting/general/components/apparence/AppearanceSettings.vue'
+import NotificationsSettings from '@/views/setting/general/components/NotificationsSettings.vue'
+import SecuritySettings from '@/views/setting/general/components/SecuritySettings.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -309,7 +315,29 @@ const router = createRouter({
       component: Settings,
       meta: {
         layout: 'default-layout'
-      }
+      },
+      children: [
+        {
+          path: 'perfil',
+          name: 'configuracoes.general.profile',
+          component: ProfileSettings,
+        },
+        {
+          path: 'aparencia',
+          name: 'configuracoes.general.appearance',
+          component: AppearanceSettings,
+        },
+        {
+          path: 'notificacoes',
+          name: 'configuracoes.general.notifications',
+          component: NotificationsSettings,
+        },
+        {
+          path: 'seguranca',
+          name: 'configuracoes.general.security',
+          component: SecuritySettings,
+        }
+      ]
     },
 
     {
@@ -342,15 +370,15 @@ const router = createRouter({
         }
       ]
     },
-    // "configuracoes.logs",
-    // {
-    //   path: '/configuracoes/logs',
-    //   name: 'configuracoes.logs',
-    //   component: Logs,
-    //   meta: {
-    //     layout: 'default-layout'
-    //   }
-    // },
+
+    {
+      path: '/configuracoes/logs',
+      name: 'setting.logs',
+      component: SettingLogs,
+      meta: {
+        layout: 'default-layout'
+      }
+    },
 
     // "profile.geral",
     {

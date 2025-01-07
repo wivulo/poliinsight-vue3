@@ -12,5 +12,13 @@ export function useNotification() {
     });
   };
 
-  return { notify };
+  const notifySuccess = (detail: string = "Operação concluida!") => notify("success", "Sucesso", detail);
+
+  const notifyInfo = (summary: string, detail: string) => notify("info", summary, detail);
+
+  const notifyWarn = (summary: string, detail: string) => notify("warn", summary, detail);
+
+  const notifyError = (detail: string = "Ocorreu um erro inesperado. Por favor, tente novamente.") => notify("error", "Erro", detail);
+
+  return { notify, notifySuccess, notifyInfo, notifyWarn, notifyError };
 }

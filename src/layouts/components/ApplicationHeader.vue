@@ -76,7 +76,8 @@ export default {
                                 <template #value>
                                     <div class="flex gap-1 items-center h-6 pt-[2px]">
                                         <div class="h-6 flex items-center">
-                                            <Avatar :label="user.name.charAt(0).toUpperCase()" class="h-5 text-sm" shape="circle"  />
+                                            <Avatar v-if="user.imageURL" :image="user.imageURL" shape="circle" class="cursor-pointer hover:scale-110 transform transition-transform"/>
+                                            <Avatar v-else :label="user.name.charAt(0).toUpperCase()" class="h-5 text-sm" shape="circle"  />
                                         </div>
                                         <div class="flex items-center h-6">
                                             <!-- <p class="text-md">{{ user.name }}</p> -->
