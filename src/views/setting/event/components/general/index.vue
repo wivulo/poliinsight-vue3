@@ -1,16 +1,18 @@
-<script setup lang="ts">
-import { ref } from 'vue';
+<script setup>
+import { ref, defineAsyncComponent } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import SettingService from '@/services/SettingService';
+import DepartamentService from '@/services/DepartamentService';
 import SettingGroupItemContainer from '@/views/setting/components/SettingGroupItemContainer.vue';
-import ApparenceSettingItem from './ApparenceSettingItem.vue';
 import ModalChanceSettingItem from '../../../components/ModalChanceSettingItem.vue';
 import { useNotification } from '@/composables/useNotification';
+import { ConfirmSwal } from '@/helpers/fireSwal';
+import { SwalConfirmAlert } from '@/helpers/swalConfirmAlert';
 
 const router = useRouter()
 const store = useStore()
-const { notifyError } = useNotification()
+const { notifyError, notifySuccess } = useNotification()
 
 const settings = ref([])
 const busy = ref(false)
@@ -28,29 +30,44 @@ const fetchSettingGroupitems = async () => {
 }
 fetchSettingGroupitems()
 
-const ModalChanceSettingItemRef = ref(null)
-const handleChangeSetting = (setting: any) => {
-    ModalChanceSettingItemRef.value.show('general', 'apparence', setting)
+const importComponent = (component) => {
+    return defineAsyncComponent(() => import(`./${component}SettingItem.vue`))
+}
+
+const handleUpdateSetting = async (setting) => {
+    try {
+        if(!await SwalConfirmAlert()) return
+
+        busy.value = true
+        const response = await SettingService.updateGroupItem(setting)
+
+        if(response.status === 200) {
+            notifySuccess('Configuração atualizada com sucesso')
+            fetchSettingGroupitems()
+            return
+        }
+
+        throw new Error('Erro ao atualizar configuração')
+    } catch (error) {
+        console.error(error)
+        notifyError()
+    } finally {
+        busy.value = false
+    }
 }
 
 </script>
 
 <template>
     <div class="flex flex-col gap-y-5 text-sm">
-        <ModalChanceSettingItem ref="ModalChanceSettingItemRef" @update:settingItem="fetchSettingGroupitems" />
-        
         <SettingGroupItemContainer
             v-for="setting in settings" :key="`${setting.id}-${setting.value}`"
             v-show="setting.roles.includes(store.getters['auth/user'].group?.name.toLowerCase())"
-            :label="setting.label" showUpdateButton
+            :label="setting.label"
             description=""
-            @setting:update="() => handleChangeSetting(setting)"
+            @setting:update="() => handleUpdateSetting(setting)"
         >
-            <ApparenceSettingItem 
-                :key="`${setting.id}-${setting.value}`" 
-                :setting class="flex justify-center text-sm"
-                @update:setting="fetchSettingGroupitems" 
-            />
+            <component :is="importComponent(setting.key)" :setting="setting" @update:setting="handleUpdateSetting" />
         </SettingGroupItemContainer>
     </div>
 </template>

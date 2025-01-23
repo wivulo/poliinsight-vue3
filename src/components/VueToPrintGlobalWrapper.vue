@@ -30,7 +30,7 @@ export default {
         <p>Preparando impressão...</p>
       </div>
 
-      <div v-else ref="componentRef" class="w-full">
+      <div v-else ref="componentRef" class="w-full min-h-full">
         <div class="print-only mb-3 w-full">
             <PrinterHeader type="teste disso" />
         </div>

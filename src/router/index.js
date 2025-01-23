@@ -1,9 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { store } from '@/store'
 import HomeView from '../views/HomeView.vue'
 import Login from '@/views/auth/Login/index.vue'
 import Signup from '@/views/auth/Signup/index.vue'
 import ForgotPassword from '@/views/auth/Password/ForgotPassword.vue'
 import ResetPasswordEmail from '@/views/auth/Password/ResetPasswordEmail.vue'
+
+import Error401 from '@/views/error/Error401.vue'
 
 import AdminUserManagment from '@/views/admin/AdminUserManagment.vue';
 import AdminListEvent from '@/views/admin/AdminListEvent.vue';
@@ -37,6 +40,7 @@ import Import from "@/views/data/import/index.vue"
 import Export from "@/views/data/export/index.vue"
 
 import Settings from "@/views/setting/general/index.vue"
+import SettingsEvent from "@/views/setting/event/index.vue"
 import SettingLogs from "@/views/setting/SettingLogs/index.vue"
 import ResetMyPassword from "@/views/setting/password/index.vue"
 
@@ -45,14 +49,9 @@ import Permissions from "@/views/seguranca/rules/index.vue"
 import Groups from "@/views/seguranca/groups/index.vue"
 
 import Profile from "@/views/profile/index.vue"
+import NormalProfile from "@/views/profile/normal.vue"
 
 import EventViewer from "@/views/event/show.vue"
-
-import ProfileSettings from "@/views/setting/general/components/ProfileSettings.vue"
-import AppearanceSettings from '@/views/setting/general/components/apparence/AppearanceSettings.vue'
-import NotificationsSettings from '@/views/setting/general/components/NotificationsSettings.vue'
-import SecuritySettings from '@/views/setting/general/components/SecuritySettings.vue'
-
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -94,14 +93,25 @@ const router = createRouter({
         layout: 'empty-layout'
       }
     },
-
+    {
+      path: '/error/401', name: 'error.401', component: Error401,
+      meta: {
+        layout: 'empty-layout'
+      }
+    },
     {
       path: '/dashboard/overview',
       name: 'dashboard.overview',
       component: DashboardGeral,
       meta: {
         layout: 'default-layout'
-      }
+      },
+      beforeEnter: (to, from) => {
+        const isAdminOrOrganizer = store.getters['auth/isAdminOrOrganizer']
+        if (!isAdminOrOrganizer) {
+          return { name: 'home' }
+        }
+      },
     },
 
     //////////////////////////////////////////////////////////////////////////////
@@ -121,7 +131,13 @@ const router = createRouter({
       component: AdminListEvent,
       meta: {
         layout: 'default-layout'
-      }
+      },
+      beforeEnter: (to, from) => {
+        const isAdminOrOrganizer = store.getters['auth/isAdmin']
+        if (!isAdminOrOrganizer) {
+          return { name: 'home' }
+        }
+      },
     },
     {
       path: '/gestao-eventos/meus-eventos',
@@ -129,7 +145,13 @@ const router = createRouter({
       component: MyEvents,
       meta: {
         layout: 'default-layout'
-      }
+      },
+      beforeEnter: (to, from) => {
+        const isAdminOrOrganizer = store.getters['auth/isAdminOrOrganizer']
+        if (!isAdminOrOrganizer) {
+          return { name: 'home' }
+        }
+      },
     },
     {
       path: '/gestao-eventos/meus-eventos/:id', name: 'event.show', component: EventViewer,
@@ -146,7 +168,13 @@ const router = createRouter({
           name: 'event.show.tickets',
           component: TicketsTable,
         }
-      ]
+      ],
+      beforeEnter: (to, from) => {
+        const isAdminOrOrganizer = store.getters['auth/isAdminOrOrganizer']
+        if (!isAdminOrOrganizer) {
+          return { name: 'home' }
+        }
+      },
     },
     // "gestao-eventos.calendar",
     {
@@ -163,7 +191,13 @@ const router = createRouter({
       component: SpeakersAdmin,
       meta: {
         layout: 'default-layout'
-      }
+      },
+      beforeEnter: (to, from) => {
+        const isAdminOrOrganizer = store.getters['auth/isAdmin']
+        if (!isAdminOrOrganizer) {
+          return { name: 'home' }
+        }
+      },
     },
     {
       path: '/gestao-de-eventos/palestrantes',
@@ -288,7 +322,13 @@ const router = createRouter({
       component: AdminUserManagment,
       meta: {
         layout: 'default-layout'
-      }
+      },
+      beforeEnter: (to, from) => {
+        const isAdminOrOrganizer = store.getters['auth/isAdmin']
+        if (!isAdminOrOrganizer) {
+          return { name: 'home' }
+        }
+      },
     },
     // "seguranca.permissions",
     {
@@ -297,7 +337,13 @@ const router = createRouter({
       component: Permissions,
       meta: {
         layout: 'default-layout'
-      }
+      },
+      beforeEnter: (to, from) => {
+        const isAdminOrOrganizer = store.getters['auth/isAdmin']
+        if (!isAdminOrOrganizer) {
+          return { name: 'home' }
+        }
+      },
     },
     // "seguranca.groups",
     {
@@ -306,7 +352,13 @@ const router = createRouter({
       component: Groups,
       meta: {
         layout: 'default-layout'
-      }
+      },
+      beforeEnter: (to, from) => {
+        const isAdminOrOrganizer = store.getters['auth/isAdmin']
+        if (!isAdminOrOrganizer) {
+          return { name: 'home' }
+        }
+      },
     },
     // "configuracoes.settings",
     {
@@ -315,60 +367,16 @@ const router = createRouter({
       component: Settings,
       meta: {
         layout: 'default-layout'
-      },
-      children: [
-        {
-          path: 'perfil',
-          name: 'configuracoes.general.profile',
-          component: ProfileSettings,
-        },
-        {
-          path: 'aparencia',
-          name: 'configuracoes.general.appearance',
-          component: AppearanceSettings,
-        },
-        {
-          path: 'notificacoes',
-          name: 'configuracoes.general.notifications',
-          component: NotificationsSettings,
-        },
-        {
-          path: 'seguranca',
-          name: 'configuracoes.general.security',
-          component: SecuritySettings,
-        }
-      ]
+      }
     },
 
     {
       path: '/configuracoes/eventos',
       name: 'setting.event',
-      component: Settings,
+      component: SettingsEvent,
       meta: {
         layout: 'default-layout'
-      },
-      children: [
-        {
-          path: 'gerais',
-          name: 'setting.event.general',
-          component: Settings,
-        },
-        {
-          path: 'Categoria',
-          name: 'setting.event.categories',
-          component: Settings,
-        },
-        {
-          path: 'Departamentos',
-          name: 'setting.event.departments',
-          component: Settings,
-        },
-        {
-          path: 'Relatorios',
-          name: 'setting.event.reports',
-          component: Settings,
-        }
-      ]
+      }
     },
 
     {
@@ -377,16 +385,31 @@ const router = createRouter({
       component: SettingLogs,
       meta: {
         layout: 'default-layout'
-      }
+      },
+      beforeEnter: (to, from) => {
+        const isAdminOrOrganizer = store.getters['auth/isAdmin']
+        if (!isAdminOrOrganizer) {
+          return { name: 'home' }
+        }
+      },
     },
 
     // "profile.geral",
     {
-      path: '/perfil',
+      path: '/perfil/:id',
       name: 'profile.geral',
       component: Profile,
       meta: {
         layout: 'default-layout'
+      }
+    },
+    {
+      path: '/perfil-de-usuario/:id',
+      name: 'profile',
+      component: NormalProfile,
+      meta: {
+        layout: 'navbar-layout',
+        title: 'Perfil de usuário'
       }
     },
 

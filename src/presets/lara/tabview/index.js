@@ -88,9 +88,6 @@ export default {
             class: [
                 'relative',
 
-                // Font
-                'font-bold',
-
                 // Flexbox and Alignment
                 'flex items-center',
 
@@ -141,7 +138,7 @@ export default {
         content: {
             class: [
                 // Spacing
-                'p-5',
+                'py-5 px-2',
 
                 // Shape
                 'rounded-b-md',

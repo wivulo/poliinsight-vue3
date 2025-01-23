@@ -1,11 +1,12 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, defineAsyncComponent, markRaw } from 'vue';
 import { useDocumentTitle } from '@/composables/useDocumentTitle'
 import { useRouter } from 'vue-router';
 import { useRequest } from '@/composables/useRequest';
 import SettingService from '@/services/SettingService';
 import CardRoot from '@/components/PCard/CardRoot.vue';
-import TabMenu from 'primevue/tabmenu';
+import TabView from 'primevue/tabview';
+import TabPanel from 'primevue/tabpanel';
 
 const { execute } = useDocumentTitle()
 execute('Defiçinições Gerais')
@@ -14,23 +15,26 @@ const router = useRouter()
 const { executeRequest } = useRequest()
 
 const tabItems = ref(null);
-(async () => {
-    if (!router.currentRoute.value.name.toString().match(/configuracoes\.general\..*/))
-        router.push({name: 'configuracoes.general.profile'})
 
+async function fetchSettings(){
     tabItems.value = await executeRequest(
         () => SettingService.ShowGroupsBySettingCode('GENERAL'),
         null,
         'Erro ao buscar as configurações'
     )
 
+    if (!router.currentRoute.value.query.groupid)
+        router.push({query: {groupid: tabItems.value[0].id}})
+
     tabItems.value = tabItems.value.map(item => {
         return {
             ...item,
             label: item.name,
+            component: markRaw(defineAsyncComponent(() => import(item.component)))
         }
     })
-})();
+}
+fetchSettings()
 
 </script>
 
@@ -45,38 +49,22 @@ const tabItems = ref(null);
             </div>
 
             <div class="flex flex-col gap-5 mt-5">
-                <TabMenu :model="tabItems">
-                    <template #item="{ item, props }">
-                        <div v-ripple @click="() => router.push({name: item.code, query: {groupid: item.id}})" class="px-3 py-[.4rem] text-sm border border-gray-400/40  hover:bg-red-700/50 cursor-pointer hover:text-white"
-                            :class="{'bg-[#DA5551] text-white': item.code == router.currentRoute.value.name}">
-                            <span :class="'mr-1 fa ' + item.icon" />
-                            <span v-bind="props.label">{{ item.label }}</span>
-                        </div>
-
-                        <!-- <router-link v-slot="{ href, navigate }" :to="{name: item.code}" custom>
-                            <a v-ripple :href="href" @click="navigate" class="px-3 py-1 text-sm border border-gray-400/40  hover:bg-red-700/50 cursor-pointer hover:text-white rounded-none"
-                                :class="{'bg-[#DA5551] text-white': item.code == router.currentRoute.value.name}"
-                            >
+                <TabView id="custom_tabview" :unstyled="true">
+                    <TabPanel v-for="item in tabItems" :key="item.id">
+                        <template #header>
+                            <div @click="() => router.push({query: {groupid: item.id}})">
                                 <span :class="'mr-1 fa ' + item.icon" />
-                                <span v-bind="props.label">{{ item.label }}</span>
-                            </a>
-                        </router-link> -->
-                    </template>
-                </TabMenu>
+                                <span >{{ item.label }}</span>
+                            </div>
+                        </template>
 
-                <div>
-                    <router-view v-slot="{ Component }">
                         <transition>
-                            <component :is="Component" ref="settingGroup" />
+                            <component :is="item.component" ref="settingGroup" />
                         </transition>
-                    </router-view>
-                </div>
+                    </TabPanel>
+                </TabView>
             </div>
 
         </CardRoot>
     </div>
 </template>
-
-<style>
-    
-</style>

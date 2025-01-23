@@ -1,4 +1,5 @@
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
 import SpeakerServices from '@/services/SpeakerServices';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -6,43 +7,38 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import InputGroup from 'primevue/inputgroup';
 import Dropdown from 'primevue/dropdown';
+import { useNotification } from '@/composables/useNotification';
+import { useRoute } from 'vue-router';
 
-export default {
-    name: "event.show.speakers",
-    components: {
-        DataTable, Column, Button, InputText, InputGroup, Dropdown
-    },
-    data(){
-        return {
-            busy: false,
-            speakers: [],
-            totalRecods: 0,
-            filter: null,
-        }
-    },
-    created(){
-        this.findEventspeakers();
-    },
-    methods: {
-        async findEventspeakers(){
-            try {
-                this.busy = true
-                const response = await SpeakerServices.showByEvent(this.$route.params.id)
-                this.speakers = response.data;
-                this.totalRecods = this.speakers.length ?? 0;
-            } catch (error) {
-                this.$toast.add({severity:'error', summary:'Erro', detail: 'Erro ao buscar os speakers', life: 3000});
-            } finally {
-                this.busy = false
-            }
-        },
+const {notifyError} = useNotification();
+const route = useRoute();
 
-        findData(){
-            this.findEventspeakers()
-        },
+const busy = ref(false);
+const speakers = ref([]);
+const totalRecods = ref(0);
+const filter = ref(null);
+
+const findEventspeakers = async () => {
+    try {
+        busy.value = true;
+        const response = await SpeakerServices.showByEvent(route.params.id);
+        speakers.value = response.data;
+        totalRecods.value = speakers.value.length ?? 0;
+    } catch (error) {
+        notifyError('Erro ao buscar os speakers');
+        console.log(error);
+    } finally {
+        busy.value = false;
     }
-}
+};
 
+const findData = () => {
+    findEventspeakers();
+};
+
+onMounted(() => {
+    findEventspeakers();
+});
 </script>
 
 <template>
@@ -76,7 +72,7 @@ export default {
 
             <template #empty>
                 <div class="flex items-center justify-center h-10">
-                    <p class="text-gray-400">Nenhum dado disponível</p>
+                    <p class="text-gray-400">Nenhuma informação disponível</p>
                 </div>
             </template>
         </DataTable>

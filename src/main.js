@@ -8,6 +8,7 @@ import "@/plugin/axios"
 
 //PrimeVue
 import PrimeVue from 'primevue/config';
+import Tooltip from 'primevue/tooltip';
 import Lara from '@/presets/lara';
 import ToastService from 'primevue/toastservice';
 import Ripple from 'primevue/ripple';
@@ -49,6 +50,11 @@ const vueHtmlToPaperOptions = {
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
 
+//dayjs
+import dayjs from 'dayjs';
+import 'dayjs/locale/pt'; // Importa o português
+dayjs.locale('pt');
+
 export const app = createApp(App)
 
 app.use(router)
@@ -60,6 +66,8 @@ app.use(PrimeVue, {
 });
 app.use(ToastService);
 app.directive('ripple', Ripple);
+app.directive('tooltip', Tooltip);
+
 app.use(ConfirmationService);
 
 // app.use(BootstrapVue)
@@ -86,5 +94,25 @@ app.use(VueHtmlToPaper, vueHtmlToPaperOptions)
 
 //Vue Multiselect
 app.component('Multiselect', Multiselect)
+
+//dayjs
+app.config.globalProperties.$dayjs = dayjs;
+app.directive('formatDate', {
+  mounted(el, binding) {
+    el.innerHTML = dayjs(binding.value).format('dddd, D [de] MMMM');
+  }
+})
+
+app.directive('formatDateDDMMMYYY', {
+  mounted(el, binding) {
+    el.innerHTML = dayjs(binding.value).format('DD [de] MMMM YYYY');
+  }
+})
+
+app.directive('formatTime', {
+  mounted(el, binding) {
+    el.innerHTML = dayjs(binding.value).format('HH:mm');
+  }
+})
 
 app.mount('#app')

@@ -34,5 +34,9 @@ export default {
             oldPassword,
             newPassword
         })
+    },
+
+    search(params = null) {
+        return axios.post(`${baseUrl}/search`, { params })
     }
 }

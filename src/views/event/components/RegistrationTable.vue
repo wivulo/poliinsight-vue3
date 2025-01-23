@@ -1,4 +1,5 @@
-<script>
+<script setup>
+import { ref, onMounted, shallowRef } from 'vue';
 import EventConfigServices from '@/services/EventConfigServices.js';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -9,60 +10,47 @@ import Dropdown from 'primevue/dropdown';
 import RegistrationTableTeam from './RegistrationTableTeam.vue';
 import RegistrationTableSingle from './RegistrationTableSingle.vue';
 
-export default {
-    name: "event.show.registrations",
-    props: {
-        eventType: {
-            type: String,
-            required: true
-        }
-    },
-    components: {
-        DataTable, Column, Button, InputText, InputGroup, Dropdown,
-        RegistrationTableTeam, RegistrationTableSingle
-    },
-    data(){
-        return {
-            busy: false,
-            filter: null,
-
-            eventConfig: {
-                data: {},
-                busy: false
-            },
-            
-            activeTable: null
-        }
-    },
-    async created(){
-        await this.getEventConfig();
-    },
-    methods: {
-        async getEventConfig(){
-            try {
-                this.busy = true
-                const responde = await EventConfigServices.showByEventType(this.eventType)
-                
-                const conf = responde.data
-                
-                if(conf.registrationType == 'single' || conf.registrationType == 'hibrido'){
-                    this.activeTable = 'RegistrationTableSingle'
-                }else{
-                    this.activeTable = 'RegistrationTableTeam'
-                }
-            } catch (error) {
-                this.handleError('Erro ao buscar configuração do evento')
-            } finally {
-                this.busy = false
-            }
-        },
-
-        updateComponent(){
-            this.$refs.componentTabela.updateComponent()
-        }
+const props = defineProps({
+    eventType: {
+        type: String,
+        required: true
     }
-}
+});
 
+const busy = ref(false);
+const filter = ref(null);
+const eventConfig = ref({
+    data: {},
+    busy: false
+});
+const activeTable = ref(null);
+
+const getEventConfig = async () => {
+    try {
+        busy.value = true;
+        const response = await EventConfigServices.showByEventType(props.eventType);
+        const conf = response.data;
+
+        if (conf.registrationType == 'single' || conf.registrationType == 'hibrido') {
+            activeTable.value = RegistrationTableSingle;
+        } else {
+            activeTable.value = RegistrationTableTeam;
+        }
+    } catch (error) {
+        handleError('Erro ao buscar configuração do evento');
+    } finally {
+        busy.value = false;
+    }
+};
+
+const componentTabelaRef = ref(null);
+const updateComponent = () => {
+    componentTabelaRef.value.updateComponent();
+};
+
+onMounted(async () => {
+    await getEventConfig();
+});
 </script>
 
 <template>
@@ -77,7 +65,7 @@ export default {
         </div>
 
         <template v-if="activeTable">
-            <component ref="componentTabela" :is="activeTable" />
+            <component ref="componentTabelaRef" :is="activeTable" />
         </template>
 
         <template v-else>

@@ -14,6 +14,10 @@ export default {
         return axios.get(`${databaseURL}/registrations/event/${eventId}`)
     },
 
+    showByUser(userId){
+        return axios.get(`${databaseURL}/registrations/user/${userId}`)
+    },
+
     store(data){
         return axios.post(`${databaseURL}/registrations`, {
             registration: data

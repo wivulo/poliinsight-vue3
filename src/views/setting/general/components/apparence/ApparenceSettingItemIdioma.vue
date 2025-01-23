@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
+
 const props = defineProps(['setting']);
+const emit = defineEmits(['update:setting']);
 
 const langs = [
     {
@@ -19,13 +21,11 @@ const langs = [
 
 const lang = langs.find((lang) => lang.value === props.setting.value) || langs[0];
 
-const changeLang = (lang: {name: string, value: string}) => {
-    lang = lang;
-    props.setting.value = lang.value;
+const updateSetting = (lang: any) => {
+    lang = lang
+    const settingUpdated = { ...props.setting, value: lang.value };
+    emit('update:setting', settingUpdated);
 }
-
-
-
 
 </script>
 
@@ -43,6 +43,7 @@ const changeLang = (lang: {name: string, value: string}) => {
             selectLabel="Selecionar"
             deselectLabel="Remover"
             selectedLabel="Selecionado"
+            @select="updateSetting"
         >
             <template #option="{ option }">
                 <div class="flex text-slate-800 text-sm">

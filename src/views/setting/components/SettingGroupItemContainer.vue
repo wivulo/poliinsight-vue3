@@ -26,7 +26,9 @@ const handleUpdate = () => {
             <p class="text-xs">{{ description }}</p>
         </div>
 
-        <div class="col-span-2 flex justify-center">
+        <div class="col-span-2 flex" 
+            :class="{ 'col-span-3 justify-end': !showButton && !showUpdateButton, 'justify-center': showButton || showUpdateButton }"
+        >
             <slot />
         </div>
 

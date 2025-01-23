@@ -1,45 +1,46 @@
-<script>
-import { defineComponent, computed } from 'vue';
+<script setup >
+import { computed, watch } from 'vue';
 import Toast from 'primevue/toast';
 import { useRouter } from 'vue-router';
-import { mapGetters } from 'vuex';
 import { useVuelidate } from '@vuelidate/core'
-import ConfirmDialog from 'primevue/confirmdialog';
+import { useStore } from 'vuex';
 
-export default defineComponent({
-  name: "App",
-  components: {
-    Toast, ConfirmDialog
-  },
-  setup() {
-    const router = useRouter();
-    const defaultLayout = 'default-layout';
+const router = useRouter();
+const v$ = useVuelidate();
+const store = useStore();
 
-    const layout = computed(() => {
-      return router.currentRoute.value.meta.layout || defaultLayout;
-    });
+const defaultLayout = 'default-layout';
+const layout = computed(() => {
+  return router.currentRoute.value.meta.layout || defaultLayout;
+});
 
-    return {
-      layout,
-      v$: useVuelidate(),
-    };
-  },
-  computed: {
-        ...mapGetters({
-            user: 'auth/user',
-            token: 'auth/token',
-        }),
-  },
-  // mounted() {
-  //   this.$primevue.config.ripple = true;
-  // },
-  watch: {
-    $route(to, from) {
-      if (!this.token && !this.user) {
-        this.$router.push({ name: 'login' });
+const user = computed(() => store.getters['auth/user']);
+const busy = computed(() => store.getters['auth/busy']);
+const token = computed(() => store.getters['auth/token']);
+
+
+watch(() => router.currentRoute.value, (to, from) => {
+  //array de rotas que não precisam de autenticação
+  const publicRoutes = ['login', 'signup', 'forgot.password', 'reset.password', 'home'];
+  
+  if (!publicRoutes.includes(to.name)) {
+    const unwatch = watch(busy, (newBusy) => {
+      if (!newBusy) {
+        if (!token.value || !user.value) {
+          router.push({ name: 'login' });
+        }
+        unwatch();
       }
-    },
-  },
+    });
+  }
+});
+
+defineExpose({
+  v$,
+  router,
+  user,
+  token,
+  layout,
 });
 </script>
 
@@ -47,7 +48,6 @@ export default defineComponent({
   <div class="h-screen overflow-y-auto">
     <Toast />
     <!-- <RouterView /> -->
-    <ConfirmDialog></ConfirmDialog>
     <transition name="page" mode="out-in">
       <component :is="layout" v-if="layout" :key="layout" />
     </transition>

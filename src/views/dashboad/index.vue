@@ -22,6 +22,7 @@ export default {
     computed: {
         ...mapGetters({
             user: 'auth/user',
+            group: 'group/workGroup'
         }),
     }
 }
@@ -31,9 +32,9 @@ export default {
      <div class="flex flex-col py-3 px-5 gap-3 w-full">
         <template v-if="user">
             <div>
-                <AdminOverviewInfo v-if="user?.groupId == 1" />
+                <AdminOverviewInfo v-if="group?.name === 'administrator'" />
 
-                <OrganizerOverviewInfo v-else-if="user?.groupId == 2"/>
+                <OrganizerOverviewInfo v-else-if="group?.name === 'organizador'"/>
 
                 <div v-else>
                     Normal

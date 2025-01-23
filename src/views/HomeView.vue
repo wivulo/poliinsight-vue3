@@ -1,26 +1,33 @@
-<script>
+<script setup>
+import { ref } from 'vue';
 import CarouselView from '@/components/Carousel/CarouselView.vue'
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import Image from 'primevue/image';
 import logo from "@/assets/logo_without_bg.png"
+import EventServices from '@/services/EventServices';
 
+document.title = 'Página Inicial';
 
-export default {
-  name: "Home",
-  components: {
-    Image,
-    CarouselView, Card, Button
-  },
-  data(){
-    return {
-      logo: logo
-    }
-  },
-  created() {
-    document.title = 'Página Inicial';
-  }
+// const logo = ref(logo)
+const events = ref([])
+const busy = ref(false);
+
+function fetchEvents() {
+  busy.value = true;
+  EventServices.public_index()
+    .then((response) => {
+      events.value = response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      busy.value = false;
+    });
 }
+fetchEvents();
+
 </script>
 
 <template>
@@ -32,18 +39,18 @@ export default {
       </div>
     </div>
 
-    <div class="mb-4 relative">
+    <div class="mb-10 relative">
       <CarouselView />
     </div>
 
-    <div class="mb-3 px-4">
+    <div class="mb-3 px-4 mt-10">
       <div class="my-2 mb-2 border-b border-surface-100">
-        <p class="text-lg">Eventos recentes</p>
+        <p class="text-base">Eventos recentes</p>
       </div>
 
         <div>
           <Card
-            style="max-width: 20rem;"
+            style="max-width: 15rem;"
             class="mb-2"
           >
             <template #header>
@@ -51,12 +58,10 @@ export default {
             </template>
 
             <template #content>
-              <p class="my-3 text-base">
+              <p class="my-3 text-sm">
                 Some quick example text to build on the card title and make up 
                 the bulk of the card's content.
               </p>
-    
-              <Button href="#" severity="Primary">Go somewhere</Button>
             </template>
           </Card>
         </div>
@@ -65,7 +70,7 @@ export default {
 
     <div class="mb-3 px-4">
       <div class="my-2 mb-2 border-b border-surface-100">
-        <p class="text-lg">
+        <p class="text-base">
           Eventos da Engenharia
         </p>
       </div>
@@ -73,7 +78,7 @@ export default {
       <div class="my-2">
         <div>
           <Card
-            style="max-width: 20rem;"
+            style="max-width: 15rem;"
             class="mb-2"
           >
             <template #header>
@@ -81,12 +86,10 @@ export default {
             </template>
 
             <template #content>
-              <p class="my-3 text-base">
+              <p class="my-3 text-sm">
                 Some quick example text to build on the card title and make up 
                 the bulk of the card's content.
               </p>
-    
-              <Button href="#" severity="Primary">Go somewhere</Button>
             </template>
           </Card>
         </div>
@@ -130,17 +133,17 @@ export default {
         </ul>
       </div>
 
-      <div class="basis-1/4">
-        <Image :src="logo" alt="Responsive image"  width="150" height="150" />
+      <div class="basis-1/4 flex items-center justify-center">
+        <Image :src="logo" alt="Responsive image"  width="100" height="100" />
       </div>
     </div>
 
-    <footer class="w-full h-auto flex items-center justify-center border-top bg-zinc-500">
-      <p class="text-center text-base text-white">
-        Designed and built with all the love in the world. 
+    <footer class="w-full h-24 flex items-center justify-center gap-3 flex-col border-top bg-zinc-200">
+      <p class="text-center text-sm text-slate-800">
         Maintained by Instituto Superior politecnico de Benguela.
-        <br />
-        Currently v1.0.0 And powered by WIVULO
+      </p>
+      <p class="text-center text-sm text-slate-800">
+        Currently v1.0.0 And powered by WIVULO. Todos os direitos reservados - © 2025.
       </p>
     </footer>
 

@@ -132,7 +132,7 @@ export default {
 
 <template>
     <div class="p-4 px-5 w-full" ref="componentRef">
-        <ModalEditEvent ref="ModalEditEvent" />
+        <ModalEditEvent ref="ModalEditEvent" @updated="fetchEvents"/>
         <ModalDeleteEvent ref="ModalDeleteEvent" @event-deleted="fetchEvents" />
 
         <CardRoot class="mt-4">
@@ -181,7 +181,7 @@ export default {
                         </div>
 
                         <div class="my-3 no-print" v-show="showFilters">
-                        <EventFilters />
+                            <EventFilters />
                         </div>
 
                         <div>
@@ -212,11 +212,11 @@ export default {
                                         </template>
                                     </Column>
 
-                                    <Column field="localization" header="Localização" />
+                                    <Column field="location" header="Localização" />
 
-                                    <Column field="date" header="Data">
+                                    <Column field="startDate" header="Data">
                                         <template #body="props">
-                                            {{ dateFormater(props.data.date) }}
+                                            {{ dateFormater(props.data.startDate) }}
                                         </template>
                                     </Column>
 

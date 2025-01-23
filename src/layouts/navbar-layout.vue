@@ -13,9 +13,9 @@ export default {
 
 <template>
   <div class="flex flex-col w-full overflow-x-hidden">
-      <ApplicationHeader2/>
+      <ApplicationHeader2 class="bg-gray-50 application-header border-b border-black/10"/>
 
-      <div class="flex w-full overflow-x-hidden fadeInRight">
+      <div class="flex w-full overflow-x-hidden fadeInRight bg-gray-100">
         <router-view v-slot="{ Component }">
           <transition>
             <component :is="Component" />

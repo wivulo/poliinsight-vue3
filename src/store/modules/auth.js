@@ -30,6 +30,11 @@ export const auth = {
         navAndRoles: state => state.navAndRoles,
         RolesAndPath: state => state.RolesAndPath,
         onlyRoles: state => state.onlyRoles,
+        isAdminOrOrganizer: state => state.user.groups.find(userGroup =>  ['admininistrator', 'organizador'].includes(userGroup.group.name)),
+        isAdmin: state => state.user.groups.find(userGroup => userGroup.group.name === 'admininistrator'),
+        organizerGroup: state => state.user.groups.find(userGroup => userGroup.group.name === 'organizador'),
+        colaboratorGroup: state => state.user.groups.find(userGroup => userGroup.group.name === 'colaborator'),
+        participantGroup: state => state.user.groups.find(userGroup => userGroup.group.name === 'participant'),
         fetchNavsBusy: state => state.fetchNavsBusy
     },
   
@@ -56,6 +61,9 @@ export const auth = {
             setLocalStorage('AUTH_NAV_AND_ROLES', [])
             setLocalStorage('AUTH_ROLES_AND_PATH', [])
             setLocalStorage('AUTH_ONLY_ROLES', [])
+            setLocalStorage('AUTH_USER_GROUPS', [])
+            setLocalStorage('AUTH_USER_WORK_GROUP', [])
+
         },
     
         [types.LOGOUT] (state) {
@@ -70,6 +78,8 @@ export const auth = {
             setLocalStorage('AUTH_NAV_AND_ROLES', [])
             setLocalStorage('AUTH_ROLES_AND_PATH', [])
             setLocalStorage('AUTH_ONLY_ROLES', [])
+            setLocalStorage('AUTH_USER_GROUPS', [])
+            setLocalStorage('AUTH_USER_WORK_GROUP', [])
         },
     
         [types.UPDATE_USER] (state, { user }) {
@@ -102,7 +112,6 @@ export const auth = {
         },
 
         [types.FETCH_NAVS_BUSY] (state, { busy }){
-            console.log(busy)
             state.fetchNavsBusy = busy
         },
     },

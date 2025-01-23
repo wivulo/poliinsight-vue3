@@ -30,11 +30,16 @@ export default{
         };
     },
     methods: {
-      redirectOnLogin(user){
-        if(user.groupId === 3){
-          this.$router.push({ name: 'home', params: {id: user.id}});
-        }else{
+      async redirectOnLogin(user){
+        const groups = await this.$store.dispatch("group/fetchGroups", user.id)
+
+        const group = groups.find(group => ['organizador', 'admininistrator'].includes(group.name))
+
+        if(group){
+          this.$store.dispatch("auth/fetchNavAndRoles", response.data.user.id)
           this.$router.push({ name: 'dashboard.overview', params: {id: user.id} });
+        }else{
+          this.$router.push({ name: 'home', params: {id: user.id}});
         }
       },
 
@@ -50,10 +55,9 @@ export default{
         }
         
         if(response.status === 200){
-          this.$toast.add({severity:'success', summary: 'Success', detail: 'A entrar....', life: 2000});
+          this.$toast.add({severity:'success', summary: 'Concluido', detail: 'A entrar....', life: 2000});
           this.$store.dispatch("auth/fetchUser", response.data.user.id)
-          this.$store.dispatch("auth/saveToken", { token: response.data.token, remember: false })
-          this.$store.dispatch("auth/fetchNavAndRoles", response.data.user.id)
+          this.$store.dispatch("auth/saveToken", { token: response.data.token, remember: this.remember })
           this.redirectOnLogin(response.data.user)
           return
         }

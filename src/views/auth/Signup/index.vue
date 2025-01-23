@@ -28,22 +28,16 @@ export default {
             step: 0,
             user: {
                 name: '',
-                nickname: '',
                 email: '',
                 password: '',
-                confirmPassword: '',
                 gender: "",
                 username: "",
                 course: "",
                 institution: "Instituto Superior Politécnico de Benguela",
-                birthDate: "",
-                isISPBStudent: false,
-                isEventOrganizer: false,
-                office: "N/D",
-                department: "",
-                groupId: 2,
-                documentProving: "N/D"
+                birthdate: "",
+                department_id: null,
             },
+            confirmPassword: null,
             busy: false,
             items: [
                 { label: 'Dados Pessoais', icon: 'pi pi-user' },
@@ -54,30 +48,35 @@ export default {
     },
     methods: {
         async signup() {
-                if(this.user.password != this.user.confirmPassword) {
-                    this.toastMessage('error', 'A confirmação de senha não corresponde!', 'Erro')
-                    return
-                }
+                try {
+                    this.busy = true
+                    const response = await AuthServices.signup(this.user)
 
-                this.busy = true
-                const response = await AuthServices.signup(this.user)
-                .catch(() => this.toastMessage('error', 'Erro ao criar conta!', 'Erro'))
-                .finally(() => this.busy = false)
+                    if(response?.status == 201) {
+                        this.toastMessage()
+                        setTimeout(() => this.$router.push({name: "login"}), 1000)
+                        return
+                    }
 
-                if(response?.status == 200) {
-                    this.toastMessage()
-                    setTimeout(() => this.$router.push({name: "login"}), 1000)
+                    throw new Error()
+                } catch (error) {
+                    this.toastMessage('error', 'Erro ao criar conta!', 'Erro')
+                } finally {
+                    this.busy = false
                 }
         },
 
         async handleSubmit(){
+            if(this.user.password !== this.confirmPassword) {
+                this.toastMessage('error', 'A confirmação de senha não corresponde!', 'Erro')
+                return
+            }
+
             const result = await this.$swal.fire({
                 title: 'Tem certeza?',
                 text: "Deseja criar a conta com os dados fornecidos?",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
                 confirmButtonText: 'Sim, criar conta!',
                 cancelButtonText: 'Cancelar'
             })
@@ -94,6 +93,10 @@ export default {
         goBack(){
             if(window.history.length > 0)
                 this.$router.go(-1);
+        },
+
+        handleCPasseChange(passe) {
+            this.confirmPassword = passe
         }
     }
 }
@@ -146,7 +149,7 @@ export default {
 
                             <StepperPanel :header="items[2].label">
                                 <template #content="{ prevCallback }">
-                                    <Step_3_finish :user="user" />
+                                    <Step_3_finish :user="user" @changeCpassword="handleCPasseChange" />
 
                                     <div class="flex pt-4 justify-end gap-2">
                                         <Button size="small" class="h-8 text-base" severity="secondary" @click="prevCallback">

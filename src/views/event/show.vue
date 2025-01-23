@@ -1,131 +1,153 @@
-<script>
+<script setup>
+import { ref, reactive, computed, onMounted, watch, shallowRef } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 import EventServices from '@/services/EventServices';
-import { dateFormatter } from "@/utils/dateFormatter"
+import { dateFormatter } from "@/utils/dateFormatter";
 import AutoComplete from 'primevue/autocomplete';
 import Card from 'primevue/card';
 import InputGroup from 'primevue/inputgroup';
-import Button from 'primevue/button'
+import Button from 'primevue/button';
 import Image from 'primevue/image';
 import Dropdown from 'primevue/dropdown';
-import CCard from "@/components/PCard/index.js"
+// import CCard from "@/components/PCard/index.js";
+import CardRoot from '@/components/PCard/CardRoot.vue';
 import TabMenu from 'primevue/tabmenu';
+import TabView from 'primevue/tabview';
+import TabPanel from 'primevue/tabpanel';
 import ModalNewRegistration from './components/ModalNewRegistration.vue';
-import RegistrationTable from "@/views/event/components/RegistrationTable.vue"
-import TicketsTable from "@/views/event/components/TicketsTable.vue"
+import RegistrationTable from "@/views/event/components/RegistrationTable.vue";
+import TicketsTable from "@/views/event/components/TicketsTable.vue";
 import SpeakersTable from './components/SpeakersTable.vue';
+import ActivitiesTab from './components/ActivitiesTab.vue';
 import dayjs from 'dayjs';
+import { SwalConfirmAlert } from '@/helpers/swalConfirmAlert';
+import { useNotification } from '@/composables/useNotification';
+import ModalChangeEventStatus from './components/ModalChangeEventStatus.vue';
 
-export default {
-    name: 'Event.viewer',
-    components: {
-        AutoComplete, Card, ModalNewRegistration,
-        InputGroup, Button, TabMenu,
-        Image, Dropdown, CardRoot: CCard.Root,
-        RegistrationTable, TicketsTable, SpeakersTable,
+const route = useRoute();
+const router = useRouter();
+const store = useStore();
+const { notifyError, notifySuccess } = useNotification();
+
+const busy = ref(false);
+const event = ref(null);
+const events = reactive({
+    busy: false,
+    data: []
+});
+const params = reactive({
+    where: {
+        name: {
+            contains: ''
+        },
+        organizerId: store.getters['auth/user'].id,
     },
-    data(){
-        return {
-            busy: false,
-            event: null,
-            events: {
-                busy: false,
-                data: []
-            },
-            params: {
-                query: null,
-                orderBy: {
-                    field: 'name',
-                    direction: 'asc'
-                },
-                userId: this.$store.getters['auth/user'].id,
-            },
+});
 
-            tabItems: [
-                { label: 'Incrições', component: 'RegistrationTable', icon: 'fa fa-pencil', route: 'event.show.registrations' },
-                { label: 'Ingressos', component: 'TicketsTable' , icon: 'fa fa-file', route: 'event.show.tickets' },
-                { label: 'Palestrantes', component: 'SpeakersTable', icon: 'fa fa-users', route: 'event.show.speakers' },
-            ],
-            tabICurrenttem: 'RegistrationTable',
+const tabItems = [
+    { label: 'Atividades', component: ActivitiesTab, icon: 'fa fa-tasks' },
+    { label: 'Incrições', component: RegistrationTable, icon: 'fa fa-pencil', route: 'event.show.registrations' },
+    { label: 'Palestrantes', component: SpeakersTable, icon: 'fa fa-users', route: 'event.show.speakers' },
+    { label: 'Ingressos', component: TicketsTable, icon: 'fa fa-file', route: 'event.show.tickets' },
+];
+const tabICurrenttem = ref('RegistrationTable');
+const showMoreDetails = ref(false);
 
-            showMoreDetails: false
+const date_formatter = computed(() => dateFormatter);
+
+const getEvent = async () => {
+    try {
+        busy.value = true;
+        const response = await EventServices.show(route.params.id);
+        if (response.status === 200) {
+            event.value = response.data;
+            return;
         }
-    },
-    async created(){
-        this.getEvent()
-    },
-    computed: {
-        date_formatter(){
-            return dateFormatter
-        }
-    },
-    methods: {
-        async getEvent(){
-            try {
-                this.busy = true
-                const responde = await EventServices.show(this.$route.params.id)
-                this.event = responde.data
-            } catch (error) {
-                this.handleError('Erro ao buscar evento')
-            } finally {
-                this.busy = false
-            }
-        },
-
-        async getEvents(){
-            try {
-                this.events.busy = true
-                const responde = await EventServices.search(this.params)
-                this.events.data = responde.data
-            } catch (error) {
-                this.handleError('Erro ao buscar os eventos')
-            } finally {
-                this.events.busy = false
-            }
-        },
-
-        handleShowModalNewRegistration(){
-            this.$refs.ModalNewRegistration.show()
-        },
-
-        handleRegistrationCompleted(){
-            this.getEvent()
-            this.$refs.componentTabela.updateComponent()
-        },
-
-        handleEventSelected(event){
-            this.$router.push({name: 'event.show', params: {id: event.id}})
-        },
-
-        handleChangeTable(component){
-            this.tabICurrenttem = component
-        },
-
-        handleError(error){
-            this.$toast.add({severity: 'error', summary: 'Erro', detail: error})
-        },
-
-        timeFormatter(time){
-            return dayjs(time).format('HH:mm')
-        }
+        throw new Error();
+    } catch (error) {
+        handleError('Erro ao buscar evento');
+    } finally {
+        busy.value = false;
     }
-}
+};
+
+const getEvents = async () => {
+    try {
+        events.busy = true;
+        const response = await EventServices.search(params);
+        events.data = response.data;
+    } catch (error) {
+        handleError('Erro ao buscar os eventos');
+    } finally {
+        events.busy = false;
+    }
+};
+
+const ModalNewRegistrationRef = ref(null)
+function handleShowModalNewRegistration() {
+    ModalNewRegistrationRef.value.show();
+};
+
+const componentTabelaRef = ref(null);
+const handleRegistrationCompleted = () => {
+    getEvent();
+    componentTabelaRef.value.updateComponent();
+};
+
+const handleEventSelected = (event) => {
+    router.push({ name: 'event.show', params: { id: event.value.id } });
+};
+
+const handleChangeTable = (component) => {
+    tabICurrenttem.value = component;
+};
+
+const handleError = (error) => {
+    toast.add({ severity: 'error', summary: 'Erro', detail: error });
+};
+
+const timeFormatter = (time) => {
+    return dayjs(time).format('HH:mm');
+};
+
+const ModalChangeEventStatusRef = ref(null);
+const handleChangeEventStatus = async () => {
+    ModalChangeEventStatusRef.value.show();
+};
+
+onMounted(() => {
+    getEvent();
+});
+
+watch(route, () => {
+    getEvent();
+});
 </script>
 
 <template>
     <div id="eventShow" class="flex flex-col px-5 pt-7 pb-5 gap-5 w-full flex-auto">
         <ModalNewRegistration 
-            ref="ModalNewRegistration" 
+            ref="ModalNewRegistrationRef" 
             @created:registration="handleRegistrationCompleted" 
+        />
+
+        <ModalChangeEventStatus 
+            ref="ModalChangeEventStatusRef" 
+            @updated="getEvent"
         />
 
         <!-- <div class="flex flex-col gap-5 w-full"> -->
             <CardRoot class="w-full shadow-sm cardroot">
                 <InputGroup>
-                    <Button outlined class="h-9 w-9 border border-r-0 border-surface-300 bg-transparent hover:bg-transparent">
+                    <Button outlined class="h-9 w-9 border-0 border-surface-300 bg-transparent hover:bg-transparent">
                         <i class="fa fa-search text-surface-700" />
                     </Button>
-                    <AutoComplete v-model="params.query" :suggestions="events.data" @complete="getEvents" 
-                        placeholder="Escreva para pesquisar" class="w-full h-9" inputClass="w-full border-l-0" 
+                    <AutoComplete 
+                        v-model="params.where.name.contains" 
+                        :suggestions="events.data" @complete="getEvents"
+                        optionLabel="name"
+                        placeholder="Escreva para pesquisar" class="w-full h-9" inputClass="w-full border-0" 
                         id="autocomplete-statistic-viewer" @item-select="handleEventSelected"
                     >
                         <template #option="slotProps">
@@ -152,21 +174,21 @@ export default {
                     <div class="flex flex-col gap-3">
     
                         <div class="w-full h-[218px] border overflow-hidden">
-                            <Image :src="event.imageURL" class="object-fill object-center" imageClass="h-[218px]" alt="event.name" preview/>
+                            <Image :src="event.imageURL" class="object-fill object-center w-full" imageClass="h-[218px] w-full" alt="event.name" preview/>
                         </div>
 
                         <div>
                             <p class="text-xl font-medium">
                                 {{ event.name }}
                             </p>
-                            <p>{{ event.localization }}</p>
+                            <p>{{ event.location }}</p>
                         </div>
 
                         <div class="mt-2 min-h-160 relative">
                             <ul class="flex flex-col gap-2 text-sm">
                                 <li>
                                     <p><b>Tipo:</b></p>
-                                    <p>{{ event?.type == 'free' ? 'Grátuito' : 'Pago' }}</p>
+                                    <p>{{ event?.type }}</p>
                                 </li>
                                 <li>
                                     <p><b>Categoria</b>: </p>
@@ -182,7 +204,7 @@ export default {
                                 </li>
                                 <li>
                                     <p><b>Data de início</b>:</p>
-                                    <p>{{date_formatter(event.date)}}</p>
+                                    <p>{{date_formatter(event.startDate)}}</p>
                                 </li>
                                 <li>
                                     <p><b>Data de fim</b>:</p>
@@ -193,15 +215,26 @@ export default {
                             <ul v-show="showMoreDetails" class="flex flex-col gap-2 text-sm mt-2">
                                 <li>
                                     <p><b>Hora de inicio</b>:</p>
-                                    <p>{{ timeFormatter(event.time) }}</p>
+                                    <p>{{ timeFormatter(event.startTime) }}</p>
                                 </li>
                                 <li>
                                     <p><b>Hora de Fim</b>:</p>
-                                    <p>{{ timeFormatter(event.timeEnd) }}</p>
+                                    <p>{{ timeFormatter(event.endTime) }}</p>
                                 </li>
-                                <li>
+                                <li class="group relative cursor-pointer">
                                     <p><b>Estado</b>:</p>
-                                    <p>{{ event.status?.name }}</p>
+                                    <p
+                                        class="group-hover:-translate-x-7 relative transform transition-all"
+                                        :class="{'text-green-500': event.status?.name == 'Aberto', 'text-red-500': event.status?.name == 'Cancelado', 'text-yellow-500': event.status?.name == 'Brevemente'}"
+                                    >
+                                        {{ event.status?.name }}
+                                    </p>
+
+                                    <Button 
+                                        icon="pi pi-pencil" text severity="secondary" size="small" 
+                                        class="w-5 h-5 !absolute right-0 bottom-0 opacity-0 group-hover:opacity-100 transition-all transform" 
+                                        title="Mudar estado do evento" @click="handleChangeEventStatus"
+                                    />
                                 </li>
                             </ul>
 
@@ -240,27 +273,24 @@ export default {
     
                 <CardRoot class="w-[70%]">
                    <div class="flex flex-col gap-5">
-                        <TabMenu :model="tabItems">
-                            <template #item="{ item, props }">
-                                <div v-ripple @click="() => handleChangeTable(item.component)" class="px-3 py-[.5rem] text-sm border border-gray-400/40  hover:bg-red-700/50 cursor-pointer hover:text-white"
-                                    :class="{'bg-[#DA5551] text-white': item.component == tabICurrenttem}">
-                                    <span v-bind="props.icon" />
-                                    <span v-bind="props.label">{{ item.label }}</span>
-                                </div>
-                            </template>
-                        </TabMenu>
+                        <TabView id="custom_tabview" :unstyled="true">
+                            <TabPanel v-for="item in tabItems" :key="item.id">
+                                <template #header>
+                                    <div>
+                                        <span :class="'mr-1 fa ' + item.icon" />
+                                        <span >{{ item.label }}</span>
+                                    </div>
+                                </template>
 
-                        <div>
-                            <!-- <router-view v-slot="{ Component }"> -->
                                 <transition>
                                     <component 
-                                        :is="tabICurrenttem" 
-                                        ref="componentTabela"
-                                        :eventType="event.category?.name"
+                                        :is="item.component" 
+                                        ref="componentTabelaRef"
+                                        :eventType="event.category?.name" 
                                     />
                                 </transition>
-                            <!-- </router-view> -->
-                        </div>
+                            </TabPanel>
+                        </TabView>
                    </div>
                 </CardRoot>
             </div>

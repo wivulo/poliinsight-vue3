@@ -56,6 +56,10 @@ export default {
         return axios.get(`${source}/groupItems/${groupId}`);
     },
 
+    showSettingGroupItemByKey(key: string) {
+        return axios.get(`${source}/groupItems/key/${key}`);
+    },
+
     createGroupItem(data) {
         return axios.post(`${source}/groupItems`, { groupItemData: data });
     },

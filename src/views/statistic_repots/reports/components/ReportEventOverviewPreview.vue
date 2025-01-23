@@ -40,6 +40,9 @@ export default {
             default: () => []
         }
     },
+    components: {
+        ISPBLogo
+    },
     methods: {
         DDMMMYYYY(date){
             return new Date(date).toLocaleDateString('pt-Ao', {day: '2-digit', month: 'long', year: 'numeric'});
@@ -82,11 +85,11 @@ export default {
 
         <div>
             <div class="flex items-center gap-1">
-                <p><strong>Data:</strong> {{DDMMMYYYY(event.date)}}</p>
+                <p><strong>Data:</strong> {{DDMMMYYYY(event.startDate)}}</p>
                 <span>-</span>
                 <p>{{DDMMMYYYY(event.endDate)}}</p>
             </div>
-            <p><strong>Local:</strong> {{event.localization}}</p>
+            <p><strong>Local:</strong> {{event.location}}</p>
             <p class="mb-2"><strong>Departamento:</strong> {{event.department?.name}}</p>
         </div>
 
@@ -118,12 +121,12 @@ export default {
             </tr>
             <tr>
                 <td>Participantes do gênero Masculino</td>
-                <td v-if="statistic.genderDistribution">{{statistic.genderDistribution.male}}</td>
+                <td v-if="statistic.genderDistribution">{{statistic.genderDistribution["Masculino"]}}</td>
                 <td v-else>0</td>
             </tr>
             <tr>
                 <td>Participantes do gênero Feminino</td>
-                <td v-if="statistic.genderDistribution.female">{{statistic.genderDistribution.female}}</td>
+                <td v-if="statistic.genderDistribution">{{statistic.genderDistribution["Feminino"]}}</td>
                 <td v-else>0</td>
             </tr>
             <tr>

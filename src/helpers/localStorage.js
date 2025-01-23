@@ -1,6 +1,11 @@
 export function getLocalStorage (key, fallback) {
-  if (window.localStorage.getItem(key) == null) { return fallback }
-  return JSON.parse(window.localStorage.getItem(key))
+  if(!key) return null
+
+  const item = window.localStorage.getItem(key)
+  if (item === null) { return fallback }
+  if(item === 'undefined') return undefined
+
+  return JSON.parse(item)
 }
 
 export function setLocalStorage (key, value) {

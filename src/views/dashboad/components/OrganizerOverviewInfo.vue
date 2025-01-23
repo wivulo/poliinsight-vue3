@@ -328,11 +328,11 @@ export default {
                             
                             </CardValue>
                             <CardInformation class="mt-2 flex flex-col gap-2 relative h-full text-sm">
-                                <p><b>Localização</b>: {{ data.last_event?.event?.localization }}</p>
-                                <p><b>Data de início</b>: {{ dateFormater(data.last_event?.event?.date) }} às {{ time(data.last_event?.event?.time) }}</p>
-                                <p><b>Data de fim</b>: {{ dateFormater(data.last_event?.event?.endDate) }}</p> às {{ time(data.last_event?.event?.timeEnd) }}
+                                <p><b>Localização</b>: {{ data.last_event?.event?.location }}</p>
+                                <p><b>Data de início</b>: {{ dateFormater(data.last_event?.event?.startDate) }} às {{ time(data.last_event?.event?.startTime) }}</p>
+                                <p><b>Data de fim</b>: {{ dateFormater(data.last_event?.event?.endDate) }}</p> às {{ time(data.last_event?.event?.endTime) }}
                                 <p><b>Categoria</b>: {{ data.last_event?.event?.category?.name }}</p>
-                                <p><b>Departamento</b>: {{ data.last_event?.event?.departament }}</p>
+                                <p><b>Departamento</b>: {{ data.last_event?.event?.departament?.name }}</p>
 
                                 <RouterLink :to="{name: 'analise_relatorios.analitics.show', params: {id: data.last_event?.event?.id ?? 1}}" class="text-red-600 absolute left-0 bottom-0">
                                     Ver mais

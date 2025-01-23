@@ -21,7 +21,7 @@ export default {
       <ApplicationHeader class="bg-zinc-50 application-header"/>
 
       <div class="flex w-full overflow-x-hidden fadeInRight bg-gray-100 application-body">
-        <VueToPrintGlobalWrapper class="w-full">
+        <VueToPrintGlobalWrapper class="min-h-full">
           <router-view v-slot="{ Component }">
             <transition>
               <component :is="Component" />

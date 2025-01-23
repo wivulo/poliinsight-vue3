@@ -6,6 +6,14 @@ export default {
         return axios.get(`${databaseURL}/events`)
     },
 
+    index(params = null) {
+        return axios.get(`${databaseURL}/events`)
+    },
+
+    public_index(params = null) {
+        return axios.get(`${databaseURL}/events/public`)
+    },
+
     fetchEventsOrganizer(organizerId) {
         return axios.get(`${databaseURL}/events/organizer/${organizerId}`)
     },
@@ -23,23 +31,31 @@ export default {
         return axios.post(`${databaseURL}/events`, formData);
     },
 
+    update(event){
+        return axios.put(`${databaseURL}/events/${event.id}`, { event });
+    },
+
     show(id){
         return axios.get(`${databaseURL}/events/${id}`);
+    },
+
+    showPublic(id){
+        return axios.get(`${databaseURL}/events/public/${id}`);
     },
 
     delete(id){
         return axios.delete(`${databaseURL}/events/${id}`);
     },
 
-    search(query){
-        return axios.get(`${databaseURL}/events/search`, {
-            params: {
-                query
-            }
-        });
+    search(params){
+        return axios.post(`${databaseURL}/events/search`, { params });
     },
 
     getStatistic(eventId){
         return axios.get(`${databaseURL}/statistics/${eventId}`);
+    },
+
+    changeStatus(eventId, statusId){
+        return axios.put(`${databaseURL}/events/status/${eventId}`, { statusId });
     }
 }

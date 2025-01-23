@@ -12,7 +12,10 @@ export default {
 
             // Color
             'bg-surface-0 dark:bg-surface-800',
-            'text-surface-500 dark:text-white/60'
+            'text-surface-500 dark:text-white/60',
+
+            //printer
+            'no-print',
         ]
     },
     firstpagebutton: ({ context }) => ({

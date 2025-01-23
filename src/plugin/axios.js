@@ -2,6 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import Swal from 'sweetalert2'
 import { store } from '@/store'
+import router from "@/router";
 
 // Add a request interceptor
 axios.interceptors.request.use(function (config) {
@@ -34,19 +35,19 @@ axios.interceptors.response.use(async function (response) {
 
       Cookies.remove('token');
       store.dispatch('auth/logout');
-      window.location.href = '/login';
+      // window.location.href = '/login';
+      router.push({ name: 'login' });
     }
 
-    if(error.response.status === 401 && error.response.data.error === 'Access denied'){
+    if(error.response.status === 401 || error.response.data.error === 'Access denied'){
       await Swal.fire({
         title: 'ACESSO NEGADO!',
         text: 'Não tens permissão para aceder a este recurso.',
         icon: 'error',
       })
 
-      Cookies.remove('token');
-      store.dispatch('auth/logout');
-      window.location.href = '/login';
+      // window.location.href = '/error/401';
+      router.push({ name: 'error.401' });
     }
 
     if(error.response.status >= 500){

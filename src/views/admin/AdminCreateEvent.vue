@@ -40,8 +40,8 @@ export default {
             },
 
             event_type: [
-                {label: 'Gratuito', value: 'free'},
-                {label: 'Pago', value: 'paid'}
+                {label: 'Gratuito', value: 'Gratuito'},
+                {label: 'Pago', value: 'Pago'}
             ],
 
             eventTypeSelected: null,
@@ -51,11 +51,11 @@ export default {
                 organizerId: 1,
                 name: '',
                 description: '',
-                date: null,
+                startDate: null,
                 endDate: null,
-                time: '',
-                timeEnd: '',
-                localization: '',
+                startTime: '',
+                endTime: '',
+                location: '',
                 departmentId: '',
                 vacancies: 0,
                 type: '',
@@ -217,7 +217,7 @@ export default {
                     <Dropdown id="freeOrPaid" v-model="event.type"  :options="event_type" optionLabel="label" optionValue="value" placeholder="Selecione a forma de acesso ao evento" class="h-9 w-[290px]">
                         <template #value="slotProps">
                             <div v-if="slotProps.value" class="flex items-center text-black">
-                                {{ slotProps.value === 'free' ? 'Gratuito' : 'Pago' }}
+                                {{ slotProps.value }}
                             </div>
                             <div v-else>
                                 {{ slotProps.placeholder }}
@@ -263,14 +263,14 @@ export default {
                         <Textarea v-model="event.description" rows="5" cols="30" placeholder="Descrição do evento" class="hover:border-slate-400"/>
 
                         <FloatLabel class="mt-2">
-                            <InputText id="localization" v-model="event.localization" class="w-full border-slate-300 h-9" :required="true"/>
+                            <InputText id="localization" v-model="event.location" class="w-full border-slate-300 h-9" :required="true"/>
                             <label for="localization" class="text-slate-400">
                                 <small class="text-slate-400"> Localização </small>
                             </label>
                         </FloatLabel>
 
                         <div class="flex gap-3">
-                            <Calendar v-model="event.date" placeholder="Data de inicio" :showIcon="true" :readonlyInput="true" :showOnFocus="true" :minDate="new Date()" :maxDate="new Date(2025, 12, 31)" iconDisplay="input" class="flex-grow border-slate-300 h-9 focus:outline-slate-400" inputClass="hover:border-slate-400"/>
+                            <Calendar v-model="event.startDate" placeholder="Data de inicio" :showIcon="true" :readonlyInput="true" :showOnFocus="true" :minDate="new Date()" :maxDate="new Date(2025, 12, 31)" iconDisplay="input" class="flex-grow border-slate-300 h-9 focus:outline-slate-400" inputClass="hover:border-slate-400"/>
 
                             <Calendar v-model="event.endDate" placeholder="Data de fim" :showIcon="true" :readonlyInput="true" :showOnFocus="true" :minDate="new Date()" :maxDate="new Date(2025, 12, 31)"  iconDisplay="input" class="flex-grow border-slate-300 h-9 focus:outline-slate-400" inputClass="hover:border-slate-400"/>
                         </div>
@@ -281,7 +281,7 @@ export default {
                                     <i class="fa fa-clock" />
                                 </InputIcon>
 
-                                <Calendar id="calendar-timeonly" v-model="event.time" timeOnly class="remove-border h-9 w-full" placeholder="Hora de inicio"/>
+                                <Calendar id="calendar-timeonly" v-model="event.startTime" timeOnly class="remove-border h-9 w-full" placeholder="Hora de inicio"/>
                             </IconField>
 
                             <IconField class="border border-surface-300 rounded-md h-10 flex-grow">
@@ -289,7 +289,7 @@ export default {
                                     <i class="fa fa-clock" />
                                 </InputIcon>
 
-                                <Calendar id="calendar-timeonly" v-model="event.timeEnd" timeOnly class="remove-border h-9 w-full" placeholder="Hora de termino"/>
+                                <Calendar id="calendar-timeonly" v-model="event.endTime" timeOnly class="remove-border h-9 w-full" placeholder="Hora de termino"/>
                             </IconField>
                         </div>
                     </div>

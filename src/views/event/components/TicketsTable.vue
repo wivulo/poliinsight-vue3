@@ -1,48 +1,39 @@
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
 import TicketsService from '@/services/TicketsService.js';
-import { mapGetters } from 'vuex';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import InputGroup from 'primevue/inputgroup';
 import Dropdown from 'primevue/dropdown';
+import { useNotification } from '@/composables/useNotification';
+import { useRoute } from 'vue-router';
 
-export default {
-    name: "event.show.tickets",
-    components: {
-        DataTable, Column, Button, InputText, InputGroup, Dropdown
-    },
-    data(){
-        return {
-            busy: false,
-            tickets: [],
-            totalRecods: 0,
-            filter: null,
-        }
-    },
-    created(){
-        this.getEventtickets();
-    },
-    methods: {
-        async getEventtickets(){
-            this.busy = true
-            console.log(this.$route.params.id)
-            const response = await TicketsService.getByEventId(this.$route.params.id)
-            .catch(error => {
-                this.$toast.add({severity:'error', summary:'Erro', detail: 'Erro ao buscar os tickets', life: 3000});
-            });
-            this.tickets = response.data;
-            this.totalRecods = this.tickets.length ?? 0;
-            this.busy = false
-        },
+const {notifyError} = useNotification();
+const route = useRoute();
 
-        getData(){
-            this.getEventtickets()
-        },
+const busy = ref(false);
+const tickets = ref([]);
+const totalRecods = ref(0);
+const filter = ref(null);
+
+const getEventtickets = async () => {
+    busy.value = true;
+    try {
+        const response = await TicketsService.getByEventId(route.params.id);
+        tickets.value = response.data;
+        totalRecods.value = tickets.value.length ?? 0;
+    } catch (error) {
+        notifyError('Erro ao buscar os tickets');
+    } finally {
+        busy.value = false;
     }
-}
+};
 
+onMounted(() => {
+    getEventtickets();
+});
 </script>
 
 <template>

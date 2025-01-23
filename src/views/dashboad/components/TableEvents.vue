@@ -37,11 +37,11 @@ export default {
     >                                        
         <Column field="name" header="Nome" />
         
-        <Column field="localization" header="Localização" />
+        <Column field="location" header="Localização" />
 
-        <Column field="date" header="Data">
+        <Column field="startDate" header="Data">
             <template #body="props">
-                {{ dateFormater(props.data.date) }}
+                {{ dateFormater(props.data.startDate) }}
             </template>
         </Column>
 

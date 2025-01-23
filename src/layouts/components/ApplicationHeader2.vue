@@ -14,7 +14,7 @@ export default {
         return {
             logo: logo,
             search: '',
-            links: ['perfil', 'sair']
+            links: ['Perfil', 'Sair']
         }
     },
     components: {
@@ -24,11 +24,13 @@ export default {
     },
     computed: {
         ...mapGetters({
-            user: 'auth/user'
+            user: 'auth/user',
+            group: 'group/workGroup'
         })
     },
     mounted() {
-        if(this.user?.groupId != 3){
+        console.log(this.group)
+        if(['organizador', 'admininistrator'].includes(this.group)){
             this.links = [
                 'Gestão de eventos',
                 ...this.links
@@ -37,10 +39,16 @@ export default {
     },
     methods: {
         handleUserMenuClick(option){
-            if(option === 'sair'){
+            if(option === 'Sair'){
                 this.handleLogout()
             }else if(option === 'Gestão de eventos'){
                 this.$router.push({name: 'dashboard.overview', params: {id: this.user.id}})
+            } else if(option === 'Perfil'){
+                if(['organizador', 'admininistrator'].includes(this.group)){
+                    this.$router.push({name: 'profile.geral', params: {id: this.user.id}})
+                } else {
+                    this.$router.push({name: 'profile', params: {id: this.user.id}})
+                }
             }
         },
 

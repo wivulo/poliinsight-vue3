@@ -53,7 +53,7 @@ export default {
 
             // Secondary Button
             {
-                'text-white dark:text-zinc-900': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain,
+                'text-slate-800 dark:text-zinc-100': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain,
                 'bg-gray-300/50 hover:bg-gray-300/80 dark:bg-zinc-400': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain,
                 'border border-gray-300/50 dark:border-zinc-400': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain
             },
