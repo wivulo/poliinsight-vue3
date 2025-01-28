@@ -39,7 +39,7 @@ const params = reactive({
     where: {
         name: {
             contains: ''
-        }
+        },
     }
 })
 
@@ -70,21 +70,23 @@ function onPageChange (event) {
     // fetchUsers()
 }
 
-function handleViewUser(user: any) {}
+function handleViewUser(user: any) {
+    router.push({ name: 'security.users.show', params: { id: user.id }})
+}
 
 const ModalEditUserRef = ref<InstanceType<typeof ModalEditUser> | null>(null)
 function handleEditUser(userToEdit: any) {
     ModalEditUserRef.value?.show(userToEdit)
 }
 
-async function handleDeleteUser(user) {
+async function handleDeleteUser(user: any) {
     try {
         if(!await SwalConfirmAlert()) return;
 
         busy.value = true;
         const response = await UserServices.delete(user.id)
         if(response.status === 200) {
-            notifySuccess('Utilizador eliminado definitivamente com sucesso!');
+            notifySuccess('Operação concluida!');
             fetchUsers()
             return;
         }
