@@ -17,6 +17,8 @@ export const group = {
         groups: state => state.groups,
         workGroup: state => state.workGroup,
         busy: state => state.busy,
+        isAdministrator: state => ['admininistrator', 'administrator', 'Administrador'].includes(state.workGroup.name),
+        isOrganizer: state => ['organizador', 'organizer', 'Organizador'].includes(state.workGroup.name),
     },
   
     // mutations
@@ -44,16 +46,16 @@ export const group = {
                 const response = await axios.get(`${databaseURL}/groups/user/${id}`)
                 if(response.status === 200) {
                     commit(types.FETCH_GROUPS, { groups: response.data })
-                    
-                    if(response.data?.length && state.workGroup.id === undefined) {
+
+                    if(response?.data && !state.workGroup?.length) {
                         //Procurar na lista de grupos os grupos de preferencia do sistema, na ordem:
                         //1 - admininistrator, 2 - organizador, 3 - participante, 4 - qualquer outro
-                        const group = response.data.find(group => group.name === 'administrator') ||
-                                        response.data.find(group => group.name === 'organizador') ||
-                                        response.data.find(group => group.name === 'participante') ||
+                        const group = response.data.find(group => ['admininistrator', 'administrator', 'Administrador'].includes(group.name)) ||
+                                        response.data.find(group => ['organizador', 'organizer', 'Organizador'].includes(group.name)) ||
+                                        response.data.find(group => ['participante', 'Participante', 'Participant']) ||
                                         response.data[0]
 
-                        commit(types.CHANGE_WORK_GROUP, { group: group })
+                        commit(types.CHANGE_WORK_GROUP, { group })
                     }
                     return response.data
                 }

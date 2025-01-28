@@ -57,5 +57,9 @@ export default {
 
     changeStatus(eventId, statusId){
         return axios.put(`${databaseURL}/events/status/${eventId}`, { statusId });
+    },
+
+    feedback(eventId, feedback){
+        return axios.post(`${databaseURL}/feedback/${eventId}`, { feedback });
     }
 }

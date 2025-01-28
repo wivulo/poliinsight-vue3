@@ -50,25 +50,25 @@ export default {
       <div class="flex relative">
         <div id="carousel" class="relative w-full">
           <div class="carousel-item" v-for="(image, index) in images" :class="getClass(index)" :key="index">
-            <picture>
               <figure>
-                <img :src="image.imageURL" :alt="image.name" />
-              </figure>
-              <figcaption>
-                <p class="flex items-center text-ellipsis-2" :title="image.name">
-                    <RouterLink :to="{name: 'event.show', params: {id: image.id}}" class="font-bold text-surface-900 cursor-pointer">
-                      {{ image.name }}
-                    </RouterLink>
-                </p>
+                <picture>
+                  <img :src="image.imageURL" :alt="image.name" />
+                </picture>
+                <figcaption>
+                  <p class="flex items-center text-ellipsis-2" :title="image.name">
+                      <RouterLink :to="{name: 'event.show', params: {id: image.id}}" class="font-bold text-surface-900 cursor-pointer">
+                        {{ image.name }}
+                      </RouterLink>
+                  </p>
 
-                <p class="flex flex-col gap-1 text-surface-500 truncate">
-                    <span class="flex items-center">
-                        <i class="pi pi-calendar mr-1" /> <span v-formatDate="image.startDate" :title="image.startDate"/>
-                    </span>
-                    <span :title="image.location"><i class="pi pi-map-marker"></i> {{ image.location }}</span>
-                </p>
-              </figcaption>
-            </picture>
+                  <p class="flex flex-col gap-1 text-surface-500 truncate">
+                      <span class="flex items-center">
+                          <i class="pi pi-calendar mr-1" /> <span v-formatDate="image.startDate" :title="image.startDate"/>
+                      </span>
+                      <span :title="image.location"><i class="pi pi-map-marker"></i> {{ image.location }}</span>
+                  </p>
+                </figcaption>
+              </figure>
           </div>
         </div>
 

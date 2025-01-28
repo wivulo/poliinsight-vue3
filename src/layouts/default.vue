@@ -18,7 +18,7 @@ export default {
     <ApplicationSidebar/>
 
     <div id="page-wrapper" class="h-full">
-      <ApplicationHeader class="bg-zinc-50 application-header"/>
+      <ApplicationHeader class="bg-zinc-50 application-header border-b border-black/10"/>
 
       <div class="flex w-full overflow-x-hidden fadeInRight bg-gray-100 application-body">
         <VueToPrintGlobalWrapper class="min-h-full">

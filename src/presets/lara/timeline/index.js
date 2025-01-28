@@ -20,9 +20,10 @@ export default {
     }),
     opposite: ({ props, context }) => ({
         class: [
-            'flex-1',
+            // 'flex-1',
+            'w-[100px]',
             {
-                'px-4': props.layout === 'vertical',
+                'pr-4': props.layout === 'vertical',
                 'py-4': props.layout === 'horizontal'
             },
             {

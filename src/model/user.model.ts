@@ -15,7 +15,7 @@ export type User = {
     department: string
     username: string
     password: string
-    group: Group
+    groups: Group[]
     groupId: number
     teamId: string
 }

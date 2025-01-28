@@ -29,8 +29,7 @@ export default {
         })
     },
     mounted() {
-        console.log(this.group)
-        if(['organizador', 'admininistrator'].includes(this.group)){
+        if(['organizador', 'admininistrator'].includes(this.group?.name)){
             this.links = [
                 'Gestão de eventos',
                 ...this.links
@@ -42,12 +41,12 @@ export default {
             if(option === 'Sair'){
                 this.handleLogout()
             }else if(option === 'Gestão de eventos'){
-                this.$router.push({name: 'dashboard.overview', params: {id: this.user.id}})
+                this.$router.push({ name: 'dashboard.overview' })
             } else if(option === 'Perfil'){
-                if(['organizador', 'admininistrator'].includes(this.group)){
-                    this.$router.push({name: 'profile.geral', params: {id: this.user.id}})
+                if(['organizador', 'admininistrator'].includes(this.group?.name)){
+                    this.$router.push({name: 'profile.geral' })
                 } else {
-                    this.$router.push({name: 'profile', params: {id: this.user.id}})
+                    this.$router.push({name: 'profile' })
                 }
             }
         },

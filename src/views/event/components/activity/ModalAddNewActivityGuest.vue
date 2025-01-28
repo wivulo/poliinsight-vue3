@@ -37,7 +37,8 @@ let guest = ref({
     biography: null,
     roleInActivity: null,
     userId: null,
-    activityId: null
+    activityId: null,
+    eventId: router.currentRoute.value.params.id
 });
 let activity = ref(null);
 const rules = {
@@ -293,7 +294,7 @@ defineExpose({ show });
                     <!-- <p class="text-xs text-zinc-400">O que o convidado fará?</p> -->
                     <label for="roleInActivity">Função</label>
 
-                    <Dropdown id="roleInActivity" v-model="guest.roleInActivity"  :options="['Palestrante', 'Apresentador', 'Discursor', 'Telespectador']" placeholder="Selecione uma função" class="h-9">
+                    <Dropdown id="roleInActivity" v-model="guest.roleInActivity"  :options="['Orador', 'Moderador', 'Palestrante', 'Apresentador', 'Entretenimento','Telespectador']" placeholder="Selecione uma função" class="h-9">
                         <template #value="slotProps">
                             <div v-if="slotProps.value" class="flex items-center text-black">
                                 {{ slotProps.value }}

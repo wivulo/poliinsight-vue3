@@ -36,8 +36,9 @@ export default{
         const group = groups.find(group => ['organizador', 'admininistrator'].includes(group.name))
 
         if(group){
-          this.$store.dispatch("auth/fetchNavAndRoles", response.data.user.id)
-          this.$router.push({ name: 'dashboard.overview', params: {id: user.id} });
+          this.$store.dispatch("auth/fetchNavAndRoles", user.id)
+          // console.log(user)
+          this.$router.push({ name: 'dashboard.overview' });
         }else{
           this.$router.push({ name: 'home', params: {id: user.id}});
         }
@@ -55,7 +56,7 @@ export default{
         }
         
         if(response.status === 200){
-          this.$toast.add({severity:'success', summary: 'Concluido', detail: 'A entrar....', life: 2000});
+          this.$toast.add({severity:'success', summary: 'Concluido', detail: 'Entrando', life: 2000});
           this.$store.dispatch("auth/fetchUser", response.data.user.id)
           this.$store.dispatch("auth/saveToken", { token: response.data.token, remember: this.remember })
           this.redirectOnLogin(response.data.user)

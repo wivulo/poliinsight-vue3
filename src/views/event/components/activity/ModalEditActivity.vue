@@ -14,6 +14,7 @@ import Calendar from 'primevue/calendar';
 import InputNumber from 'primevue/inputnumber';
 import { SwalConfirmAlert } from '@/helpers/swalConfirmAlert';
 import ModalNewActivityType from './ModalNewActivityType.vue';
+import InlineMessage from 'primevue/inlinemessage';
 
 const emit = defineEmits(['updated']);
 const { notifyError, notifySuccess } = useNotification();
@@ -34,6 +35,7 @@ let activity = reactive({
     requires_registration: "Não",
     maxParticipants: null,
     targetAudience: 'Geral',
+    date: null,
 });
 
 const rules = {
@@ -44,6 +46,7 @@ const rules = {
     eventId: { required },
     location: { required },
     requires_registration: { required },
+    date: { required },
 };
 
 const v$ = useVuelidate(rules, activity);
@@ -54,8 +57,12 @@ const activityTypes = ref([]);
 
 function show(data: any) {
     visible.value = true;
-    activity = reactive(data);
-    selectedActivityType.value = activityTypes.value.find(t => t.id === data.typeId);
+    activity = reactive({
+        ...data,
+        date: new Date(data.date),
+        startTime: new Date(data.startTime),
+        endTime: new Date(data.endTime),
+    });
     fetchActivityTypes();
 }
 
@@ -77,6 +84,7 @@ function handleReset() {
         requires_registration: "Não",
         maxParticipants: null,
         targetAudience: 'Geral',
+        date: null,
     })
     selectedActivityType.value = null;
     submited.value = false;
@@ -124,15 +132,13 @@ function handleShowModalNewActivityType() {
     ModalNewActivityTypeRef.value.show();
 }
 
-async function fetchActivityTypes(type = null) {
+async function fetchActivityTypes() {
     try {
         activityTypesBusy.value = true;
         const response = await ActivityServices.findActivityTypes();
         if(response.status === 200) {
             activityTypes.value = response.data;
-            if(type) {
-                activity.typeId = activityTypes.value.find(t => t.id === type.id);
-            }
+            selectedActivityType.value = activityTypes.value.find(t => t.id === activity.typeId);
             return;
         }
 
@@ -214,6 +220,20 @@ defineExpose({ show });
             <div class="flex gap-3 flex-wrap">
                 <div class="mt-2 w-full">
                     <p class="text-sm">Qual será a duração?</p>
+                </div>
+
+                <div class="flex flex-col gap-1 w-full">
+                    <label for="date">Data</label>
+                    <Calendar
+                        id="calendar" v-model="activity.date" 
+                        manualInput showIcon iconDisplay="input"
+                        class="h-9 overflow-hidden" placeholder="ex.: 01/12/2025"
+                        :invalid="submited && v$.date.$invalid"
+                    />
+
+                    <InlineMessage severity="error" v-if="submited && v$.date.$invalid" class="text-xs">
+                        A data da actividade é obrigatória.
+                    </InlineMessage>
                 </div>
 
                 <div class="flex flex-col gap-1 w-[45%] mr-7">

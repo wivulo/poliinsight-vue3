@@ -1,12 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { store } from '@/store'
-import HomeView from '../views/HomeView.vue'
 import Login from '@/views/auth/Login/index.vue'
+import Logout from '@/views/auth/logout/index.vue'
 import Signup from '@/views/auth/Signup/index.vue'
 import ForgotPassword from '@/views/auth/Password/ForgotPassword.vue'
 import ResetPasswordEmail from '@/views/auth/Password/ResetPasswordEmail.vue'
 
 import Error401 from '@/views/error/Error401.vue'
+
+import HomeView from '../views/HomeView.vue'
+import PublicEventShow from '@/views/home/show.vue'
 
 import AdminUserManagment from '@/views/admin/AdminUserManagment.vue';
 import AdminListEvent from '@/views/admin/AdminListEvent.vue';
@@ -45,6 +48,7 @@ import SettingLogs from "@/views/setting/SettingLogs/index.vue"
 import ResetMyPassword from "@/views/setting/password/index.vue"
 
 import Users from "@/views/seguranca/users/index.vue"
+import ShowUser from "@/views/seguranca/users/show.vue"
 import Permissions from "@/views/seguranca/rules/index.vue"
 import Groups from "@/views/seguranca/groups/index.vue"
 
@@ -52,16 +56,12 @@ import Profile from "@/views/profile/index.vue"
 import NormalProfile from "@/views/profile/normal.vue"
 
 import EventViewer from "@/views/event/show.vue"
+import PublicEventRegistration from '@/views/event/registrations/public_registration.vue'
+import Detail from '@/views/event/registrations/detail.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/', name: 'home', component: HomeView,
-      meta: {
-        layout: 'navbar-layout'
-      }
-    },
     {
       path: '/login', name: 'login', component: Login,
       meta: {
@@ -100,6 +100,19 @@ const router = createRouter({
       }
     },
     {
+      path: '/', name: 'home', component: HomeView,
+      meta: {
+        layout: 'navbar-layout'
+      }
+    },
+    {
+      path: '/eventos/:id', name: 'public.event.show', component: PublicEventShow,
+      meta: {
+        layout: 'navbar-layout',
+        title: 'Evento'
+      },
+    },
+    {
       path: '/dashboard/overview',
       name: 'dashboard.overview',
       component: DashboardGeral,
@@ -107,8 +120,10 @@ const router = createRouter({
         layout: 'default-layout'
       },
       beforeEnter: (to, from) => {
-        const isAdminOrOrganizer = store.getters['auth/isAdminOrOrganizer']
-        if (!isAdminOrOrganizer) {
+        const isAdminOrOrganizer = store.getters['group/isAdministrator']
+        const isOrganizer = store.getters['group/isOrganizer']
+
+        if (!isAdminOrOrganizer && !isOrganizer) {
           return { name: 'home' }
         }
       },
@@ -232,6 +247,27 @@ const router = createRouter({
     },
 
     {
+      path: '/evento/:id/inscricoes',
+      name: 'event.registrations.public.show',
+      component: PublicEventRegistration,
+      meta: {
+        layout: 'navbar-layout',
+        ansestor: 'Evento',
+        title: 'Inscrições'
+      }
+    },
+    {
+      path: '/evento/:id/inscricoes/:registrationid',
+      name: 'event.registrations.public.detail',
+      component: Detail,
+      meta: {
+        layout: 'navbar-layout',
+        ansestor: ['Evento', 'Inscrições'],
+        title: 'Detalhes da inscrição'
+      }
+    },
+
+    {
       path: '/gestao-de-eventos/tickets',
       name: 'gestao-eventos.tickets',
       component: Tickets,
@@ -319,7 +355,21 @@ const router = createRouter({
     {
       path: '/seguranca/usuarios',
       name: 'seguranca.users',
-      component: AdminUserManagment,
+      component: Users,
+      meta: {
+        layout: 'default-layout'
+      },
+      beforeEnter: (to, from) => {
+        const isAdminOrOrganizer = store.getters['auth/isAdmin']
+        if (!isAdminOrOrganizer) {
+          return { name: 'home' }
+        }
+      },
+    },
+    {
+      path: '/seguranca/usuarios/:id',
+      name: 'security.users.show',
+      component: ShowUser,
       meta: {
         layout: 'default-layout'
       },
@@ -396,7 +446,7 @@ const router = createRouter({
 
     // "profile.geral",
     {
-      path: '/perfil/:id',
+      path: '/perfil',
       name: 'profile.geral',
       component: Profile,
       meta: {
@@ -404,7 +454,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/perfil-de-usuario/:id',
+      path: '/perfil-de-usuario',
       name: 'profile',
       component: NormalProfile,
       meta: {
@@ -412,7 +462,11 @@ const router = createRouter({
         title: 'Perfil de usuário'
       }
     },
-
+    {
+      path: '/logout',
+      name: 'logout',
+      component: Logout
+    }
   ]
 })
 

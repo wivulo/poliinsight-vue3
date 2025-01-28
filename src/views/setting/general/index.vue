@@ -4,6 +4,7 @@ import { useDocumentTitle } from '@/composables/useDocumentTitle'
 import { useRouter } from 'vue-router';
 import { useRequest } from '@/composables/useRequest';
 import SettingService from '@/services/SettingService';
+import { componentMap } from '@/views/setting/components/componentMap.js';
 import CardRoot from '@/components/PCard/CardRoot.vue';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
@@ -30,7 +31,7 @@ async function fetchSettings(){
         return {
             ...item,
             label: item.name,
-            component: markRaw(defineAsyncComponent(() => import(item.component)))
+            component: defineAsyncComponent(componentMap[item.component])
         }
     })
 }

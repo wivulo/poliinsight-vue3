@@ -18,11 +18,10 @@ import Swal from 'sweetalert2';
 
 const router = useRouter();
 const { notifyError, notifySuccess } = useNotification()
-const { formatter } = useDateFormatter();
 
 const busy = ref(false);
 const activities = ref([]);
-const filter = ref(null);
+const filter = null;
 
 const dropdownItems = [
     {
@@ -139,12 +138,12 @@ onMounted(() => fetchActivities() );
             <Column field="type.name" header="Tipo" sortable></Column>
             <Column field="startTime" header="Início" sortable>
                 <template #body="slotProps">
-                    {{ formatter(null, slotProps.data.startTime).formattedTime }}
+                    <span v-formatTime="slotProps.data.startTime" />
                 </template>
             </Column>
             <Column field="endTime" header="Fim">
                 <template #body="slotProps">
-                    {{ formatter(null, slotProps.data.endTime).formattedTime }}
+                    <span v-formatTime="slotProps.data.endTime" />
                 </template>
             </Column>
 

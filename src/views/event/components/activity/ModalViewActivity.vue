@@ -128,7 +128,7 @@ defineExpose({ show });
 <template>
     <Dialog v-model:visible="visible" modal header="Actividade" dismissableMask class="w-[60rem]">
         <ModalAddNewActivityGuest ref="ModalAddNewActivityGuestRef" @created="fetchActivity" />
-        <ModalEditGuest ref="ModalEditGuestRef" @created="fetchActivity" />
+        <ModalEditGuest ref="ModalEditGuestRef" @updated="fetchActivity" />
 
         <div class="flex h-[20rem]">
             <div class="basis-1/4 text-sm">

@@ -4,6 +4,7 @@ import axios from 'axios'
 import * as types from '../mutation-types'
 import { getLocalStorage, setLocalStorage, removeLocalStorage } from '@/helpers/localStorage'
 import { prepareonlyRoles, prepareRolesAndPath, perparenavAndRoles} from '@/helpers/rules'
+import router from '@/router'
 
 
 export const auth = { 
@@ -30,11 +31,11 @@ export const auth = {
         navAndRoles: state => state.navAndRoles,
         RolesAndPath: state => state.RolesAndPath,
         onlyRoles: state => state.onlyRoles,
-        isAdminOrOrganizer: state => state.user.groups.find(userGroup =>  ['admininistrator', 'organizador'].includes(userGroup.group.name)),
-        isAdmin: state => state.user.groups.find(userGroup => userGroup.group.name === 'admininistrator'),
-        organizerGroup: state => state.user.groups.find(userGroup => userGroup.group.name === 'organizador'),
-        colaboratorGroup: state => state.user.groups.find(userGroup => userGroup.group.name === 'colaborator'),
-        participantGroup: state => state.user.groups.find(userGroup => userGroup.group.name === 'participant'),
+        isAdminOrOrganizer: state => state.user?.groups.find(userGroup =>  ['admininistrator', 'organizador'].includes(userGroup.group.name)),
+        isAdmin: state => state.user?.groups.find(userGroup => userGroup.group.name === 'admininistrator'),
+        organizerGroup: state => state.user?.groups.find(userGroup => userGroup.group.name === 'organizador'),
+        colaboratorGroup: state => state.user?.groups.find(userGroup => userGroup.group.name === 'colaborator'),
+        participantGroup: state => state.user?.groups.find(userGroup => userGroup.group.name === 'participant'),
         fetchNavsBusy: state => state.fetchNavsBusy
     },
   
@@ -160,6 +161,7 @@ export const auth = {
     
         async logout ({ commit }) {        
             commit(types.LOGOUT)
+            router.push({ name: 'home' })
         },
     }
 }

@@ -32,9 +32,15 @@ export default {
      <div class="flex flex-col py-3 px-5 gap-3 w-full">
         <template v-if="user">
             <div>
-                <AdminOverviewInfo v-if="group?.name === 'administrator'" />
+                <!-- 
+                
+                response.data.find(group => ['admininistrator', 'administrator', 'Administrador'].includes(group.name)) ||
+                response.data.find(group => ['organizador', 'organizer', 'Organizador'].includes(group.name)) ||
+                response.data.find(group => ['participante', 'Participante', 'Participant']) ||
+                -->
+                <AdminOverviewInfo v-if="['admininistrator', 'administrator', 'Administrador'].includes(group?.name)" />
 
-                <OrganizerOverviewInfo v-else-if="group?.name === 'organizador'"/>
+                <OrganizerOverviewInfo v-else-if="['organizador', 'organizer', 'Organizador'].includes(group?.name)"/>
 
                 <div v-else>
                     Normal

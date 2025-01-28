@@ -1,9 +1,10 @@
 <script setup>
-import { ref, defineAsyncComponent, markRaw } from 'vue';
+import { ref, defineAsyncComponent, markRaw, onMounted } from 'vue';
 import { useDocumentTitle } from '@/composables/useDocumentTitle'
 import { useRouter } from 'vue-router';
 import { useRequest } from '@/composables/useRequest';
 import SettingService from '@/services/SettingService';
+import { componentMap } from '@/views/setting/components/componentMap.js';
 import CardRoot from '@/components/PCard/CardRoot.vue';
 import TabMenu from 'primevue/tabmenu';
 import TabView from 'primevue/tabview';
@@ -15,8 +16,8 @@ execute('Defiçinições de Evento')
 const router = useRouter()
 const { executeRequest } = useRequest()
 
-const tabItems = ref(null);
-(async () => {
+const tabItems = ref([]);
+async function fetchSettingGroup() {
     tabItems.value = await executeRequest(
         () => SettingService.ShowGroupsBySettingCode('EVENT'),
         null,
@@ -30,10 +31,14 @@ const tabItems = ref(null);
         return {
             ...item,
             label: item.name,
-            component: markRaw(defineAsyncComponent(() => import(item.component)))
+            component: defineAsyncComponent(componentMap[item.component])
         }
     })
-})();
+}
+
+onMounted(() => {
+    fetchSettingGroup()
+})
 
 </script>
 

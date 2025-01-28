@@ -1,6 +1,7 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import SettingService from '@/services/SettingService';
+import { useStore } from 'vuex';
 
 const props = defineProps({
     src: {
@@ -9,6 +10,11 @@ const props = defineProps({
         default: '/images/ispb logo.svg'
     }
 })
+
+const store = useStore();
+
+const user = computed(() => store.getters['auth/user']);
+const token = computed(() => store.getters['auth/token']);
 
 const logo = ref(props.src);
 const busy = ref(false);
@@ -30,9 +36,10 @@ async function fetchSetting(){
     }
 }
 
-// onMounted(() => {
-//     fetchSetting();
-// })
+onMounted(() => {
+    if(user.value?.id && token.value)
+        fetchSetting();
+})
 
 </script>
 

@@ -3,8 +3,13 @@ import { ref, reactive, watch, onMounted } from 'vue';
 import { useVuelidate } from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
 import ActivityServices from '@/services/ActivityServices';
+import EventServices from '@/services/EventServices';
 import { useNotification } from '@/composables/useNotification';
 import { useRouter } from 'vue-router';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc'
+dayjs.locale('pt');
+dayjs.extend(utc);
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
@@ -14,6 +19,7 @@ import Calendar from 'primevue/calendar';
 import InputNumber from 'primevue/inputnumber';
 import { SwalConfirmAlert } from '@/helpers/swalConfirmAlert';
 import ModalNewActivityType from './ModalNewActivityType.vue';
+import InlineMessage from 'primevue/inlinemessage';
 
 const emit = defineEmits(['created']);
 const { notifyError, notifySuccess } = useNotification();
@@ -22,6 +28,10 @@ const router = useRouter();
 let visible = ref(false);
 let busy = ref(false);
 let submited = ref(false);
+const event = ref({
+    busy: false,
+    data: null,
+});
 let activity = reactive({
     name: null,
     description: null,
@@ -33,16 +43,17 @@ let activity = reactive({
     requires_registration: "Não",
     maxParticipants: null,
     targetAudience: 'Geral',
+    date: null,
 });
 
 const rules = {
     name: { required },
-    typeId: { required },
     startTime: { required },
     endTime: { required },
     eventId: { required },
     location: { required },
-    requires_registration: { required },
+    maxParticipants: { required },
+    date: { required },
 };
 
 const v$ = useVuelidate(rules, activity);
@@ -54,6 +65,8 @@ const activityTypes = ref([]);
 function show() {
     visible.value = true;
     fetchActivityTypes()
+    fetchEvent();
+    activity.eventId = router.currentRoute.value.params.id;
 }
 
 function handleHidden() {
@@ -73,6 +86,7 @@ function handleReset() {
         requires_registration: "Não",
         maxParticipants: null,
         targetAudience: 'Geral',
+        date: null,
     })
     selectedActivityType.value = null;
     submited.value = false;
@@ -87,8 +101,12 @@ function handleCancel() {
 
 function handleOK() {
     submited.value = true;
-    console.log(v$.value);
-    return v$.value.$invalid && store();
+
+    if(!activityDateIsValid(activity.date)) {
+        return;
+    }
+
+    return !v$.value.$invalid && store();
 }
 
 async function store() {
@@ -97,7 +115,6 @@ async function store() {
 
         busy.value = true;
         
-        activity.eventId = router.currentRoute.value.params.id;
         activity.typeId = selectedActivityType.value?.id;
         
         const response = await ActivityServices.store(activity);
@@ -143,6 +160,36 @@ async function fetchActivityTypes(type = null) {
     }
 }
 
+const fetchEvent = async () => {
+    try {
+        event.value.busy = true;
+        const response = await EventServices.show(router.currentRoute.value.params.id);
+        if (response.status === 200) {
+            event.value.data = response.data;
+            return;
+        }
+        throw new Error();
+    } catch (error) {
+        console.error(error);
+        notifyError('Erro ao buscar evento!');
+    } finally {
+        event.value.busy = false;
+    }
+};
+
+function activityDateIsValid(value: Date) {
+    const startEventDate = dayjs.utc(event.value.data?.startDate).date();
+    const endEventDate = dayjs.utc(event.value.data?.endDate).date();
+    const selectedDate = dayjs(value).date();
+
+    if(selectedDate < startEventDate || selectedDate > endEventDate) {
+        notifyError('Data inválida! A data da actividade deve estar dentro do período do evento.');
+        return false;
+    }
+
+    return true;
+}
+
 //expor a função show para ser usada no componente pai
 defineExpose({ show });
 </script>
@@ -155,7 +202,12 @@ defineExpose({ show });
                 <label for="name">Nome</label>
                 <InputText v-model="activity.name" id="name" class="h-9" 
                     placeholder="Ex.: Apresentação Cultural"
+                    :invalid="submited && v$.name.$invalid"
                 />
+
+                <InlineMessage severity="error" v-if="submited && v$.name.$invalid" class="text-xs">
+                    O nome da actividade é obrigatório.
+                </InlineMessage>
             </div>
 
             <div class="flex flex-col gap-1">
@@ -171,13 +223,12 @@ defineExpose({ show });
                 <label for="location">Local</label>
                 <InputText v-model="activity.location" id="location" class="h-9" 
                     placeholder="Ex.: Auditório"
+                    :invalid="submited && v$.location.$invalid"
                 />
 
-                <div v-if="submited && v$.location.$invalid" :class="{ error: v$.location.$invalid }">
-                    <div class="input-errors" v-for="error of v$.location.$errors" :key="error.$uid">
-                        <div class="error-msg">{{ error.$message }}</div>
-                    </div>
-                </div>
+                <InlineMessage severity="error" v-if="submited && v$.location.$invalid" class="text-xs">
+                    O local da actividade é obrigatório.
+                </InlineMessage>
             </div>
             
             <div class="flex flex-col gap-1">
@@ -211,17 +262,30 @@ defineExpose({ show });
             
             <div class="flex gap-3 flex-wrap">
                 <div class="mt-2 w-full">
-                    <p class="text-sm">Qual será a duração?</p>
+                    <p class="text-xs">Qual será a duração?</p>
+                </div>
+
+                <div class="flex flex-col gap-1 w-full">
+                    <label for="date">Data</label>
+                    <Calendar
+                        id="calendar" v-model="activity.date" 
+                        manualInput showIcon iconDisplay="input"
+                        class="h-9 overflow-hidden" placeholder="ex.: 01/12/2025"
+                        :invalid="submited && v$.date.$invalid"
+                    />
+
+                    <InlineMessage severity="error" v-if="submited && v$.date.$invalid" class="text-xs">
+                        A data da actividade é obrigatória.
+                    </InlineMessage>
                 </div>
 
                 <div class="flex flex-col gap-1 w-[45%] mr-7">
                     <label for="startTime">Início</label>
-                    <!-- <InputText v-model="activity.startTime" id="startTime" class="h-9" /> -->
-                    <!-- <input typeId="time" v-model="activity.startTime" id="startTime" class="h-9" /> -->
                     <Calendar 
                         id="calendar-timeonly" v-model="activity.startTime" 
                         timeOnly hourFormat="24" manualInput showIcon iconDisplay="input"
                         class="h-9 overflow-hidden" placeholder="ex.: 08:00"
+                        :invalid="submited && v$.startTime.$invalid"
                     />
                 </div>
                 
@@ -232,6 +296,7 @@ defineExpose({ show });
                         id="calendar-timeonly" v-model="activity.endTime" 
                         timeOnly hourFormat="24" manualInput showIcon iconDisplay="input"
                         class="h-9 overflow-hidden" placeholder="ex.: 09:00"
+                        :invalid="submited && v$.endTime.$invalid"
                     />
                 </div>
             </div>
@@ -243,7 +308,14 @@ defineExpose({ show });
 
             <div class="flex flex-col gap-1">
                 <label for="maxParticipants">Máximo de Participantes</label>
-                <InputNumber v-model="activity.maxParticipants" id="maxParticipants" class="h-9" placeholder="Ex.: 100" />
+                <InputNumber 
+                    v-model="activity.maxParticipants" id="maxParticipants" class="h-9" placeholder="Ex.: 100" 
+                    :invalid="submited && v$.maxParticipants.$invalid" :min="1" mode="decimal"    
+                />
+
+                <InlineMessage severity="error" v-if="submited && v$.maxParticipants.$invalid" class="text-xs">
+                    O número máximo de participantes é obrigatório.
+                </InlineMessage>
             </div>
 
             <div class="flex flex-col gap-1">

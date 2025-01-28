@@ -14,6 +14,7 @@ import ToastService from 'primevue/toastservice';
 import Ripple from 'primevue/ripple';
 import 'primeicons/primeicons.css'
 import ConfirmationService from 'primevue/confirmationservice';
+import lang_pt from '@/config/language/pt.json'
 
 //local css
 import './assets/main.css'
@@ -51,9 +52,13 @@ import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
 
 //dayjs
-import dayjs from 'dayjs';
-import 'dayjs/locale/pt'; // Importa o português
-dayjs.locale('pt');
+// import dayjs from 'dayjs';
+import { extendedDayjs } from './plugin/dayjs'
+const dayjs = extendedDayjs
+// import 'dayjs/locale/pt'; // Importa o português
+// import utc from 'dayjs/plugin/utc'
+// dayjs.locale('pt');
+// dayjs.extend(utc)
 
 export const app = createApp(App)
 
@@ -62,14 +67,14 @@ app.use(store)
 app.use(PrimeVue, {
     unstyled: true,
     pt: Lara,
-    ripple: true
+    ripple: true,
+    locale: lang_pt.pt
 });
 app.use(ToastService);
 app.directive('ripple', Ripple);
 app.directive('tooltip', Tooltip);
 
 app.use(ConfirmationService);
-
 // app.use(BootstrapVue)
 // app.use(IconsPlugin)
 
@@ -96,22 +101,21 @@ app.use(VueHtmlToPaper, vueHtmlToPaperOptions)
 app.component('Multiselect', Multiselect)
 
 //dayjs
-app.config.globalProperties.$dayjs = dayjs;
 app.directive('formatDate', {
   mounted(el, binding) {
-    el.innerHTML = dayjs(binding.value).format('dddd, D [de] MMMM');
+    el.innerHTML = dayjs(binding.value).utc().tz().format('dddd, D [de] MMMM');
   }
 })
 
 app.directive('formatDateDDMMMYYY', {
   mounted(el, binding) {
-    el.innerHTML = dayjs(binding.value).format('DD [de] MMMM YYYY');
+    el.innerHTML = dayjs(binding.value).utc().tz().format('DD [de] MMMM YYYY');
   }
 })
 
 app.directive('formatTime', {
   mounted(el, binding) {
-    el.innerHTML = dayjs(binding.value).format('HH:mm');
+    el.innerHTML = extendedDayjs(binding.value).utc().tz().format('HH:mm');
   }
 })
 

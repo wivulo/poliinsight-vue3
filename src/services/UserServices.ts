@@ -5,8 +5,10 @@ const baseUrl = `${databaseURL}/users`
 
 
 export default {
-    index(){
-        return axios.post(`${baseUrl}`)
+    index(params: any){
+        return axios.get(`${baseUrl}`, {
+            params
+        })
     },
 
     show(id: string){
@@ -38,5 +40,13 @@ export default {
 
     search(params = null) {
         return axios.post(`${baseUrl}/search`, { params })
-    }
+    },
+
+    store(user: any){
+        return axios.post(`${baseUrl}`, { user })
+    },
+
+    delete(id: string){
+        return axios.delete(`${baseUrl}/${id}`)
+    },
 }

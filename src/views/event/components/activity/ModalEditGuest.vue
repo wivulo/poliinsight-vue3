@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import ActivityServices from '@/services/ActivityServices';
 import { useNotification } from '@/composables/useNotification';
 import { useVuelidate } from '@vuelidate/core'
@@ -16,6 +17,7 @@ import Image from 'primevue/image';
 import { SwalConfirmAlert } from '@/helpers/swalConfirmAlert';
 
 const emit = defineEmits(['updated']);
+const router = useRouter();
 const { notifyError, notifySuccess } = useNotification();
 const { upload } = useUploadImage();
 
@@ -33,7 +35,8 @@ let guest = ref({
     roleInActivity: null,
     userId: null,
     activityId: null,
-    user: null
+    user: null,
+    eventId: null
 });
 let activity = ref(null);
 const rules = {
@@ -55,7 +58,7 @@ const uploadImage = ref({
 function show(data: any) {
     visible.value = true;
     console.log(data)
-    guest.value = data;
+    guest.value = {...data, eventId: router.currentRoute.value.params.id, phone: +data.phone};
 }
 
 function handleHidden() {
@@ -236,7 +239,7 @@ defineExpose({ show });
                     <!-- <p class="text-xs text-zinc-400">O que o convidado fará?</p> -->
                     <label for="roleInActivity">Função</label>
 
-                    <Dropdown id="roleInActivity" v-model="guest.roleInActivity"  :options="['Palestrante', 'Apresentador', 'Discursor', 'Telespectador']" placeholder="Selecione uma função" class="h-9">
+                    <Dropdown id="roleInActivity" v-model="guest.roleInActivity"  :options="['Orador', 'Moderador', 'Palestrante', 'Apresentador', 'Entretenimento','Telespectador']" placeholder="Selecione uma função" class="h-9">
                         <template #value="slotProps">
                             <div v-if="slotProps.value" class="flex items-center text-black">
                                 {{ slotProps.value }}

@@ -99,8 +99,6 @@ a{
   color: var(--color-soft)
 }
 
-* { list-style: none; }
-
 img {
   max-width: 100%; 
 }
@@ -212,7 +210,7 @@ table tbody tr[data-pc-section='bodyrow']:hover{
 }
 
 div:where(.swal2-container) {
-  z-index: 3102 !important;
+  z-index: 10000 !important;
 }
 
 .text-ellipsis-2 {

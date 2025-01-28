@@ -29,7 +29,7 @@ export default {
     text: {
         class: [
             // Font and Text
-            'text-base leading-none',
+            'leading-none',
             'font-medium'
         ]
     }

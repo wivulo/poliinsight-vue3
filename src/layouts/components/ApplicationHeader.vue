@@ -1,45 +1,19 @@
-<script>
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
 import { mapGetters } from 'vuex'
-import AppLogo from '@/components/AppLogo.vue'
-import InputText from 'primevue/inputtext';
+import { useStore } from 'vuex'
+import { useRoute } from 'vue-router';
 import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import Avatar from 'primevue/avatar';
 import Skeleton from 'primevue/skeleton';
 import BaseGrayButton from './BaseGrayButton.vue'
 
-export default {
-    name: 'ApplicationHeader',
-    data() {
-        return {
-            search: '',
-            links: ['perfil', 'sair']
-        }
-    },
-    components: {
-        AppLogo, BaseGrayButton,
-        InputText, Avatar,
-        Button, Dropdown, Skeleton
-    },
-    computed: {
-        ...mapGetters({
-            user: 'auth/user',
-            busy: 'auth/busy'
-        })
-    },
-    methods: {
-        handleUserMenuClick(option){
-            if(option === 'sair'){
-                this.handleLogout()
-            }
-        },
+const store = useStore()
+const route = useRoute()
 
-        handleLogout() {
-            this.$store.dispatch('auth/logout')
-            this.$router.push({path: "/"})
-        },
-    }
-}
+const user = computed(() => store.getters['auth/user'])
+const busy = computed(() => store.getters['auth/busy'])
 </script>
 
 <template>
@@ -72,7 +46,14 @@ export default {
                         
                         <li v-else-if="user" class="flex border-x border-slate-200 px-1">
 
-                            <Dropdown :options="links" class="p-0 h-9">
+                            <Dropdown 
+                                :options="[
+                                    {label: 'Página Inicial', route: 'home' },
+                                    {label: 'Perfil', route: 'profile.geral'},
+                                    {label: 'Sair', route: 'logout'}
+                                ]" 
+                                class="p-0 h-9"
+                            >
                                 <template #value>
                                     <div class="flex gap-1 items-center h-6 pt-[2px]">
                                         <div class="h-6 flex items-center">
@@ -89,8 +70,10 @@ export default {
                                 </template>
 
                                 <template #option="{ option }">
-                                    <div class="h-3 text-sm text-zinc-500 w-full text-left justify-start" @click="handleUserMenuClick(option)">
-                                        {{ option }}
+                                    <div class="h-3 text-sm text-zinc-500 w-full text-left justify-start">
+                                        <router-link :to="{name: option.route}">
+                                            {{ option.label }}
+                                        </router-link>
                                     </div>
                                 </template>
                             </Dropdown>

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, shallowRef } from 'vue';
 import EventConfigServices from '@/services/EventConfigServices.js';
+import { useNotification } from '@/composables/useNotification';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
@@ -17,14 +18,13 @@ const props = defineProps({
     }
 });
 
+const { notifyError } = useNotification();
+
+
 const busy = ref(false);
 const filter = ref(null);
-const eventConfig = ref({
-    data: {},
-    busy: false
-});
-const activeTable = ref(null);
 
+let activeTable = null;
 const getEventConfig = async () => {
     try {
         busy.value = true;
@@ -32,12 +32,13 @@ const getEventConfig = async () => {
         const conf = response.data;
 
         if (conf.registrationType == 'single' || conf.registrationType == 'hibrido') {
-            activeTable.value = RegistrationTableSingle;
+            activeTable = RegistrationTableSingle;
         } else {
-            activeTable.value = RegistrationTableTeam;
+            activeTable = RegistrationTableTeam;
         }
     } catch (error) {
-        handleError('Erro ao buscar configuração do evento');
+        console.error(error);
+        notifyError('Erro ao buscar configuração do evento');
     } finally {
         busy.value = false;
     }
@@ -54,7 +55,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="flex flex-col">
+    <div class="flex flex-col gap-3">
         <div class="flex">
             <InputGroup>
                 <Button size="small" class="h-9 bg-transparent border border-surface-300 border-r-0">
