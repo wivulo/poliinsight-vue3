@@ -1,6 +1,7 @@
 <script>
 import EventServices from '@/services/EventServices';
 import FinancesServices from '@/services/FinancesServices.js';
+import SurveyServices from '@/services/SurveyServices';
 import currency from '@/helpers/currency';
 import AutoComplete from 'primevue/autocomplete';
 import Card from 'primevue/card';
@@ -24,11 +25,13 @@ export default {
         CardValue: CCard.Value,
         CardInformation: CCard.Information,
     },
-    data(){
+    data() {
         return {
             busy: false,
             event: null,
             statistic: null,
+            survey_busy: false, // novo busy para questionários
+            surveys: [],       // variável para os questionários
             statistic_busy: false,
             dataGenderDistribuition: null,
             dataGenderDistribuitionChartOptions: null,
@@ -47,72 +50,111 @@ export default {
                 busy: false,
                 data: []
             },
+            feedbacks: {
+                busy: false,
+                data: []
+            }
         }
     },
-    async created(){
-        this.getEvent()
-        this.getStatistic()
-        this.fetchInvestiments()
-        this.fetchIncomes()
-        this.fetchExpenses()
+    async created() {
+        this.getEvent();
+        this.getStatistic();
+        this.fetchInvestiments();
+        this.fetchIncomes();
+        this.fetchExpenses();
+        this.fetchSurveys(); // chama a requisição para questionários
+        this.fetchFeedbacks();
     },
     mounted() {
         if (this.$refs.chart && this.$refs.chart.chart) {
             this.$refs.chart.chart.destroy();
         }
-        
+
         this.dataGenderDistribuition = this.setdataGenderDistribuition();
         this.dataGenderDistribuitionChartOptions = this.setdataGenderDistribuitionChartOptions();
         this.ageDistribuition = this.setageDistribuition();
         this.ageDistribuitionChartOptions = this.setAgeDistribuitionChartOptions();
     },
     computed: {
-        date_formatter(){
+        date_formatter() {
             return dateFormatter
         },
 
-        old_fullname(){
+        old_fullname() {
             return `${this.statistic?.oldestParticipantInfo.name}`
         },
 
-        new_fullname(){
+        new_fullname() {
             return `${this.statistic?.youngestParticipantInfo.name}`
         },
 
-        totalInvestiments(){
+        totalInvestiments() {
             return this.investments.data.reduce((acc, curr) => acc + curr.amount, 0)
         },
 
-        totalIncomes(){
+        totalIncomes() {
             return currency.KWAZA.format(this.incomes.data.reduce((acc, curr) => acc + curr.amount, 0))
         },
 
-        totalExpenses(){
+        totalExpenses() {
             return currency.KWAZA.format(this.expenses.data.reduce((acc, curr) => acc + curr.amount, 0))
         }
     },
     methods: {
-        async getEvent(){
+        async getEvent() {
             this.busy = true
             const responde = await EventServices.show(this.$route.params.id)
-            .catch(() => this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar evento'}))
+                .catch(() => this.$toast.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao buscar evento' }))
             this.event = responde.data
             this.busy = false
         },
 
-        async getStatistic(){
+        async getStatistic() {
             this.statistic_busy = true
             const responde = await EventServices.getStatistic(this.$route.params.id)
-            .catch(() => this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar as estatísticas'}))
+                .catch(() => this.$toast.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao buscar as estatísticas' }))
             this.statistic = responde.data
             this.statistic_busy = false
+        },
+
+        async fetchSurveys() {
+            try {
+                this.survey_busy = true;
+                const response = await SurveyServices.showByEvent(this.$route.params.id);
+                if (response.status === 200) {
+                    this.surveys = response.data;
+                }
+            } catch (error) {
+                console.error(error);
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'Erro ao carregar os questionários'
+                });
+            } finally {
+                this.survey_busy = false;
+            }
+        },
+
+        async fetchFeedbacks() {
+            try {
+                this.feedbacks.busy = true;
+                const response = await EventServices.getFeedBacks(this.$route.params.id);
+                if (response.status === 200) {
+                    this.feedbacks.data = response.data;
+                }
+            } catch (error) {
+                console.error(error);
+            } finally {
+                this.feedbacks.busy = false;
+            }
         },
 
         setdataGenderDistribuition() {
             let male = 0;
             let female = 0;
 
-            if(this.statistic?.genderDistribution){
+            if (this.statistic?.genderDistribution) {
                 male = this.statistic.genderDistribution?.male;
                 female = this.statistic.genderDistribution?.female;
             }
@@ -158,16 +200,16 @@ export default {
         setageDistribuition() {
             let ages = [0, 0, 0, 0]
 
-            if(this.statistic?.agesDistribution){
+            if (this.statistic?.agesDistribution) {
                 let objAges = this.statistic.agesDistribution;
-                for(const age in objAges){
-                    if(+age >= 40 ){
+                for (const age in objAges) {
+                    if (+age >= 40) {
                         ages[3] += objAges[age]
                     }
-                    else if(+age >= 30 && +age < 40){
+                    else if (+age >= 30 && +age < 40) {
                         ages[2] += objAges[age]
                     }
-                    else if(+age >= 25 && +age < 30){
+                    else if (+age >= 25 && +age < 30) {
                         ages[1] += objAges[age]
                     }
                     else {
@@ -246,11 +288,11 @@ export default {
             });
         },
 
-        toKwanza(value){
+        toKwanza(value) {
             return currency.KWAZA.format(value)
         },
 
-        async fetchInvestiments(){
+        async fetchInvestiments() {
             try {
                 this.investments.busy = true;
                 const response = await FinancesServices.findInvestiment(this.$route.params.id);
@@ -262,7 +304,7 @@ export default {
             }
         },
 
-        async fetchIncomes(){
+        async fetchIncomes() {
             try {
                 this.incomes.busy = true;
                 const response = await FinancesServices.findIncomes(this.$route.params.id);
@@ -274,7 +316,7 @@ export default {
             }
         },
 
-        async fetchExpenses(){
+        async fetchExpenses() {
             try {
                 this.expenses.busy = true;
                 const response = await FinancesServices.findExpenses(this.$route.params.id);
@@ -300,20 +342,22 @@ export default {
 <template>
     <div class="flex px-5 py-7 w-full">
         <div class="flex flex-col gap-10 items-center w-full">
-    
+
             <div class="flex flex-col gap-4 w-full">
-               <div class="flex justify-between w-full border-b border-zinc-400/20 items-center">
+                <div class="flex justify-between w-full border-b border-zinc-400/20 items-center">
                     <p class="text-xl font-bold uppercase">
                         <i class="fa fa-spinner animate-spin text-black text-base" v-if="busy" />
                         <template v-else>
                             <div class="flex gap-3 items-center">
-                                <RouterLink :to="{name: 'analise_relatorios.analitics'}" title="Voltar para lista" class="no-print">
+                                <RouterLink :to="{ name: 'analise_relatorios.analitics' }" title="Voltar para lista"
+                                    class="no-print">
                                     <i class="fa fa-chevron-left text-sm p-2 cursor-pointer hover:bg-slate-200" />
                                 </RouterLink>
                                 <div class="flex flex-col gap-1">
                                     <p class="text-xs opacity-30">Mapa do evento</p>
-                                    <RouterLink :to="{name: 'event.show', params: {id: event?.id}}" class="text-xl font-bold hover:text-primary-500/70">
-                                        {{event?.name}}
+                                    <RouterLink :to="{ name: 'event.show', params: { id: event?.id } }"
+                                        class="text-xl font-bold hover:text-primary-500/70">
+                                        {{ event?.name }}
                                     </RouterLink>
                                 </div>
                             </div>
@@ -321,13 +365,14 @@ export default {
                     </p>
 
                     <div class="no-print">
-                        <Button severity="secondary" size="small" class="h-8" @click="handlePrint" title="Imprimir mapa do evento">
-                            <i class="fa fa-print text-black"/>
+                        <Button severity="secondary" size="small" class="h-8" @click="handlePrint"
+                            title="Imprimir mapa do evento">
+                            <i class="fa fa-print text-black" />
                         </Button>
                     </div>
-               </div>
+                </div>
 
-               <div class="flex justify-between gap-7 min-h-[14rem] mb-4">
+                <div class="flex justify-between gap-7 min-h-[14rem] mb-4">
                     <CardRoot class="h-48">
                         <CardValue class="flex gap-3 relative h-40">
                             <p class="font-semibold">Total de vagas</p>
@@ -345,12 +390,15 @@ export default {
                             <p class="font-semibold">Total de inscrições</p>
                             <div class="self-end">
                                 <p class="text-xl">
-                                    <i class="fa fa-spinner animate-spin text-black text-base" v-if="statistic_busy"></i>
+                                    <i class="fa fa-spinner animate-spin text-black text-base"
+                                        v-if="statistic_busy"></i>
                                     <span v-else>{{ statistic?.totalParticipants ?? 0 }}</span>
                                 </p>
                             </div>
                             <div class="w-5 h-40 border border-zinc-300 overflow-hidden relative">
-                                <div class="w-5 bg-zinc-600 absolute bottom-0 left-0" :style="{height: statistic?.totalParticipants*((1/100)*160)+'px' ?? 0+'px'}"></div>
+                                <div class="w-5 bg-zinc-600 absolute bottom-0 left-0"
+                                    :style="{ height: statistic?.totalParticipants * ((1 / 100) * 160) + 'px' ?? 0 + 'px' }">
+                                </div>
                             </div>
                         </CardValue>
                     </CardRoot>
@@ -358,13 +406,14 @@ export default {
                     <CardRoot class="h-48">
                         <CardValue>
                             <CardValue class="flex gap-3 relative h-40">
-                            <p class="font-semibold">Vagas Restantes</p>
-                            <div class="self-end">
-                                <p class="text-xl">
-                                    <i class="fa fa-spinner animate-spin text-black text-base" v-if="busy || statistic_busy"></i>
-                                    <span v-else>{{ (+event?.vacancies) - (+statistic?.totalParticipants) }}</span>
-                                </p>
-                            </div>
+                                <p class="font-semibold">Vagas Restantes</p>
+                                <div class="self-end">
+                                    <p class="text-xl">
+                                        <i class="fa fa-spinner animate-spin text-black text-base"
+                                            v-if="busy || statistic_busy"></i>
+                                        <span v-else>{{ (+event?.vacancies) - (+statistic?.totalParticipants) }}</span>
+                                    </p>
+                                </div>
                             </CardValue>
                         </CardValue>
                     </CardRoot>
@@ -372,16 +421,17 @@ export default {
                     <CardRoot class="h-48">
                         <CardValue class="flex gap-3 relative h-40">
                             <p class="font-semibold">Investimento</p>
-                                
+
                             <div class="self-end">
                                 <p class="text-xl">
-                                    <i class="fa fa-spinner animate-spin text-black text-base" v-if="investments.busy"></i>
+                                    <i class="fa fa-spinner animate-spin text-black text-base"
+                                        v-if="investments.busy"></i>
                                     <span v-else>{{ toKwanza(totalInvestiments) }}</span>
                                 </p>
                             </div>
                         </CardValue>
                     </CardRoot>
-               </div>
+                </div>
 
                 <section class="flex flex-col gap-4">
                     <div>
@@ -390,11 +440,13 @@ export default {
 
                     <template v-if="statistic_busy">
                         <div class="flex justify-between gap-7">
-                            <CardRoot class="cardroot flex justify-center items-center" style="width: 350px;height: 300px;">
+                            <CardRoot class="cardroot flex justify-center items-center"
+                                style="width: 350px;height: 300px;">
                                 <i class="fa fa-spinner animate-spin text-black text-base" />
                             </CardRoot>
 
-                            <CardRoot class="cardroot flex justify-center items-center" style="width: 350px;height: 300px;">
+                            <CardRoot class="cardroot flex justify-center items-center"
+                                style="width: 350px;height: 300px;">
                                 <i class="fa fa-spinner animate-spin text-black text-base" />
                             </CardRoot>
 
@@ -417,7 +469,9 @@ export default {
                     <div v-else id="demografic-blocks" class="flex gap-8 justify-between min-h-[19rem] pb-2 mb-5">
                         <CardRoot id="demografic-block-1" class="flex justify-center items-center avoid-break">
                             <figure class="flex flex-col gap-1">
-                                <PChart ref="chart" type="pie" :data="dataGenderDistribuition" :options="dataGenderDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" class="w-full md:w-30rem" />
+                                <PChart ref="chart" type="pie" :data="dataGenderDistribuition"
+                                    :options="dataGenderDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]"
+                                    class="w-full md:w-30rem" />
                                 <figcaption class="print-only">
                                     <div class="flex">
                                         <div class="flex flex-col gap-2 border border-zinc-300 grow p-2">
@@ -426,15 +480,17 @@ export default {
                                         </div>
                                         <div class="flex flex-col gap-2 border border-zinc-300 grow p-2">
                                             <p>Feminino:</p>
-                                            <p class="text-center">{{ statistic?.genderDistribution?.female ?? 0}}</p>
+                                            <p class="text-center">{{ statistic?.genderDistribution?.female ?? 0 }}</p>
                                         </div>
                                     </div>
                                 </figcaption>
                             </figure>
                         </CardRoot>
-                        
+
                         <CardRoot id="demografic-block-2" class="flex justify-center items-center avoid-break">
-                            <PChart ref="chart" type="bar" :data="ageDistribuition" :options="ageDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]" :canvas-props="{width: 350, height: 300}" />
+                            <PChart ref="chart" type="bar" :data="ageDistribuition"
+                                :options="ageDistribuitionChartOptions" :plugins="[pluginEmptyDataPlugin]"
+                                :canvas-props="{ width: 350, height: 300 }" />
                         </CardRoot>
 
                         <div id="demografic-block-3" class="flex flex-col gap-5 avoid-break">
@@ -476,7 +532,7 @@ export default {
                             </CardRoot>
                         </div>
                     </div>
-               </section>
+                </section>
 
                 <section class="flex flex-col gap-4">
                     <div>
@@ -489,7 +545,8 @@ export default {
                                 <p class="font-semibold">Total de Receitas</p>
                                 <div class="self-end">
                                     <p class="text-xl">
-                                        <i class="fa fa-spinner animate-spin text-black text-base" v-if="incomes.busy"></i>
+                                        <i class="fa fa-spinner animate-spin text-black text-base"
+                                            v-if="incomes.busy"></i>
                                         <span v-else>{{ totalIncomes }}</span>
                                     </p>
                                 </div>
@@ -501,7 +558,8 @@ export default {
                                 <p class="font-semibold">Total de Despesas</p>
                                 <div class="self-end">
                                     <p class="text-xl">
-                                        <i class="fa fa-spinner animate-spin text-black text-base" v-if="expenses.busy"></i>
+                                        <i class="fa fa-spinner animate-spin text-black text-base"
+                                            v-if="expenses.busy"></i>
                                         <span v-else>{{ totalExpenses }}</span>
                                     </p>
                                 </div>
@@ -511,18 +569,73 @@ export default {
                         <CardRoot class="h-48">
                             <CardValue>
                                 <CardValue class="flex gap-3 relative h-40">
-                                <p class="font-semibold">Total de Investimento</p>
-                                <div class="self-end">
-                                    <p class="text-xl">
-                                        <i class="fa fa-spinner animate-spin text-black text-base" v-if="investments.busy"></i>
-                                        <span v-else>{{ toKwanza(totalInvestiments) }}</span>
-                                    </p>
-                                </div>
+                                    <p class="font-semibold">Total de Investimento</p>
+                                    <div class="self-end">
+                                        <p class="text-xl">
+                                            <i class="fa fa-spinner animate-spin text-black text-base"
+                                                v-if="investments.busy"></i>
+                                            <span v-else>{{ toKwanza(totalInvestiments) }}</span>
+                                        </p>
+                                    </div>
                                 </CardValue>
                             </CardValue>
                         </CardRoot>
                     </div>
-               </section>
+                </section>
+
+                <section class="flex flex-col gap-4">
+                    <div>
+                        <h4>Dados dos questionários</h4>
+                    </div>
+                    <div v-if="surveys.length">
+                        <div v-for="(survey, index) in surveys" :key="survey.id" class="mb-6">
+                            <h6>Questionário {{ ++index }} </h6>
+                            <h5 class="text-lg font-semibold mb-2">{{ survey.title }}</h5>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <CardRoot v-for="question in survey.questions" :key="question.id">
+                                    <div class="p-2 text-sm">
+                                        <p class="font-semibold">{{ question.question }}</p>
+                                        <p>Respostas: {{ question.responses ? question.responses.length : 0 }}</p>
+                                    </div>
+                                </CardRoot>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <p v-if="survey_busy">Carregando questionários...</p>
+                        <p v-else>Nenhuma informação de questionários disponível.</p>
+                    </div>
+                </section>
+
+                <section class="flex flex-col gap-4">
+                    <div>
+                        <p>Feedbacks</p>
+                    </div>
+
+                    <div v-if="feedbacks.busy">
+                        <p>Carregando feedbacks...</p>
+                    </div>
+
+                    <div v-else>
+                        <div v-if="feedbacks.data.length" class="flex flex-col gap-3">
+                            <div v-for="feedback in feedbacks.data" :key="feedback.id">
+                                <CardRoot>
+                                    <div class="flex flex-col gap-2">
+                                        <div class="flex flex-col ">
+                                            <p class="font-semibold">{{ feedback?.name }} <span class="text-sm">@{{ feedback?.email }}</span></p>
+                                        </div>
+                                        <CardValue>
+                                            <p>{{ feedback?.feedback }}</p>
+                                        </CardValue>
+                                    </div>
+                                </CardRoot>
+                            </div>
+                        </div>
+                        <div v-else>
+                            <p>Nenhum feedback disponível</p>
+                        </div>
+                    </div>
+                </section>
             </div>
         </div>
     </div>

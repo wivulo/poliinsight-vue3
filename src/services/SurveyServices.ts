@@ -30,5 +30,9 @@ export default {
 
     submitResponses(id, data: any) {
         return axios.post(`${source}/responses/`+id, { survey: data})
+    },
+
+    showByEvent(eventId: string) {
+        return axios.get(`${source}/event/${eventId}`);
     }
 };

@@ -62,6 +62,10 @@ export default {
     },
 
     feedback(eventId, feedback){
-        return axios.post(`${databaseURL}/feedback/${eventId}`, { feedback });
+        return axios.post(`${databaseURL}/events/feedback/${eventId}`, { feedback });
+    },
+
+    getFeedBacks(eventId){
+        return axios.get(`${databaseURL}/events/feedback/${eventId}`);
     }
 }

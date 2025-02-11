@@ -304,11 +304,11 @@ async function send() {
                                 <InputText v-model="feedback.email" placeholder="Email" class="w-[300px]  h-9"/>
                             </div>
 
-                            <Textarea v-model="feedback.message" placeholder="Mensagem" rows="5" />
+                            <Textarea v-model="feedback.message" placeholder="Mensagem" rows="5" class="hover:border-zinc-400" />
 
                             <div class="w-full flex justify-end">
                                 <Button icon="pi pi-send" label="Enviar" size="small" class="h-9" 
-                                    @click="handleOk" 
+                                    @click="handleOk" :loading="feedback_busy"
                                 />
                             </div>
                         </div>
