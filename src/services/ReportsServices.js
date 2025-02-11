@@ -18,6 +18,12 @@ export default {
         });
     },
 
+    generateWithTemplate(report){
+        return axios.post(`${databaseURL}/reports/generate/template`, {
+            report
+        });
+    },
+
     export(report){
         return axios.post(`${databaseURL}/reports/export`, {
             report
@@ -42,5 +48,18 @@ export default {
 
     getReportFile(fileUrl){
         return axios.get(fileUrl, { responseType: 'blob' });
+    },
+
+    storeTemplate(eventId, type, file){
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('eventId', eventId);
+        formData.append('type', type);
+
+        return axios.post(`${databaseURL}/reports/template/${eventId}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
     }
 }

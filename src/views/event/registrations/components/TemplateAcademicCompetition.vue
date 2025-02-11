@@ -88,6 +88,7 @@ export default {
                 this.$emit('created:registration')
                 this.reset()
             } catch (error) {
+                console.error(error)
                 this.$toast.add({severity: 'error', summary: 'Erro', detail: error, life: 3000})
             } finally {
                 this.registration.busy = false

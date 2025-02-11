@@ -1,251 +1,313 @@
-<script>
+<script setup>
+import { ref, reactive } from 'vue';
+import { useRoute } from 'vue-router';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
-import Dropdown from 'primevue/dropdown'
+import { useNotification } from '@/composables/useNotification';
+import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
-import PaidEvent from './PaidEvent.vue';
-import ParticipantServices from '@/services/ParticipantServices.js'
-import RegistrationServices from '@/services/RegistrationServices.js'
 import Button from 'primevue/button';
-import { data } from 'autoprefixer';
+import PaidEvent from './PaidEvent.vue';
+import ParticipantServices from '@/services/ParticipantServices.js';
+import RegistrationServices from '@/services/RegistrationServices.js';
+import Stepper from 'primevue/stepper';
+import StepperPanel from 'primevue/stepperpanel';
+import useVuelidate from '@vuelidate/core';
+import { required } from '@vuelidate/validators';
+import InlineMessage from 'primevue/inlinemessage';
+import { ConfirmSwal } from '@/helpers/fireSwal';
 
-export default {
-    name: 'Registration.template.seminar',
-    props: ['fields', 'event'],
-    components: {
-        InputText, InputNumber, Button,
-        Dropdown, Calendar, PaidEvent,
-    },
-    data(){
-        return {
-            data: {
-                name: null,
-                email: null,
-                phone: null,
-                birthdate: null,
-                gender: null
-            },
-            registration: {
-                data: {},
-                busy: false
-            },
-            genders: [
-                { label: 'Masculino', value: 'male' },
-                { label: 'Feminino', value: 'female' }
-            ],
+const props = defineProps({
+    fields: Array,
+    event: Object
+});
+const emit = defineEmits(['created:registration', 'update:registration']);
 
-            validation: {
-                data: {
-                    name: {required: true},
-                    email: {required: true},
-                    phone: {required: true},
-                }
-            },
-        }
-    },
-    methods: {
-        reset(){
-            this.data = {}
-        },
+const route = useRoute();
+const { notifyError, notifySuccess } = useNotification();
 
-        async handleMakeRegistration(){
-            try {
-                const [valid, names] = this.verifyRequiredFields(this.data)
-                if(!valid) {
-                    this.handleErrorMessage('Preencha todos os campos obrigatórios');
-                    return;
-                };
+const formData = reactive({
+    name: null,
+    email: null,
+    phone: null,
+    birthdate: null,
+    gender: null
+});
 
-                const result = await this.$swal.fire({
-                    text: 'Tem a certeza?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    cancelButtonText: 'Não',
-                    confirmButtonText: 'Sim, tenho',
-                    confirmButtonColor: '#EF4444',
-                    cancelButtonColor: '#CBD5E1',
-                })
+const registration = reactive({
+    data: {},
+    busy: false
+});
 
-                if(!result.isConfirmed) return
+const savedRegistration = ref(null);
 
-                this.registration.data = {
-                    ...this.registration.data,
-                    ...this.data
-                }
+const genders = ['Masculino', 'Feminino'];
 
-                this.registration.busy = true
+const rules = {
+    name: { required },
+    email: { required },
+    phone: { required }
+};
+const v$ = useVuelidate(rules, formData);
 
-                // console.log(this.registration.data)
-                
-                const response = await RegistrationServices.store({
-                    eventId: this.$route.params.id,
-                    participant: {
-                        name: this.registration.data?.name,
-                        email: this.registration.data?.email,
-                        phone: this.registration.data?.phone,
-                        birthdate: this.registration.data?.birthdate,
-                        gender: this.registration.data?.gender
-                    },
-                    team: null,
-                    ticketId: this.registration.data?.ticket ? this.registration.data?.ticket?.ticketId : null,
-                    data: {
-                        ...this.registration.data?.data,
-                        paymentMode: this.registration.data?.ticket ? this.registration.data?.ticket.payment_mode : null,
-                    }
-                })
+const activeStep = ref(0);
+function goToStep(index) {
+    console.log('goToStep: ', index);
+    activeStep.value = index;
+    console.log('activeStep: ', activeStep.value);
+}
 
-                if(response.data?.error || response.status > 299) throw new Error('Erro ao fazer a inscrição')
+function handleErrorMessage(message = 'Erro ao fazer a inscrição') {
+    notifyError(message);
+}
 
+function reset () {
+    formData.name = null;
+    formData.email = null;
+    formData.phone = null;
+    formData.birthdate = null;
+    formData.gender = null;
+    registration.data = {};
+    savedRegistration.value = null;
+    activeStep.value = 0;
+}
 
-                this.$swal.fire('', 'Inscrição feita com sucesso', 'success')
-                this.$emit('created:registration')
-                this.reset()
-            } catch (error) {
-                this.handleErrorMessage(error)
-            } finally {
-                this.registration.busy = false
-            }
-        },
+// Salva informações pessoais e avança para o passo 2
+async function handleSavePersonalInfo() {
 
-        handleRegistrationUpdate(value){
-            this.registration.data = {
-                ...this.registration.data,
-                ticket: value
-            }
-        },
-
-        verifyRequiredFields(fields){
-            let fieldInvalidName = [];
-
-            const fieldInvalid = Object.entries(fields).reduce((acc, [key, value]) => {
-                if (this.validation.data[key]?.required && (value === '' || value === null)) {
-                    acc[key] = value;
-                    fieldInvalidName.push(key);
-                }
-                return acc;
-            }, {});
-
-            const count = fieldInvalidName.length;
-            const valid = count === 0;
-
-            return [valid, fieldInvalidName];
-        },
-
-        handleErrorMessage(message = 'Erro ao fazer a inscrição'){
-            this.$toast.add({severity: 'error', summary: 'Erro', detail: message, life: 3000})
-        },
-
+    if (savedRegistration.value) {
+        goToStep(1);
+        return;
     }
+
+    await v$.value.$validate();
+    if (v$.value.$invalid) {
+        handleErrorMessage('Preencha todos os campos obrigatórios');
+        return;
+    }
+
+    registration.busy = true;
+    try {
+        const result = await ConfirmSwal();
+        if (!result.isConfirmed) return;
+
+        const response = await RegistrationServices.store({
+            eventId: route.params.id,
+            participant: {
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                birthdate: formData.birthdate,
+                gender: formData.gender
+            },
+            team: null,
+            ticketId: null,
+            data: {}
+        });
+
+        if (response.status === 201) {
+            savedRegistration.value = response.data;
+            notifySuccess('Informações pessoais salvas com sucesso');
+            registration.data = { ...registration.data, ...formData };
+            goToStep(1);
+            return true
+        }
+
+        throw new Error();
+    } catch (error) {
+        console.error(error);
+        handleErrorMessage(error.message || error);
+        return false;
+    } finally {
+        registration.busy = false;
+    }
+}
+
+function validatePayment() {
+    if (!registration.data?.ticket) {
+        handleErrorMessage('Adicione as informações de pagamento');
+        return false;
+    }
+
+    if (!registration.data.ticket?.ticketId) {
+        handleErrorMessage('Selecione um ticket');
+        return false;
+    }
+
+    if (!registration.data.ticket?.method) {
+        handleErrorMessage('Selecione um método de pagamento');
+        return false;
+    }
+
+    if (
+        ['bank_transfer', 'bank_deposit'].includes(registration.data.ticket?.method) 
+        && 
+        !registration.data.ticket?.bankAccountId
+    ) {
+        handleErrorMessage('Selecione uma conta bancária');
+        return false;
+    }
+
+    if (
+        ['bank_transfer', 'bank_deposit', 'tpa'].includes(registration.data.ticket?.method) 
+        && 
+        !registration.data.ticket?.transationReference
+    ) {
+        handleErrorMessage('Adicione a referência da transação');
+        return false;
+    }
+
+    return true;
+}
+
+// Salva o método de pagamento usando storeTicket
+async function handleSavePayment() {
+    if (!validatePayment()) return;
+
+    try {
+        const result = await ConfirmSwal();
+        if (!result.isConfirmed) return;
+
+        registration.busy = true;
+        const response = await RegistrationServices.payment({
+            registrationId: savedRegistration.value?.id,
+            ...registration.data.ticket
+        });
+
+        if (!response.data?.error && response.status === 201) {
+            notifySuccess('Incrição concluida com sucesso');
+            emit('created:registration');
+            reset();
+            return
+        }
+
+        throw new Error(response.data?.error || 'Erro ao salvar pagamento');
+    } catch (error) {
+        console.error(error);
+        handleErrorMessage(error.message || error);
+    } finally {
+        registration.busy = false;
+    }
+}
+
+function handleRegistrationUpdate(value) {
+    registration.data = { ...registration.data, ticket: value };
+    emit('update:registration', value);
 }
 </script>
 
 <template>
-    <form @submit.prevent="handleMakeRegistration" class="flex gap-3 flex-col px-3">
-        <div class="flex flex-wrap gap-3">
-            <div class="form-group w-full">
-                <label for="name" class="ml-2">
-                    <i class="fas fa-user me-1 "></i> <small> Nome </small> <span class="text-primary-500">*</span>
-                </label>
-                <InputText id="name" v-model="data.name" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex.: João da Silva" />
-            </div>
-
-            <div class="form-group">
-                <label for="email" class="ml-2">
-                    <i class="fas fa-envelope me-1 "></i> <small> Email </small> <span class="text-primary-500">*</span>
-                </label>
-                <InputText id="email" v-model="data.email" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex.: joaosilva@gmail.com" />
-            </div>
-
-            <div class="form-group">
-                <label for="phone" class="ml-2">
-                    <i class="fas fa-phone me-1 "></i> <small> Telefone </small> <span class="text-primary-500">*</span>
-                </label>
-                <InputText id="phone" v-model="data.phone" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex.: (244) 999xxxxxx" />
-            </div>
-
-            <div class="form-group">
-                <label for="birthdate" class="ml-2">
-                    <i class="fas fa-calendar me-1 "></i> <small> Data de Nascimento </small>
-                </label>
-                <Calendar id="birthdate" v-model="data.birthdate" dateFormat="dd/mm/yy" class="w-full border-zinc-300 hover:border-zinc-400 h-9" :required="true" placeholder="Ex.: 01/01/2000" />
-            </div>
-
-            <div class="form-group">
-                <label for="gender" class="ml-2">
-                    <i class="fas fa-venus-mars me-1 "></i> <small> Gênero </small>
-                </label>
-
-                <Dropdown id="gender" v-model="data.gender" :options="genders" optionLabel="label" optionValue="value" class="w-full border-zinc-300 h-9" placeholder="Ex.: Masculino">
-                    <template #value="slotProps">
-                        <div v-if="slotProps.value" class="flex items-center text-slate-800">
-                            {{ genders.find(gn => gn.value === slotProps.value).label }}
-                        </div>
-                        <span v-else>
-                            {{ slotProps.placeholder }}
-                        </span>
-                    </template>
-                </Dropdown>
-            </div>
-        </div>
-
-        <!-- <div class="flex flex-wrap gap-3">
-            <template v-for="field in fields" :key="field.name">
-                <template v-if="field.type === 'text' || field.type === 'email'">
-                    <div class="form-group">
-                        <label :for="field.name" class="ml-2">
-                            <i class="fas fa-user me-1 "></i> <small> {{ field.label }} </small>
-                        </label>
-                        <InputText :id="field.name" v-model="data[field.name]" class="w-full border-zinc-300 h-9" :required="field.required" :placeholder="field.placeholder" v-if="field.visibility" />
-                    </div>
-                </template>
-
-                <template v-else-if="field.type === 'tel'">
-                    <div class="form-group">
-                        <label :for="field.name" class="ml-2">
-                            <i class="fas fa-phone me-1 "></i> <small> {{ field.label }} </small>
-                        </label>
-                        <InputNumber :id="field.name" v-model="data[field.name]" class="w-full border-zinc-300 h-9" :required="field.required" :placeholder="field.placeholder" v-if="field.visibility" />
-                    </div>
-                </template>
-
-                <template v-else-if="field.type === 'date'">
-                    <div class="form-group">
-                        <label :for="field.name" class="ml-2">
-                            <i class="fas fa-calendar me-1" /> <small> {{ field.label }} </small>
-                        </label>
-                        <Calendar :id="field.name" v-model="data[field.name]" class="border-zinc-300 h-9 focus:outline-zinc-400 w-full" inputClass="hover:border-zinc-400" :required="field.required" :placeholder="field.placeholder" v-if="field.visibility" />
-                    </div>
-                </template>
-
-                <template v-else-if="field.type === 'dropdown'">
-                    <div class="form-group flex flex-col">
-                        <label :for="field.name" class="ml-2">
-                            <i class="fas fa-user me-1" /> <small> {{ field.label }} </small>
-                        </label>
-                        <Dropdown :id="field.name" v-model="data[field.name]" :options="field.options" optionLabel="label" optionValue="value" :required="field.required" :placeholder="field.placeholder" v-if="field.visibility" class="h-9 w-full bg-white"  />
-                    </div>
-                </template>
-
+    <Stepper v-model:activeIndex="activeStep" :readonly="true">
+        <StepperPanel>
+            <template #header="{ index }">
+                <button class="bg-transparent border-none inline-flex items-center justify-center w-10 h-10 rounded-full">
+                    <span :class="['border w-10 h-10 flex justify-center items-center rounded-full', { 'bg-primary': index <= activeStep, 'border-surface-400': index > activeStep }]">
+                        <i class="pi pi-user text-white" />
+                    </span>
+                </button>
             </template>
-        </div> -->
 
-        <PaidEvent
-            v-if="event?.type === 'paid'" 
-            :event="event" 
-            @update:registration="handleRegistrationUpdate" 
-        />
+            <template #content="{ nextCallback }">
 
-        <div class="flex w-full justify-end my-2">
-            <Button type="submit" size="small" class="h-9" :loading="registration.busy">
-                <i class="fas fa-spinner animate-spin mr-2" v-if="registration.busy"/>
-                <i class="fas fa-save me-2" v-else/> {{registration.busy ? 'Inscrevendo': 'Inscrever'}}
-            </Button>
-        </div>
-    </form>
+            <div class="flex flex-wrap gap-3">
+                <!-- Campo Nome -->
+                <div class="form-group w-full">
+                    <label for="name" class="ml-2">
+                        <i class="fas fa-user me-1"></i> <small> Nome </small> <span class="text-primary-500">*</span>
+                    </label>
+
+                    <InputText id="name" 
+                        v-model="formData.name" class="w-full h-9" 
+                        :required="true"
+                        placeholder="Ex.: João da Silva"
+                        :invalid="v$.name.$error"
+                    />
+                    <InlineMessage v-if="v$.name.$error" severity="error">
+                        Campo obrigatório
+                    </InlineMessage>
+                </div>
+
+                <!-- Campo Email -->
+                <div class="form-group">
+                    <label for="email" class="ml-2">
+                        <i class="fas fa-envelope me-1"></i> <small> Email </small> <span
+                            class="text-primary-500">*</span>
+                    </label>
+                    <InputText id="email" v-model="formData.email" class="w-full h-9" :required="true"
+                        placeholder="Ex.: joaosilva@gmail.com" :invalid="v$.email.$error" />
+                    <InlineMessage v-if="v$.email.$error" severity="error">
+                        Campo obrigatório
+                    </InlineMessage>
+                </div>
+
+                <!-- Campo Telefone -->
+                <div class="form-group">
+                    <label for="phone" class="ml-2">
+                        <i class="fas fa-phone me-1"></i> <small> Telefone </small> <span
+                            class="text-primary-500">*</span>
+                    </label>
+                    <InputText id="phone" v-model="formData.phone" class="w-full h-9" :required="true"
+                        placeholder="Ex.: (244) 999xxxxxx" :invalid="v$.phone.$error" />
+                    <InlineMessage v-if="v$.phone.$error" severity="error">
+                        Campo obrigatório
+                    </InlineMessage>
+                </div>
+
+                <!-- Campo Data de Nascimento e Gênero permanecem sem validação -->
+                <div class="form-group">
+                    <label for="birthdate" class="ml-2">
+                        <i class="fas fa-calendar me-1"></i> <small> Data de Nascimento </small>
+                    </label>
+                    <Calendar id="birthdate" v-model="formData.birthdate" dateFormat="dd/mm/yy"
+                        class="w-full border-zinc-300 hover:border-zinc-400 h-9" :required="true"
+                        placeholder="Ex.: 01/01/2000" />
+                </div>
+
+                <div class="form-group">
+                    <label for="gender" class="ml-2">
+                        <i class="fas fa-venus-mars me-1"></i> <small> Gênero </small>
+                    </label>
+                    <Dropdown id="gender" v-model="formData.gender" :options="genders"
+                        class="w-full border-zinc-300 h-9" placeholder="Ex.: Masculino" />
+                </div>
+            </div>
+
+                <div class="flex w-full justify-end my-2">
+                    <Button type="button" size="small" class="h-9" :loading="registration.busy"
+                        @click="async () =>  (await handleSavePersonalInfo()) && nextCallback()">Próximo</Button>
+                </div>
+            </template>
+        </StepperPanel>
+
+        <StepperPanel>
+            <template #header="{ index }">
+                <button class="bg-transparent border-none inline-flex items-center justify-center w-10 h-10 rounded-full">
+                    <span :class="['border w-10 h-10 flex justify-center items-center rounded-full', { 'bg-primary': index <= activeStep, 'border-surface-400': index > activeStep }]">
+                        <i class="pi pi-credit-card" :class="{'text-white': index <= activeStep, 'text-surface-800': index > activeStep}" />
+                    </span>
+                </button>
+            </template>
+
+            <template #content="{ prevCallback }">
+                <!-- Informações de pagamento -->
+                <PaidEvent v-if="props.event?.type == 'Pago'" :event="props.event"
+                    @update:registration="handleRegistrationUpdate" 
+                />
+
+                <div class="flex w-full justify-end my-2 gap-2">
+                    <Button type="button" size="small" class="h-9" @click="() => prevCallback() && goToStep(0)">Voltar</Button>
+                    <Button type="button" size="small" class="h-9" :loading="registration.busy" @click="handleSavePayment">
+                        <i class="fas fa-spinner animate-spin mr-2" v-if="registration.busy" />
+                        <i class="fas fa-save me-2" v-else /> {{ registration.busy ? 'Salvando' : 'Concluir' }}
+                    </Button>
+                </div>
+            </template> 
+        </StepperPanel>
+    </Stepper>
 </template>
 
 <style>
 .form-group {
-    @apply my-1 w-[47%]
+    @apply my-1 w-[47%];
 }
 </style>

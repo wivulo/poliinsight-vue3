@@ -225,7 +225,7 @@ export default {
 
             <template #empty>
                 <div class="flex items-center justify-center h-10">
-                    <p class="text-gray-400">Nenhum dado disponível</p>
+                    <p class="text-gray-400">Nenhuma informação disponível</p>
                 </div>
             </template>
         </DataTable>

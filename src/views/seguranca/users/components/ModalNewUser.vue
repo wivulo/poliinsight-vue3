@@ -102,7 +102,7 @@ async function fetchGroups(){
 }
 
 function handleCancel() {
-    visible.value = false
+    handleHidden()
     handleReset()
 }
 

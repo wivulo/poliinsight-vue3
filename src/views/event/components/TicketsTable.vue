@@ -22,8 +22,8 @@ const getEventtickets = async () => {
     busy.value = true;
     try {
         const response = await TicketsService.getByEventId(route.params.id);
-        tickets.value = response.data;
-        totalRecods.value = tickets.value.length ?? 0;
+        tickets.value = response.data.data;
+        totalRecods.value = response.data.total;
     } catch (error) {
         notifyError('Erro ao buscar os tickets');
     } finally {
@@ -31,8 +31,16 @@ const getEventtickets = async () => {
     }
 };
 
+function updateComponent() {
+    getEventtickets();
+}
+
 onMounted(() => {
     getEventtickets();
+});
+
+defineExpose({
+    updateComponent
 });
 </script>
 
@@ -71,7 +79,7 @@ onMounted(() => {
 
             <template #empty>
                 <div class="flex items-center justify-center h-10">
-                    <p class="text-gray-400">Nenhum dado disponível</p>
+                    <p class="text-gray-400">Nenhuma informação disponível</p>
                 </div>
             </template>
         </DataTable>

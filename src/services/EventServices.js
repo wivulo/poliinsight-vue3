@@ -7,7 +7,9 @@ export default {
     },
 
     index(params = null) {
-        return axios.get(`${databaseURL}/events`)
+        return axios.get(`${databaseURL}/events`, {
+            params
+        })
     },
 
     public_index(params = null) {

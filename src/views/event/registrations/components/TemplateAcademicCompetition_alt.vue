@@ -12,6 +12,7 @@ import Button from 'primevue/button';
 import TemplateAcademicCompetitionTeamMember from './TemplateAcademicCompetitionTeamMember.vue';
 import PaidEvent from './PaidEvent.vue';
 import { SwalConfirmAlert } from '@/helpers/swalConfirmAlert';
+import Checkbox from 'primevue/checkbox';
 
 const props = defineProps(['event']);
 const emit = defineEmits(['created:registration']);
@@ -23,17 +24,43 @@ const registration = reactive({
     data: {},
     busy: false
 });
-
+// Adicionar validação de membros
+const MAX_TEAM_MEMBERS = 3;
+const MIN_TEAM_MEMBERS = 2;
 const team = reactive({
     name: null,
     members: []
 });
+
+const termAndCondition = ref(false);
 
 const TemplateAcademicCompetitionTeamMemberRef = ref([]);
 const reset = () => {
     team.name = null;
     team.members = [];
     TemplateAcademicCompetitionTeamMemberRef.value.forEach(ref => ref.reset());
+};
+
+const validateTeam = () => {
+    if (!team.name) throw new Error('Preencha todos os campos');
+
+    if (team.members.length < MIN_TEAM_MEMBERS) {
+        throw new Error(`Mínimo de ${MIN_TEAM_MEMBERS} membros por equipe`);
+    }
+    
+    if (team.members.length > MAX_TEAM_MEMBERS) {
+        throw new Error(`Máximo de ${MAX_TEAM_MEMBERS} membros por equipe`);
+    }
+  
+    // Verificar emails e userIDs únicos
+    const uniqueIds = new Set();
+    team.members.forEach(member => {
+        const id = member.userId || member.email;
+        if (uniqueIds.has(id)) {
+        throw new Error(`Membro duplicado: ${id}`);
+        }
+        uniqueIds.add(id);
+    });
 };
 
 const handlerAddTeamMember = (member) => {
@@ -51,20 +78,32 @@ const handlerAddTeamMember = (member) => {
 
 const handleMakeRegistration = async () => {
     try {
-        if (!team.name || team.members.length < 2) throw new Error('Preencha todos os campos');
+        validateTeam(); // Nova validação
 
         const result = await SwalConfirmAlert()
         if (!result) return;
 
-        registration.data = {
-            team: team
+        // Adaptar estrutura para o backend
+        const backendTeam = {
+            name: team.name,
+            members: team.members.map(member => {
+                return member.userId 
+                ? { userId: member.userId }
+                : {
+                    name: member.name,
+                    email: member.email,
+                    phone: member.phone,
+                    birthdate: member.birthdate,
+                    gender: member.gender
+                };
+            })
         };
 
         registration.busy = true;
 
         const response = await RegistrationServices.store({
             eventId: route.params.id,
-            ...registration.data,
+            team: backendTeam // Nova estrutura
         });
 
         if (response.data?.error || response.status > 299) throw new Error('Erro ao fazer a inscrição');
@@ -75,7 +114,8 @@ const handleMakeRegistration = async () => {
         reset();
     } catch (error) {
         console.log(error);
-        notifyError(error);
+        const message = error.response?.data?.error || error.message;
+        notifyError(message);
     } finally {
         registration.busy = false;
     }
@@ -121,8 +161,26 @@ const handleRegistrationUpdate = (value) => {
             @update:registration="handleRegistrationUpdate" 
         />
 
-        <div class="flex w-full justify-end my-2">
-            <Button type="submit" size="small" class="h-9" :loading="registration.busy">
+        <!-- Adicionar indicador de tamanho da equipe -->
+        <div class="flex justify-between items-center">
+            <p class="ml-2">
+            <i class="fas fa-users me-1"></i> 
+            <small> Integrantes: {{ team.members.length }}/{{ MAX_TEAM_MEMBERS }}</small>
+            </p>
+            <small v-if="team.members.length < MIN_TEAM_MEMBERS" class="text-red-500">
+            Mínimo {{ MIN_TEAM_MEMBERS }} membros
+            </small>
+        </div>
+
+        <div class="flex w-full justify-between my-2">
+            <div>
+                <Checkbox v-model="termAndCondition" class="me-2" :binary="true" />
+                <small class="text-surface-400">Aceito os <a href="#" class="text-primary-500">termos e condições</a> do evento</small>
+            </div>
+
+            <Button type="submit" size="small" class="h-9" :loading="registration.busy"
+                :disabled="!termAndCondition || team.members.length < MIN_TEAM_MEMBERS"
+            >
                 <i class="fas fa-spinner animate-spin mr-2" v-if="registration.busy"/>
                 <i class="fas fa-save me-2" v-else/> {{registration.busy ? 'Inscrevendo': 'Inscrever'}}
             </Button>

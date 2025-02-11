@@ -226,7 +226,7 @@ export default {
 
             // Transitions
             'transition delay-200',
-            'z-20'
+            'z-30'
         ]
     },
     menuitem: ({ props, context }) => ({

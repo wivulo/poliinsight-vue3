@@ -148,7 +148,7 @@ export default {
                         }
                     },
                     isempty: {
-                        text: "Nenhum dado disponível",
+                        text: "Nenhuma informação disponível",
                         font: '16px Arial',
                     }
                 }
@@ -206,7 +206,7 @@ export default {
                         }
                     },
                     isempty: {
-                        text: "Nenhum dado disponível",
+                        text: "Nenhuma informação disponível",
                         font: '16px Arial',
                     }
                 },
@@ -447,7 +447,7 @@ export default {
                                     <p><b>Idade: </b> {{ statistic.oldestParticipant }} anos</p>
                                 </CardValue>
                                 <CardInformation v-else class="mt-2">
-                                    <p>Nenhum dado disponível</p>
+                                    <p>Nenhuma informação disponível</p>
                                 </CardInformation>
                             </CardRoot>
 
@@ -460,7 +460,7 @@ export default {
                                     <p><b>Idade: </b> {{ statistic?.youngestParticipant }} anos</p>
                                 </CardValue>
                                 <CardInformation v-else class="mt-2">
-                                    <p>Nenhum dado disponível</p>
+                                    <p>Nenhuma informação disponível</p>
                                 </CardInformation>
                             </CardRoot>
 

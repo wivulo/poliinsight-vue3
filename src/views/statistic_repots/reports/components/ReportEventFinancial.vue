@@ -1,11 +1,18 @@
 <script>
 import currency from '@/helpers/currency';
 import ISPBLogo from './ISPBLogo.vue';
+import PTable from '@/components/UI/Table/PTable.vue';
+import PTableHeader from '@/components/UI/Table/PTableHeader.vue';
+import TableTrThItem from '@/components/UI/Table/TableTrThItem.vue';
+import PTableBody from '@/components/UI/Table/PTableBody.vue';
+import PTableRow from '@/components/UI/Table/PTableRow.vue';
+import PTableCell from '@/components/UI/Table/PTableCell.vue';
 
 export default {
     name: "ReportEventFinancial",
     components: {
-        ISPBLogo
+        ISPBLogo, PTable, PTableHeader, TableTrThItem,
+        PTableBody, PTableRow, PTableCell
     },
     props: {
         event: {
@@ -94,36 +101,30 @@ export default {
                 <p >Instituto Superior Politécnico de Benguela</p>
                 <p>Departamento de {{event.department.name ?? 'Engenharia'}}</p>
                 <p>Relatório Financeiro</p>
+                <p class="mb-0">
+                    <b> {{event.name}}</b>
+                </p>
             </div>
         </div>
 
-       <div>
-            <p class="mb-0">
-               <strong> {{event.name}}</strong>
-            </p>
-            <p class="mb-1">
-                {{event.description}}
-            </p>
-       </div>
-
         <section class="summary my-3">
             <div class="flex gap-5 justify-between w-full mt-2">
-                <div class="flex flex-col w-30 h-120 border p-2 shadow-sm shadow-black/30">
-                    <p><strong>Receita Total</strong></p>
+                <div class="flex flex-col w-48 h-32 border p-2 shadow-sm shadow-black/30">
+                    <p><b>Receita Total</b></p>
                     <div class="w-full flex justify-end grow items-end">
                         {{toKwanza(totalFinances(incomes))}}
                     </div>
                 </div>
 
-                <div class="flex flex-col w-30 h-120 border p-2 shadow-sm shadow-black/30">
-                    <p><strong>Despesa Total</strong></p>
+                <div class="flex flex-col w-48 h-32 border p-2 shadow-sm shadow-black/30">
+                    <p><b>Despesa Total</b></p>
                     <div class="w-full flex justify-end grow items-end">
                         {{toKwanza(totalFinances(expenses))}}
                     </div>
                 </div>
 
-                <div class="flex flex-col w-30 h-120 border p-2 shadow-sm shadow-black/30">
-                    <p><strong>Lucro Líquido</strong></p>
+                <div class="flex flex-col w-48 h-32 border p-2 shadow-sm shadow-black/30">
+                    <p><b>Lucro Líquido</b></p>
                     <div class="w-full flex justify-end grow items-end">
                         {{toKwanza(netProfit())}}
                     </div>
@@ -133,33 +134,35 @@ export default {
 
         <section class="summary">
             <div class="mb-3" v-if="filtered_finances">
-                <p><strong> Resumo Financeiro</strong></p>
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Descrição</th>
-                        <th>Entrada</th>
-                        <th>Saída</th>
-                    </tr>
-                    </thead>
-                    <tbody v-if="filtered_finances.length">
-                        <tr v-for="finance in filtered_finances">
-                            <td>{{finance.name}}</td>
-                            <td>{{finance.description}}</td>
-                            <td>{{finance.input === 0 ? ' --- ' : toKwanza(finance.input)}}</td>
-                            <td>{{finance.output === 0 ? ' --- ' :  toKwanza(finance.output)}}</td>
-                        </tr>
-                    </tbody>
+                <p><b> Resumo Financeiro</b></p>
+                <PTable>
+                    <PTableHeader>
+                        <TableTrThItem>Nome</TableTrThItem>
+                        <TableTrThItem>Descrição</TableTrThItem>
+                        <TableTrThItem>Entrada</TableTrThItem>
+                        <TableTrThItem>Saída</TableTrThItem>
+                    </PTableHeader>
+                    <PTableBody v-if="filtered_finances.length">
+                        <PTableRow v-for="finance in filtered_finances">
+                            <PTableCell>{{finance.name}}</PTableCell>
+                            <PTableCell>{{finance.description}}</PTableCell>
+                            <PTableCell>{{finance.input === 0 ? ' --- ' : toKwanza(finance.input)}}</PTableCell>
+                            <PTableCell>{{finance.output === 0 ? ' --- ' :  toKwanza(finance.output)}} </PTableCell>
+                        </PTableRow>
+                    </PTableBody>
                     <tfoot>
-                        <tr>
-                            <td><strong>Total</strong></td>
-                            <td></td>
-                            <td>{{toKwanza(sum(filtered_finances.filter(finance => finance.input)))}}</td>
-                            <td>{{toKwanza(sum(filtered_finances.filter(finance => finance.output)))}}</td>
-                        </tr>
+                        <PTableRow>
+                            <PTableCell><b>Total</b></PTableCell>
+                            <PTableCell></PTableCell>
+                            <PTableCell>
+                                {{toKwanza(sum(filtered_finances.filter(finance => finance.input)))}}
+                            </PTableCell>
+                            <PTableCell>
+                                {{toKwanza(sum(filtered_finances.filter(finance => finance.output)))}}
+                            </PTableCell>
+                        </PTableRow>
                     </tfoot>
-                </table>
+                </PTable>
             </div>
         </section>
     </div>

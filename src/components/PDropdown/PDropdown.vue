@@ -1,48 +1,59 @@
-<script setup lang="ts">
-import Dropdown from 'primevue/dropdown';
-import DropdownOption from '@/components/PDropdown/DropdownOption.vue';
+<!-- DropdownRoot.vue -->
+<script setup>
+import { provide, ref, onMounted, onBeforeUnmount } from 'vue';
+import vClickOutside from '@/directives/clickOutside'; // Não esqueça de importar
 
-const props = defineProps<{
-    options: Array<
-        {
-            id?: number | string,
-            name?: string, 
-            label: string, 
-            icon?: string, 
-            click?: (prop: any) => void 
-        }>,
-    optionLabel?: string,
-    optionValue?: string,
-    placeholder?: string,
-    data: any,
-    loading?: boolean
-}>();
+const isOpen = ref(false);
+const triggerElement = ref(null);
+const menuElement = ref(null);
+
+// Adicione estas funções
+const toggle = () => {
+  isOpen.value = !isOpen.value;
+};
+
+const close = () => {
+  isOpen.value = false;
+};
+
+// Novo: Função para reposicionar dinamicamente
+const calculatePosition = () => {
+  if (!triggerElement.value || !menuElement.value) return;
+
+  const triggerRect = triggerElement.value.getBoundingClientRect();
+  const menuRect = menuElement.value.getBoundingClientRect();
+  const viewport = {
+    width: window.innerWidth,
+    height: window.innerHeight
+  };
+
+  // Lógica de posicionamento vertical
+  let vertical = 'bottom';
+  if (triggerRect.bottom + menuRect.height > viewport.height) {
+    vertical = 'top';
+  }
+
+  // Lógica de posicionamento horizontal
+  let horizontal = 'left';
+  if (triggerRect.left + menuRect.width > viewport.width) {
+    horizontal = 'right';
+  }
+
+  return `${vertical}-${horizontal}`;
+};
+
+provide('dropdown', {
+  isOpen,
+  toggle,
+  close,
+  triggerElement,
+  menuElement,
+  calculatePosition
+});
 </script>
 
 <template>
-    <Dropdown 
-        :options="props.options"
-        class="p-0 bg-primary-500"
-        option-label="label"
-        :placeholder="props.placeholder"
-        :loading
-    >
-        <template #value="{ value, placeholder }">
-            <div v-if="value" class="flex justify-center items-center text-white">
-                <i :class="value.icon" class="fa mr-1"/> {{ value.label }}
-            </div>
-
-            <div v-else class="flex justify-center items-center text-white">
-                <i class="fa fa-cog mr-1"/> <span v-show="props.placeholder">{{ placeholder }}</span>
-            </div>
-        </template>
-
-        <template #option="{ option }">
-            <DropdownOption :label="option.label" :icon="option.icon" @click="option.click(props.data)"/>
-        </template>
-
-        <template #dropdownicon>
-            <i class="fa fa-chevron-down text-white"/>
-        </template>
-    </Dropdown>
+    <div class="relative" v-click-outside="close">
+      <slot />
+    </div>
 </template>

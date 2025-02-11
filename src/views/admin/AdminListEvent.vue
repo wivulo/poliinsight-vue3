@@ -1,4 +1,5 @@
 <script>
+import { setDocumentTitleMixin } from "@/config/document.title.js"
 import EventServices from '@/services/EventServices';
 import { mapGetters } from 'vuex';
 import { dateFormatter } from "@/utils/dateFormatter"
@@ -15,21 +16,30 @@ import SplitButton  from 'primevue/splitbutton';
 import EventFilters from "@/components/EventFilters.vue"
 import ModalEditEvent from "@/views/event/components/ModalEditEvent.vue"
 import ModalDeleteEvent from "@/views/event/components/ModalDeleteEvent.vue"
-import dayjs from 'dayjs'
-
+import { extendedDayjs } from "@/plugin/dayjs";
+import PDropdown from "@/components/PDropdown/PDropdown.vue";
+import PDropdownTrigger from "@/components/PDropdown/PDropdownTrigger.vue";
+import PDropdownMenu from "@/components/PDropdown/PDropdownMenu.vue";
+import PDropdownItem from "@/components/PDropdown/PDropdownItem.vue";
+import CCard from "@/components/PCard/index.js"
+import VueToPrintWrapper from "@/components/VueToPrintWrapper.vue";
 
 export default {
     name: "Admin.ListEvent",
+    mixins: [setDocumentTitleMixin],
     components: {
-        Button, InputText, DataTable, Column,
+        VueToPrintWrapper, CardRoot: CCard.Root, Button, InputText, DataTable, Column,
         InputGroup, InputGroupAddon, Calendar,
         IconField, InputIcon, SplitButton, EventFilters,
-        ModalEditEvent, ModalDeleteEvent
+        ModalEditEvent, ModalDeleteEvent,
+        PDropdown, PDropdownTrigger, PDropdownMenu, PDropdownItem
     },
     data(){
         return {
+            title: 'Lista de eventos | Poliinsight',
             busy: false,
             events: [],
+            totalRecords: 0,
             isItemSelected: false,
             itemSelected: null,
             filter: null,
@@ -39,16 +49,29 @@ export default {
 
             selectionModeIsVisible: false,
 
-            searchActions: [
-                {
-                    label: 'Mostrar caixa de seleção',
-                    icon: 'fa fa-check-square',
-                    command: () => {
-                        this.selectionModeIsVisible = !this.selectionModeIsVisible;
-                    }
-                },
-            ],
-            
+            search: '',
+            params: {
+                take: 10,
+                skip: 1,
+                where: {
+                    OR: [
+                        {
+                            name: { contains: this.search }
+                        },
+                        {
+                            location: { contains: this.search}
+                        },
+                        {
+                            organizer: { 
+                                name: { contains: this.search}
+                            }
+                        },
+                        {
+                            description: { contains: this.search}
+                        }
+                    ]
+                }
+            }
         }
     },
     created(){
@@ -66,14 +89,13 @@ export default {
     methods: {
         async fetchEvents(){
             this.busy = true
-            const response = await EventServices.fetchEvents()
+            const response = await EventServices.index(this.params)
             .catch(() => this.$toast.add({severity:'error', summary: 'Error', detail: 'Erro ao buscar os eventos', life: 3000}))
             .finally(() => this.busy = false )
 
             if(response.status == 200){
-                this.events = response.data.map((eve, i) => {
-                return {...eve, int_id: i + 1 }
-            })
+                this.events = response.data.data
+                this.totalRecords = response.data.total
                 return
             }
 
@@ -114,12 +136,25 @@ export default {
         },
 
         dateFormater(date) {
-            return dayjs(date).format('D MMMM, YYYY')
+            return extendedDayjs(date).format('D MMMM, YYYY')
+        },
+
+        onPageChange (event) {
+            this.params.skip = event.page + 1
+            this.params.take = event.rows
         }
     },
     filters: {
         maxLengthFilter(value){
             return value.substring(0, 10) + '...';
+        }
+    },
+    watch: {
+        params: {
+            handler(){
+                this.fetchEvents()
+            },
+            deep: true
         }
     }
 }
@@ -130,116 +165,117 @@ export default {
         <ModalEditEvent ref="ModalEditEvent" />
         <ModalDeleteEvent ref="ModalDeleteEvent" @event-deleted="fetchEvents" />
 
-        <div>
-            <div class="flex gap-2 justify-end ">
-                <template v-if="isItemSelected">
-                    <Button size="small" class="actions-button">
-                        <i class="fa fa-trash mr-2"></i>Deletar
-                    </Button>
-                </template>
+        <CardRoot class="mt-4">
+            <VueToPrintWrapper type="Meus eventos">
+                <template #default="{ printer }">
+                    <div class="flex justify-between items-center no-print">
+                        <div>
+                            <h1 class="text-base font-semibold">Eventos</h1>
+                            <p class="text-sm">Lista de todos os eventos da plataforma</p>
+                        </div>
 
-                <Button size="small" class="actions-button">
-                    <router-link :to="{name: 'gestao-eventos.create'}" class="text-white hover:text-primary">
-                        <i class="fa fa-plus mr-2"></i> Criar evento
-                    </router-link>
-                </Button>
-            </div>
-        </div>
+                        <div class="flex gap-2 justify-end">
+                            <template v-if="isItemSelected">
+                                <Button size="small" class="actions-button">
+                                    <i class="fa fa-trash mr-2"></i>Deletar
+                                </Button>
+                            </template>
 
-        <div class="my-3">
-            <div class="flex">
-                <InputGroup>
-                    <Button size="small" class="h-8 bg-transparent border border-surface-300 border-r-0">
-                        <i class="fa fa-search text-black" />
-                     </Button>
-                    <InputText size="small" v-model="filter" id="search" type="text" placeholder="Pesquisar..." class="w-full rounded-none h-8 border-l-0" />
+                            <Button size="small" class="actions-button">
+                                <router-link :to="{name: 'gestao-eventos.create'}" class="text-white hover:text-primary">
+                                    <i class="fa fa-plus mr-2"></i> Evento
+                                </router-link>
+                            </Button>
 
-                    <Button size="small" class="h-8 bg-surface-500 border-none text-black hover:bg-surface-600">
-                        <i class="fa fa-filter mr-2"></i>
-                        Filtro
-                    </Button>
+                            <Button severity="secondary" size="small" class="actions-button" @click="printer.handlePrint">
+                                    <i class="fa fa-print mr-2" /> Imprimir
+                            </Button>
+                        </div>
+                    </div>
 
-                    <SplitButton :model="searchActions" severity="secondary" size="small" class="h-8" />
-                </InputGroup>
-            </div>
-        </div>
+                    <div class="my-3">
+                        <div class="flex">
+                            <InputGroup>
+                                <Button size="small" class="h-8 bg-transparent border border-surface-300 border-r-0">
+                                    <i class="fa fa-search text-black" />
+                                </Button>
+                                <InputText size="small" v-model="search" id="search" type="text" 
+                                    placeholder="Pesquisar..." class="w-full rounded-none h-8 border-l-0"
+                                    @keypress.enter="fetchEvents" 
+                                />
 
-        <div class="my-3" v-show="showFilters">
-           <EventFilters />
-        </div>
+                                <Button severity="secondary" size="small" class="h-8 border-l-0">
+                                    <i class="fa fa-filter mr-2" /> Filtro
+                                </Button>
+                            </InputGroup>
+                        </div>
+                    </div>
 
-        <div>
-            <div v-if="selectionModeIsVisible" class="my-4 w-full flex justify-between items-center">
-                <div class="flex gap-3 items-center">
-                    <Button size="small" text icon="fa fa-times" class="h-6 w-6" @click="handleHideSelectionMode"/> 
-                    Selecionados: {{ selectedEvents.length }}
-                </div>
-            </div>
-
-            <div>
-                <DataTable :value="events" size="small" paginator :rows="7"
-                    v-model:selection="itemSelected" dataKey="id" scrollable scrollHeight="380px"
-                    @row-select="onRowSelected" @row-unselect="onRowUnselected"
-                    :loading="busy" lazy
-                >
-                
-                    <Column selectionMode="multiple" v-if="selectionModeIsVisible" headerStyle="width: 3rem"></Column>
-                    
-                    <Column field="int_id" header="ID" />
-                    
-                    <Column field="name" header="Nome"></Column>
-                    
-                    <Column field="localization" header="Localização" />
-
-                    <Column field="date" header="Data">
-                        <template #body="props">
-                            {{ dateFormater(props.data.date) }}
-                        </template>
-                    </Column>
-                    
-                    <Column field="organizer.name" header="Organizador" />
-
-                    <Column field="actions" header="Ações">
-                        <template #body="props">
-                            <SplitButton 
-                                :model="[
-                                    {
-                                        label: 'Visualizar',
-                                        icon: 'fa fa-eye',
-                                        command: () => this.handleViewEvent(props.data)
-                                    },
-                                    {
-                                        label: 'Ver estátisticas',
-                                        icon: 'fa fa-chart-line',
-                                        command: () => this.handleViewEstatisticEvent(props.data)
-                                    },
-                                    {
-                                        label: 'Editar',
-                                        icon: 'fa fa-pencil',
-                                        command: () => this.handleEditEvent(props.data)
-                                    },
-                                    {
-                                        label: 'Eliminar',
-                                        icon: 'fa fa-trash',
-                                        command: () => this.handleDeleteEvent(props.data)
-                                    },
-                                ]" 
-                                severity="secondary" size="small" class="text-sm"
+                    <div>
+                        <div>
+                            <DataTable :value="events" size="small" paginator :rows="7"
+                                v-model:selection="itemSelected" stripedRows :totalRecords="totalRecords"
+                                dataKey="id" lazy class="ctable" :rowsPerPageOptions="[7, 10, 20, 50]"
+                                @row-select="onRowSelected" @row-unselect="onRowUnselected"
+                                :loading="busy" @page="onPageChange"
+                                v-model:rows="params.take"
+                                v-model:page="params.skip"
                             >
-                                <div  class="px-2 py-1">
-                                    <i class="fa fa-cog mr-1" /> opções
-                                </div>
-                            </SplitButton>
-                        </template>
-                    </Column>
-                </DataTable>
-            </div>
-        </div>
+                            
+                                <Column selectionMode="multiple" v-if="selectionModeIsVisible" headerStyle="width: 3rem"></Column>
+                                                    
+                                <Column field="name" header="Nome">
+                                    <template #body="props">
+                                        <div class="truncate w-48" :title="props.data.name">
+                                            <router-link :to="{name: 'event.show', params: {id: props.data.id}}" class="hover:text-primary-500">
+                                                {{ props.data.name }}
+                                            </router-link>
+                                        </div>
+                                    </template>
+                                </Column>
+                                
+                                <Column field="location" header="Localização" />
+
+                                <Column field="date" header="Data">
+                                    <template #body="props">
+                                        {{ dateFormater(props.data.date) }}
+                                    </template>
+                                </Column>
+                                
+                                <Column field="organizer.name" header="Organizador" />
+
+                                <Column field="options" header="Opções">
+                                    <template #body="props">
+                                        <PDropdown>
+                                            <PDropdownTrigger>
+                                                <Button icon="fa fa-cog" text size="small" class="h-9" />
+                                            </PDropdownTrigger>
+                                            <PDropdownMenu menu-class="min-w-[100px]">
+                                                <PDropdownItem>
+                                                    <router-link :to="{name: 'event.show', params: {id: props.data.id}}">
+                                                        <i class="fa fa-eye mr-2"></i> Visualizar
+                                                    </router-link>
+                                                </PDropdownItem>
+                                                <PDropdownItem @click="handleViewEstatisticEvent(props.data)">
+                                                    <router-link :to="{name: 'analise_relatorios.analitics.show', params: {id: props.data.id}}">
+                                                        <i class="fa fa-chart-line mr-2"></i> Estatísticas
+                                                    </router-link>
+                                                </PDropdownItem>
+                                            </PDropdownMenu>
+                                        </PDropdown>
+                                    </template>
+                                </Column>
+                            </DataTable>
+                        </div>
+                    </div>
+                </template>
+            </VueToPrintWrapper>
+        </CardRoot>
     </div>
 </template>
 
 <style scoped>
 .actions-button {
-    @apply h-8 bg-surface-500 border-none hover:bg-surface-600
+    @apply h-8
 }
 </style>

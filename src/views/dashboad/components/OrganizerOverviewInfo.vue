@@ -89,8 +89,8 @@ export default {
             let female = 0;
 
             if(this.data.last_event?.statistic?.genderDistribution){
-                male = this.data.last_event?.statistic.genderDistribution?.male;
-                female = this.data.last_event?.statistic.genderDistribution?.female;
+                male = this.data.last_event?.statistic.genderDistribution["Masculino"];
+                female = this.data.last_event?.statistic.genderDistribution["Feminino"];
             }
 
             return {
@@ -124,7 +124,7 @@ export default {
                         }
                     },
                     isempty: {
-                        text: "Nenhum dado disponível",
+                        text: "Nenhuma informação disponível",
                         font: '16px Arial',
                     }
                 }
@@ -180,7 +180,7 @@ export default {
                         }
                     },
                     isempty: {
-                        text: "Nenhum dado disponível",
+                        text: "Nenhuma informação disponível",
                         font: '16px Arial',
                     }
                 },

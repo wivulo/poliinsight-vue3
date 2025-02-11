@@ -1,8 +1,8 @@
 export default {
     root: ({ props }) => ({
         class: [
-            'inline-flex items-center justify-center align-top gap-2',
-            'p-3 m-0 rounded-md dark:border',
+            'inline-flex items-center align-top gap-2',
+            'p-3 py-2 m-0 rounded-md dark:border w-full justify-start',
             {
                 'bg-blue-100/70 dark:bg-blue-500/20': props.severity == 'info',
                 'bg-green-100/70 dark:bg-green-500/20': props.severity == 'success',
@@ -24,13 +24,14 @@ export default {
         ]
     }),
     icon: {
-        class: 'text-base'
+        class: 'text-xs'
     },
     text: {
         class: [
             // Font and Text
             'leading-none',
-            'font-medium'
+            'font-medium',
+            'text-xs',
         ]
     }
 };

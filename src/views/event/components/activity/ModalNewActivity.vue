@@ -6,10 +6,7 @@ import ActivityServices from '@/services/ActivityServices';
 import EventServices from '@/services/EventServices';
 import { useNotification } from '@/composables/useNotification';
 import { useRouter } from 'vue-router';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc'
-dayjs.locale('pt');
-dayjs.extend(utc);
+import { extendedDayjs as dayjs } from '@/plugin/dayjs';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
@@ -178,11 +175,20 @@ const fetchEvent = async () => {
 };
 
 function activityDateIsValid(value: Date) {
-    const startEventDate = dayjs.utc(event.value.data?.startDate).date();
-    const endEventDate = dayjs.utc(event.value.data?.endDate).date();
-    const selectedDate = dayjs(value).date();
+    const startEventDate = dayjs(event.value.data?.startDate);
+    const endEventDate = dayjs(event.value.data?.endDate);
+    const selectedDate = dayjs(value).utc();
 
-    if(selectedDate < startEventDate || selectedDate > endEventDate) {
+    console.log('startEventDate', startEventDate);
+    console.log('endEventDate', endEventDate);
+    console.log('selectedDate', selectedDate);
+
+    if(
+        !(
+            dayjs.max(selectedDate, startEventDate).isSame(selectedDate) &&
+            dayjs.min(selectedDate, endEventDate).isSame(selectedDate)
+        )
+    ) {
         notifyError('Data inválida! A data da actividade deve estar dentro do período do evento.');
         return false;
     }

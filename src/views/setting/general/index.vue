@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineAsyncComponent, markRaw } from 'vue';
+import { ref, defineAsyncComponent, markRaw, shallowRef } from 'vue';
 import { useDocumentTitle } from '@/composables/useDocumentTitle'
 import { useRouter } from 'vue-router';
 import { useRequest } from '@/composables/useRequest';
@@ -31,7 +31,7 @@ async function fetchSettings(){
         return {
             ...item,
             label: item.name,
-            component: defineAsyncComponent(componentMap[item.component])
+            component: shallowRef( defineAsyncComponent(componentMap[item.component]) )
         }
     })
 }

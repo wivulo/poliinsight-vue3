@@ -14,6 +14,7 @@ import PEmpty from '@/components/PEmpty.vue';
 import PLoading from '@/components/PLoading.vue';
 import PBreadcrumb from '@/components/PBreadcrumb.vue';
 import PError from '@/components/PError.vue';
+import Tag from 'primevue/tag';
 
 document.title = 'Inscrições | Poliinsight';
 
@@ -127,6 +128,9 @@ const AsyncComp = (component) => {
                                     <p>
                                         <i class="pi pi-users"></i> {{ iEvent?.vacancies }} vagas
                                     </p>
+                                    <div>
+                                        <Tag :severity="iEvent.status?.severity" :value="iEvent.category?.name" class="my-0.5 !font-medium" />
+                                    </div>
                                 </div>
                             </div>
                         <!-- </div> -->

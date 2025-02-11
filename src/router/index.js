@@ -59,6 +59,10 @@ import EventViewer from "@/views/event/show.vue"
 import PublicEventRegistration from '@/views/event/registrations/public_registration.vue'
 import Detail from '@/views/event/registrations/detail.vue'
 
+import Survey from '@/views/survey/index.vue'
+import SurveyShow from '@/views/survey/show.vue'
+import SurveyResponse from '@/views/survey/SurveyResponse.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -466,7 +470,58 @@ const router = createRouter({
       path: '/logout',
       name: 'logout',
       component: Logout
-    }
+    },
+
+    //Questionários
+    {
+      path: '/questionarios',
+      name: 'survey.index',
+      component: Survey,
+      meta: {
+        layout: 'default-layout',
+        title: 'Questionários'
+      }
+    },
+
+    {
+      path: '/questionarios/:id',
+      name: 'survey.show',
+      component: SurveyShow,
+      meta: {
+        layout: 'default-layout',
+        title: 'Ficha de avaliação'
+      }
+    },
+
+    {
+      path: '/questionarios/novo_questionario',
+      name: 'survey.create',
+      component: SurveyShow,
+      meta: {
+        layout: 'default-layout',
+      }
+    },
+
+    {
+      path: '/questionarios/modelos',
+      name: 'survey.models',
+      component: Survey,
+      meta: {
+        layout: 'default-layout',
+        title: 'Questionários'
+      }
+    },
+
+    {
+      path: '/questionarios/respostas/:id',
+      name: 'survey.responses',
+      component: SurveyResponse,
+      meta: {
+        layout: 'navbar-layout',
+        title: 'Questionários'
+      }
+    },
+
   ]
 })
 

@@ -69,7 +69,7 @@ const items = ref([
     { label: router.currentRoute.value.meta.title },
 ]);
 
-notifySuccess('Estamos felizes pela tua inscrição 🎉 estamos ansiosos pelo dia H e a tua presença!', 5000);
+// notifySuccess('Estamos felizes pela tua inscrição 🎉 estamos ansiosos pelo dia H e a tua presença!', 5000);
 
 </script>
 

@@ -39,7 +39,7 @@ axios.interceptors.response.use(async function (response) {
       router.push({ name: 'login' });
     }
 
-    if(error.response.status === 401 || error.response.data.error === 'Access denied'){
+    if(error.response.status === 401 && error.response.data.error === 'Access denied'){
       await Swal.fire({
         title: 'ACESSO NEGADO!',
         text: 'Não tens permissão para aceder a este recurso.',

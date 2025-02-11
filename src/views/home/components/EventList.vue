@@ -2,6 +2,10 @@
 import Image from 'primevue/image';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
+import Chip from 'primevue/chip';
+import PLoading from '@/components/PLoading.vue';
+import PEmpty from '@/components/PEmpty.vue';
+import Tag from 'primevue/tag';
 
 const { header, events, busy } = defineProps({
     header: String,
@@ -18,20 +22,17 @@ const { header, events, busy } = defineProps({
           </p>
         </div>
 
-        <div v-if="busy" class="flex-grow flex w-full h-full justify-center items-center">
-            <i class="fa fa-spinner animate-spin text-black text-base" />
-        </div>
+        <PLoading v-if="busy" />
 
-        <div v-else-if="!busy && (events && events?.length === 0)" class="flex-grow flex w-full h-full justify-center items-center">
-            <p class="text-xl text-surface-400 font-light">
-                Nenhum evento encontrado!
-            </p>
-        </div>
+        <PEmpty v-else-if="!busy && !events" />
 
         <div v-else class="my-2 flex gap-14 flex-wrap">
             <Card
                 style="max-width: 15rem;"
-                class="mb-2 h-96 overflow-hidden"
+                class="mb-2 h-[24rem] overflow-hidden"
+                :pt="{
+                    content: 'py-0',
+                }"
                 v-for="event in events" :key="event.id"
             >
                 <template #header>
@@ -44,7 +45,7 @@ const { header, events, busy } = defineProps({
                 <template #content>
                     <div class="flex justify-between items-center text-ellipsis-2" :title="event.name">
                         <RouterLink :to="{name: 'public.event.show', params: {id: event.id}}" class="text-sm font-bold text-surface-900 cursor-pointer">
-                            {{ event.name }}
+                            <p>{{ event.name }}</p>
                         </RouterLink>
                     </div>
 
@@ -53,6 +54,10 @@ const { header, events, busy } = defineProps({
                             <i class="pi pi-calendar mr-1" /> <span v-formatDate="event.startDate" :title="event.startDate"/>
                         </span>
                         <p><i class="pi pi-map-marker"></i> {{ event.location }}</p>
+                    </div>
+
+                    <div>
+                        <Tag :severity="event.status?.severity" :value="event.category?.name" class="my-0.5 !font-medium" />
                     </div>
                 </template>
             </Card>

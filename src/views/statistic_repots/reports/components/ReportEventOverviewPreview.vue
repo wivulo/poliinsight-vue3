@@ -1,16 +1,18 @@
 <script>
 import currency from '@/helpers/currency';
 import ISPBLogo from './ISPBLogo.vue';
+import PTable from '@/components/UI/Table/PTable.vue';
+import PTableHeader from '@/components/UI/Table/PTableHeader.vue';
+import TableTrThItem from '@/components/UI/Table/TableTrThItem.vue';
+import PTableBody from '@/components/UI/Table/PTableBody.vue';
+import PTableRow from '@/components/UI/Table/PTableRow.vue';
+import PTableCell from '@/components/UI/Table/PTableCell.vue';
 
 export default {
     name: "ReportEventOverviewPreview",
-    // props: ['event', 'statistic', 'registrations' ,'incomes', 'expenses', 'investiments', 'tickets'],
+    // props: ['event', 'event', 'registrations' ,'incomes', 'expenses', 'investiments', 'tickets'],
     props: {
         event: {
-            type: Object,
-            required: true
-        },
-        statistic: {
             type: Object,
             required: true
         },
@@ -41,23 +43,24 @@ export default {
         }
     },
     components: {
-        ISPBLogo
+        ISPBLogo, PTable, PTableHeader, TableTrThItem,
+        PTableBody, PTableRow, PTableCell
     },
     methods: {
-        DDMMMYYYY(date){
-            return new Date(date).toLocaleDateString('pt-Ao', {day: '2-digit', month: 'long', year: 'numeric'});
+        DDMMMYYYY(date) {
+            return new Date(date).toLocaleDateString('pt-Ao', { day: '2-digit', month: 'long', year: 'numeric' });
         },
-        diference(a, b){
+        diference(a, b) {
             return a - b;
         },
-        sum(array){
+        sum(array) {
             return array.reduce((acc, curr) => acc + curr.amount, 0);
         },
-        totalFinances(finances){
+        totalFinances(finances) {
             return finances.reduce((acc, curr) => acc + curr.amount, 0);
         },
-        
-        toKwanza(value){
+
+        toKwanza(value) {
             return currency.KWAZA.format(value)
         }
     }
@@ -70,229 +73,219 @@ export default {
             <ISPBLogo />
 
             <div class="text-center text-lg">
-                <p >Instituto Superior Politécnico de Benguela</p>
-                <p>Departamento de {{event.department.name ?? 'Engenharia'}}</p>
+                <p>Instituto Superior Politécnico de Benguela</p>
+                <p>Departamento de {{ event.department.name ?? 'Engenharia' }}</p>
                 <p>Relatório Geral do Evento</p>
             </div>
         </div>
 
-        <div class="mb-1">
-            <p class="text-lg">{{event.name}}</p>
-            <p>
-                {{event.description}}
-            </p>
-        </div>
-
         <div>
+            <p class="text-lg">{{ event.name }}</p>
             <div class="flex items-center gap-1">
-                <p><strong>Data:</strong> {{DDMMMYYYY(event.startDate)}}</p>
+                <p><strong>Data:</strong> {{ event.startDate }}</p>
                 <span>-</span>
-                <p>{{DDMMMYYYY(event.endDate)}}</p>
+                <p>{{ event.endDate }}</p>
             </div>
-            <p><strong>Local:</strong> {{event.location}}</p>
-            <p class="mb-2"><strong>Departamento:</strong> {{event.department?.name}}</p>
+            <p><strong>Local:</strong> {{ event.location }}</p>
+            <p class="mb-2"><strong>Departamento:</strong> {{ event.department?.name }}</p>
         </div>
 
-        <div class="mb-3">
-        <h4>Estatísticas Gerais</h4>
-        <table>
-            <thead>
-            <tr>
-                <th>Descrição</th>
-                <th>Valor</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>Total de vagas</td>
-                <td>{{event.vacancies}}</td>
-            </tr>
-            <tr>
-                <td>Total de Participantes</td>
-                <td>{{statistic.totalParticipants}}</td>
-            </tr>
-            <tr>
-                <td>Vagas Restantes</td>
-                <td>{{diference(event.vacancies, statistic.totalParticipants)}}</td>
-            </tr>
-            <tr v-if="investiments">
-                <td>Investimento</td>
-                <td>{{toKwanza(sum(investiments))}}</td>
-            </tr>
-            <tr>
-                <td>Participantes do gênero Masculino</td>
-                <td v-if="statistic.genderDistribution">{{statistic.genderDistribution["Masculino"]}}</td>
-                <td v-else>0</td>
-            </tr>
-            <tr>
-                <td>Participantes do gênero Feminino</td>
-                <td v-if="statistic.genderDistribution">{{statistic.genderDistribution["Feminino"]}}</td>
-                <td v-else>0</td>
-            </tr>
-            <tr>
-                <td>Idade do participante mais velho</td>
-                <td>{{statistic.oldestParticipant}} anos</td>
-            </tr>
-            <tr>
-                <td>Idade do participante mais novo</td>
-                <td>{{statistic.youngestParticipant}} anos</td>
-            </tr>
-            <tr>
-                <td>Idade mais frequente</td>
-                <td>{{statistic.averageAge}} anos</td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="mb-3 w-full">
+            <h4 class="text-lg">Estatísticas Gerais</h4>
+            <PTable>
+                <PTableHeader>
+                    <TableTrThItem>Descrição</TableTrThItem>
+                    <TableTrThItem>Valor</TableTrThItem>
+                </PTableHeader>
+                <PTableBody>
+                    <PTableRow>
+                        <PTableCell>Total de vagas</PTableCell>
+                        <PTableCell>{{ event.vacancies }}</PTableCell>
+                    </PTableRow>
+                    <PTableRow>
+                        <PTableCell>Total de Participantes</PTableCell>
+                        <PTableCell>{{ event.totalParticipants }}</PTableCell>
+                    </PTableRow>
+                    <PTableRow>
+                        <PTableCell>Vagas Restantes</PTableCell>
+                        <PTableCell>{{ diference(event.vacancies, event.totalParticipants) }}</PTableCell>
+                    </PTableRow>
+                    <PTableRow v-if="investiments">
+                        <PTableCell>Investimento</PTableCell>
+                        <PTableCell>{{ toKwanza(sum(investiments)) }}</PTableCell>
+                    </PTableRow>
+                    <PTableRow>
+                        <PTableCell>Participantes do gênero Masculino</PTableCell>
+                        <PTableCell v-if="event.genderDistribution">{{ event.genderDistribution["Masculino"] }}
+                        </PTableCell>
+                        <PTableCell v-else>0</PTableCell>
+                    </PTableRow>
+                    <PTableRow>
+                        <PTableCell>Participantes do gênero Feminino</PTableCell>
+                        <PTableCell v-if="event.genderDistribution">
+                            {{ event.genderDistribution["Feminino"] }}
+                        </PTableCell>
+                        <PTableCell v-else>0</PTableCell>
+                    </PTableRow>
+                    <PTableRow>
+                        <PTableCell>Idade do participante mais velho</PTableCell>
+                        <PTableCell>{{ event.oldestParticipant }} anos</PTableCell>
+                    </PTableRow>
+                    <PTableRow>
+                        <PTableCell>Idade do participante mais novo</PTableCell>
+                        <PTableCell>{{ event.youngestParticipant }} anos</PTableCell>
+                    </PTableRow>
+                    <PTableRow>
+                        <PTableCell>Idade mais frequente</PTableCell>
+                        <PTableCell>{{ event.averageAge }} anos</PTableCell>
+                    </PTableRow>
+                </PTableBody>
+            </PTable>
         </div>
 
         <div class="mb-3" v-if="registrations">
-            <h4>Participantes inscritos:</h4>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Email</th>
-                        <th>Contacto</th>
-                    </tr>
-                </thead>
-                <tbody v-if="registrations?.length">
-                    <tr v-for="registration in registrations" :key="registration.id">
-                        <td>{{registration.participant?.name}}</td>
-                        <td>{{registration.participant?.email}}</td>
-                        <td>{{registration?.participant.phone}}</td>
-                    </tr>
-                </tbody>
-                <tbody v-else>
-                    <tr>
-                        <td colspan="3" class="text-center">Nenhum participante inscrito</td>
-                    </tr>
-                </tbody>
-            </table>
+            <h4 class="text-lg">Participantes inscritos:</h4>
+            <PTable>
+                <PTableHeader>
+                        <TableTrThItem>Nome</TableTrThItem>
+                        <template v-if="event.EventConfiguration[0].registrationType === 'Grupo'">
+                            <TableTrThItem>Membros</TableTrThItem>
+                        </template>
+
+                        <template v-else>
+                            <TableTrThItem>Email</TableTrThItem>
+                            <TableTrThItem>Contacto</TableTrThItem>
+                        </template>
+                    </PTableHeader>
+                <PTableBody>
+                    <PTableRow v-for="registration in registrations" :key="registration.id" v-if="registrations?.length">
+                        <template v-if="registration.user">
+                            <PTableCell>{{ registration.user?.name }}</PTableCell>
+                            <PTableCell>{{ registration.user?.email }}</PTableCell>
+                            <PTableCell>{{ registration.user?.phone }}</PTableCell>
+                        </template>
+
+                        <template v-if="registration.participant">
+                            <PTableCell>{{ registration.participant?.name }}</PTableCell>
+                            <PTableCell>{{ registration.participant?.email }}</PTableCell>
+                            <PTableCell>{{ registration.participant?.phone }}</PTableCell>
+                        </template>
+
+                        <template v-if="registration.team">
+                            <PTableCell>{{ registration.team?.name }}</PTableCell>
+                            <PTableCell>{{ registration.team?.participants.length ?? 0 }}</PTableCell>
+                        </template>
+                    </PTableRow>
+                    <PTableRow v-else>
+                        <PTableCell colspan="3" class="text-center">Nenhum participante inscrito</PTableCell>
+                    </PTableRow>
+                </PTableBody>
+            </PTable>
         </div>
 
         <div class="mb-3" v-if="tickets">
-            <h4>Ingressos</h4>
-            <table>
-                <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Preço</th>
-                    <th>Quantidade</th>
-                </tr>
-                </thead>
-                <tbody v-if="tickets.length">
-                    <tr v-for="ticket in tickets">
-                        <td>{{ticket.name}}</td>
-                        <td>{{toKwanza(ticket.price)}}</td>
-                        <td>{{ticket.quantity}}</td>
-                    </tr>                
-                </tbody>
-                <tbody v-else>
-                    <tr>
-                        <td colspan="3" class="text-center">Nenhum ingresso cadastrado</td>
-                    </tr>
-                </tbody>
-            </table>
+            <h4 class="text-lg">Ingressos</h4>
+            <PTable>
+                <PTableHeader>
+                        <TableTrThItem>Nome</TableTrThItem>
+                        <TableTrThItem>Preço</TableTrThItem>
+                        <TableTrThItem>Quantidade</TableTrThItem>
+                    </PTableHeader>
+                <PTableBody>
+                    <PTableRow v-for="ticket in tickets" :key="ticket?.id" v-if="tickets.length">
+                        <PTableCell>{{ ticket?.name }}</PTableCell>
+                        <PTableCell>{{ toKwanza(ticket?.price) }}</PTableCell>
+                        <PTableCell>{{ ticket?.quantity }}</PTableCell>
+                    </PTableRow>
+                    <PTableRow v-else>
+                        <PTableCell colspan="3" class="text-center">Nenhum ingresso cadastrado</PTableCell>
+                    </PTableRow>
+                </PTableBody>
+            </PTable>
         </div>
 
         <div class="mb-3" v-if="investiments">
-            <h4 class="font-semibold">Investimentos</h4>
-            <table>
-                <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Descrição</th>
-                    <th>Montante</th>
-                </tr>
-                </thead>
-                <tbody v-if="investiments.length">
-                    <tr v-for="investiment in investiments">
-                        <td>{{investiment.name}}</td>
-                        <td>{{investiment.description}}</td>
-                        <td>{{toKwanza(investiment.amount)}}</td>
-                    </tr>
-                </tbody>
-                <tbody v-else>
-                    <tr>
-                        <td colspan="3" class="text-center">Nenhum investimento cadastrado</td>
-                    </tr>
-                </tbody>
+            <h4 class="text-lg">Investimentos</h4>
+            <PTable>
+                <PTableHeader>
+                        <TableTrThItem>Nome</TableTrThItem>
+                        <TableTrThItem>Descrição</TableTrThItem>
+                        <TableTrThItem>Montante</TableTrThItem>
+                </PTableHeader>
+                <PTableBody>
+                    <PTableRow v-for="investiment in investiments" :key="investiment?.id" v-if="investiments.length">
+                        <PTableCell>{{ investiment?.name }}</PTableCell>
+                        <PTableCell>{{ investiment?.description }}</PTableCell>
+                        <PTableCell>{{ toKwanza(investiment?.amount) }}</PTableCell>
+                    </PTableRow>
+                    <PTableRow v-else>
+                        <PTableCell colspan="3" class="text-center">Nenhum investimento cadastrado</PTableCell>
+                    </PTableRow>
+                </PTableBody>
                 <tfoot>
-                    <tr>
-                        <td><strong>Total</strong></td>
-                        <td></td>
-                        <td>{{toKwanza(totalFinances(investiments))}}</td>
-                    </tr>
+                    <PTableRow>
+                        <PTableCell><strong>Total</strong></PTableCell>
+                        <PTableCell></PTableCell>
+                        <PTableCell>{{ toKwanza(totalFinances(investiments)) }}</PTableCell>
+                    </PTableRow>
                 </tfoot>
-            </table>
+            </PTable>
         </div>
 
         <div v-if="incomes">
-            <h4 class="font-semibold">Receitas</h4>
-            <table>
-                <thead>
-                <tr>
-                    <th>Fonte</th>
-                    <th>Descrição</th>
-                    <th>Montante</th>
-                </tr>
-                </thead>
-                <tbody v-if="incomes.length">
-                    <tr v-for="income in incomes" :key="income.id">
-                        <td>{{income?.source}}</td>
-                        <td>{{income?.description}}</td>
-                        <td>{{toKwanza(income?.amount)}}</td>
-                    </tr>
-                </tbody>
-
-                <tbody v-else>
-                    <tr>
-                        <td colspan="3" class="text-center">Nenhuma receita cadastrada</td>
-                    </tr>
-                </tbody>
-
+            <h4 class="text-lg">Receitas</h4>
+            <PTable>
+                <PTableHeader>
+                        <TableTrThItem>Fonte</TableTrThItem>
+                        <TableTrThItem>Descrição</TableTrThItem>
+                        <TableTrThItem>Montante</TableTrThItem>
+                    </PTableHeader>
+                <PTableBody>
+                    <PTableRow v-for="income in incomes" :key="income.id" v-if="incomes.length">
+                        <PTableCell>{{ income?.source }}</PTableCell>
+                        <PTableCell>{{ income?.description }}</PTableCell>
+                        <PTableCell>{{ toKwanza(income?.amount) }}</PTableCell>
+                    </PTableRow>
+                    <PTableRow v-else>
+                        <PTableCell colspan="3" class="text-center">Nenhuma receita cadastrada</PTableCell>
+                    </PTableRow>
+                </PTableBody>
                 <tfoot>
-                    <tr>
-                        <td><strong>Total</strong></td>
-                        <td></td>
-                        <td>{{toKwanza(totalFinances(incomes))}}</td>
-                    </tr>
+                    <PTableRow>
+                        <PTableCell><strong>Total</strong></PTableCell>
+                        <PTableCell></PTableCell>
+                        <PTableCell>{{ toKwanza(totalFinances(incomes)) }}</PTableCell>
+                    </PTableRow>
                 </tfoot>
-            </table>
+            </PTable>
         </div>
 
         <div v-if="expenses">
-            <h4 class="font-semibold">Despesas</h4>
-            <table>
-                <thead>
-                <tr>
-                    <th>Categoria</th>
-                    <th>Descrição</th>
-                    <th>Montante</th>
-                </tr>
-                </thead>
-                <tbody v-if="expenses.length">
-                    <tr v-for="expense in expenses" :key="expense.id">
-                        <td>{{expense?.category}}</td>
-                        <td>{{expense?.description}}</td>
-                        <td>{{toKwanza(expense?.amount)}}</td>
-                    </tr>
-                </tbody>
-
-                <tbody v-else>
-                    <tr>
-                        <td colspan="3" class="text-center">Nenhuma despesa cadastrada</td>
-                    </tr>
-                </tbody>
-
+            <h4 class="text-lg">Despesas</h4>
+            <PTable>
+                <PTableHeader>
+                        <TableTrThItem>Categoria</TableTrThItem>
+                        <TableTrThItem>Descrição</TableTrThItem>
+                        <TableTrThItem>Montante</TableTrThItem>
+                    </PTableHeader>
+                <PTableBody>
+                    <PTableRow v-for="expense in expenses" :key="expense.id" v-if="expenses.length">
+                        <PTableCell>{{ expense?.category }}</PTableCell>
+                        <PTableCell>{{ expense?.description }}</PTableCell>
+                        <PTableCell>{{ toKwanza(expense?.amount) }}</PTableCell>
+                    </PTableRow>
+                    <PTableRow v-else>
+                        <PTableCell colspan="3" class="text-center">Nenhuma despesa cadastrada</PTableCell>
+                    </PTableRow>
+                </PTableBody>
                 <tfoot>
-                    <tr>
-                        <td><strong>Total</strong></td>
-                        <td></td>
-                        <td>{{toKwanza(totalFinances(expenses))}}</td>
-                    </tr>
+                    <PTableRow>
+                        <PTableCell><strong>Total</strong></PTableCell>
+                        <PTableCell></PTableCell>
+                        <PTableCell>{{ toKwanza(totalFinances(expenses)) }}</PTableCell>
+                    </PTableRow>
                 </tfoot>
-            </table>
+            </PTable>
         </div>
 
     </div>

@@ -20,10 +20,13 @@ import RegistrationTable from "@/views/event/components/RegistrationTable.vue";
 import TicketsTable from "@/views/event/components/TicketsTable.vue";
 import SpeakersTable from './components/SpeakersTable.vue';
 import ActivitiesTab from './components/ActivitiesTab.vue';
-import dayjs from 'dayjs';
+import CertificatesTab from './components/certificates/CertificatesTab.vue';
+import settingTab from './components/settings/settingTab.vue';
 import { SwalConfirmAlert } from '@/helpers/swalConfirmAlert';
 import { useNotification } from '@/composables/useNotification';
 import ModalChangeEventStatus from './components/ModalChangeEventStatus.vue';
+import PLoading from '@/components/PLoading.vue';
+import { extendedDayjs as dayjs } from '@/plugin/dayjs';
 
 const route = useRoute();
 const router = useRouter();
@@ -48,9 +51,12 @@ const params = reactive({
 const tabItems = [
     { label: 'Atividades', component: ActivitiesTab, icon: 'fa fa-tasks' },
     { label: 'Incrições', component: RegistrationTable, icon: 'fa fa-pencil', route: 'event.show.registrations' },
-    { label: 'Palestrantes', component: SpeakersTable, icon: 'fa fa-users', route: 'event.show.speakers' },
+    { label: 'Convidados', component: SpeakersTable, icon: 'fa fa-users', route: 'event.show.speakers' },
     { label: 'Ingressos', component: TicketsTable, icon: 'fa fa-file', route: 'event.show.tickets' },
+    { label: 'Certificados', component: CertificatesTab, icon: 'fa fa-certificate' },
+    { label: 'Configurações', component: settingTab, icon: 'fa fa-cog' },
 ];
+
 const tabICurrenttem = ref('RegistrationTable');
 const showMoreDetails = ref(false);
 
@@ -78,6 +84,7 @@ const getEvents = async () => {
         const response = await EventServices.search(params);
         events.data = response.data;
     } catch (error) {
+        console.error(error);
         handleError('Erro ao buscar os eventos');
     } finally {
         events.busy = false;
@@ -92,7 +99,7 @@ function handleShowModalNewRegistration() {
 const componentTabelaRef = ref(null);
 const handleRegistrationCompleted = () => {
     getEvent();
-    componentTabelaRef.value.updateComponent();
+    componentTabelaRef.value?.updateComponent();
 };
 
 const handleEventSelected = (event) => {
@@ -159,9 +166,7 @@ watch(route, () => {
                 </InputGroup>
             </CardRoot>
 
-            <div v-if="busy" class="flex-grow flex w-full h-full justify-center items-center">
-                <i class="fa fa-spinner animate-spin text-black text-base" />
-            </div>
+            <PLoading v-if="busy" />
     
             <div v-else-if="!busy && !event" class="flex-grow flex w-full h-full justify-center items-center">
                 <p class="text-xl text-surface-400 font-light">
@@ -199,16 +204,22 @@ watch(route, () => {
                                     <p>{{ event?.department.name }}</p>
                                 </li>
                                 <li>
+                                    <p><b>Data de início</b>:</p>
+                                    <p>
+                                        {{ dayjs(event.startDate).utc().format('dddd, D [de] MMM') }}
+                                    </p>
+                                </li>
+                                <li>
+                                    <p><b>Data de fim</b>:</p>
+                                    <p>{{ dayjs(event.endDate).utc().format('dddd, D [de] MMM') }}</p>
+                                </li>
+                                <li>
                                     <p><b>Vagas</b>:</p>
                                     <p>{{ event?.vacancies }}</p>
                                 </li>
                                 <li>
-                                    <p><b>Data de início</b>:</p>
-                                    <p>{{date_formatter(event.startDate)}}</p>
-                                </li>
-                                <li>
-                                    <p><b>Data de fim</b>:</p>
-                                    <p>{{ date_formatter(event.endDate) }}</p>
+                                    <p><b>Inscrições</b>:</p>
+                                    <p>{{ event?.registrations?.length ?? 0 }}</p>
                                 </li>
                             </ul>
 
@@ -273,10 +284,10 @@ watch(route, () => {
     
                 <CardRoot class="w-[70%]">
                    <div class="flex flex-col gap-5">
-                        <TabView id="custom_tabview" :unstyled="true">
+                        <TabView id="custom_tabview" :unstyled="true" :scrollable="true">
                             <TabPanel v-for="item in tabItems" :key="item.id">
                                 <template #header>
-                                    <div>
+                                    <div class="flex items-center gap-1">
                                         <span :class="'mr-1 fa ' + item.icon" />
                                         <span >{{ item.label }}</span>
                                     </div>

@@ -42,6 +42,10 @@ export default {
         return axios.post(`${baseUrl}/search`, { params })
     },
 
+    safeSearch(params = null) {
+        return axios.get(`${baseUrl}/search/safe`, { params })
+    },
+
     store(user: any){
         return axios.post(`${baseUrl}`, { user })
     },

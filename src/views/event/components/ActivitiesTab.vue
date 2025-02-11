@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref, onMounted } from 'vue';
+import { reactive, ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useNotification } from '@/composables/useNotification';
 import { useDateFormatter } from '@/composables/useDateFormatter';
@@ -9,7 +9,7 @@ import Column from 'primevue/column';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import InputGroup from 'primevue/inputgroup';
-// import Dropdown from 'primevue/dropdown';
+import { debounce } from 'lodash'
 import ModalNewActivity from './activity/ModalNewActivity.vue';
 import ModalViewActivity from './activity/ModalViewActivity.vue';
 import PDropdown from '@/components/PDropdown/PDropdown.vue';
@@ -21,7 +21,17 @@ const { notifyError, notifySuccess } = useNotification()
 
 const busy = ref(false);
 const activities = ref([]);
-const filter = null;
+const search = ref(null);
+const totalRecods = ref(0);
+const params = ref({
+    take: 8,
+    skip: 1,
+    where: {
+        name: {
+            contains: null
+        }
+    }
+})
 
 const dropdownItems = [
     {
@@ -41,14 +51,14 @@ const dropdownItems = [
     },
 ];
 
-async function fetchActivities(){
+const fetchActivities = debounce(async () => {
     try {
         busy.value = true;
-        const response = await ActivityServices.ListByEvent(router.currentRoute.value.params.id)
+        const response = await ActivityServices.ListByEvent(router.currentRoute.value.params.id, params.value);
 
         if(response.status === 200){
-            activities.value = response.data;
-            // totalRecods.value = response.data.length;
+            activities.value = response.data.data;
+            totalRecods.value = response.data.total;
             return
         }
 
@@ -59,6 +69,10 @@ async function fetchActivities(){
     } finally {
         busy.value = false;
     }
+})
+
+function updateComponent(){
+    fetchActivities();
 }
 
 const ModalNewActivityRef = ref(null);
@@ -109,7 +123,25 @@ async function handleDeleteEventActivity(activity){
     }
 }
 
+function onPageChange(event) {
+    params.value.skip = event.page + 1
+    params.value.take = event.rows
+}
+
+watch(search, () => {
+    params.value.where.name.contains = search.value;
+    fetchActivities();
+})
+
+watch(params, () => {
+    fetchActivities();
+})
+
 onMounted(() => fetchActivities() );
+
+defineExpose({
+    updateComponent
+});
 </script>
 
 <template>
@@ -123,15 +155,18 @@ onMounted(() => fetchActivities() );
                 <Button size="small" class="h-9 bg-transparent border border-surface-300 border-r-0">
                     <i class="fa fa-search text-black" />
                  </Button>
-                <InputText size="small" v-model="filter" id="search" type="text" placeholder="Escreva para pesquisar..." class="w-full rounded-none h-9 border-l-0" />
+                <InputText size="small" v-model="search" id="search" type="text" placeholder="Escreva para pesquisar..." class="w-full rounded-none h-9 border-l-0" />
                 <Button severity="secondary" size="small" class="h-9 border border-r-0" @click="ShowModalNewActivity">
                     <i class="fa fa-plus mr-1" /> Adicionar
                  </Button>
             </InputGroup>
         </div>
 
-        <DataTable :value="activities" size="small" paginator :rows="5" :totalRecords="activities.length"
-            dataKey="id" class="ctable" :loading="busy" lazy :rowsPerPageOptions="[5, 10, 20, 50]"
+        <DataTable :value="activities" size="small" paginator :rows="params.take" :totalRecords="totalRecods"
+            dataKey="id" class="ctable" :loading="busy" lazy :rowsPerPageOptions="[8, 10, 20, 50]"
+            @page="onPageChange"
+            v-model:rows="params.take"
+            v-model:page="params.skip"
         >
 
             <Column field="name" header="Nome" sortable></Column>

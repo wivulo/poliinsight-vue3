@@ -8,7 +8,7 @@ import InputGroup from 'primevue/inputgroup';
 import Dropdown from 'primevue/dropdown';
 import dayjs from 'dayjs'
 import ModalRegistrationTableTeamViewer from './ModalRegistrationTableTeamViewer.vue';
-
+import { debounce } from 'lodash'
 
 export default {
     name: "event.show.registrations.team",
@@ -21,21 +21,46 @@ export default {
             busy: false,
             registrations: [],
             totalRecods: 0,
-            filter: null,
+            search: null,
+            params: {
+                take: 8,
+                skip: 1,
+                where: {
+                    OR: [
+                            {
+                                participant: {
+                                    name: {
+                                        contains: null
+                                    }
+                                }
+                            },
+                            {
+                                user: {
+                                    name: {
+                                        contains: null
+                                    }
+                                }
+                            }
+                    ]
+                }
+            }
         }
     },
     created(){
         this.getEventRegistrations();
     },
     methods: {
-        async getEventRegistrations(){
+        getEventRegistrations: debounce(async function() {
             this.busy = true
-            const response = await RegistrationServices.showByEvent(this.$route.params.id)
+            const response = await RegistrationServices.showByEvent(this.$route.params.id, this.params)
             .catch(() => this.$toast.add({severity: 'error', summary: 'Erro', detail: 'Erro ao buscar inscrições'}))
-            this.registrations = response.data
-            this.totalRecods = this.registrations.length
-            this.busy = false
-        },
+            if(response.status === 200){
+                this.registrations = response.data.data
+                this.totalRecods = response.data.total
+                this.busy = false
+                return
+            }
+        }),
 
         updateComponent(){
             this.getEventRegistrations()
@@ -48,17 +73,44 @@ export default {
         handleShowModalRegistrationTableTeamViewer(teamId){
             this.$refs.modalRegistrationTableTeamViewer.show(teamId)
         },
+
+        onPageChange (event) {
+            this.params.skip = event.page + 1
+            this.params.take = event.rows
+        }
+    },
+    watch: {
+        search(newSearch) {
+            this.params.where.OR[0].participant.name.contains = newSearch;
+            this.params.where.OR[1].user.name.contains = newSearch;
+        },
+        params: {
+            handler: 'getEventRegistrations',
+            deep: true
+        },
     }
 }
 
 </script>
 
 <template>
-    <div class="flex w-full">
+    <div class="flex flex-col gap-3 w-full">
         <ModalRegistrationTableTeamViewer ref="modalRegistrationTableTeamViewer" />
 
-        <DataTable :value="registrations" size="small" paginator :rows="5" :totalRecords="totalRecods"
-            dataKey="id" class="ctable w-full" :loading="busy" lazy :rowsPerPageOptions="[5, 10, 20, 50]"
+        <div class="flex">
+            <InputGroup>
+                <Button size="small" class="h-9 bg-transparent border border-surface-300 border-r-0">
+                    <i class="fa fa-search text-black" />
+                 </Button>
+                <InputText size="small" v-model="search" id="search" type="text" placeholder="Escreva para pesquisar..." class="w-full rounded-none h-9 border-l-0" />
+            </InputGroup>
+        </div>
+
+        <DataTable :value="registrations" size="small" paginator :rows="params.take" :totalRecords="totalRecods"
+            dataKey="id" class="ctable w-full" :loading="busy" lazy :rowsPerPageOptions="[8, 10, 20, 50]"
+            @page="onPageChange"
+            v-model:rows="params.take"
+            v-model:page="params.skip"
         >
 
             <Column field="participant.data" header="Nome" >

@@ -15,8 +15,10 @@ export default {
         return axios.get(`${source}/${id}`)
     },
 
-    ListByEvent(eventId: string) {
-        return axios.get(`${source}/event/${eventId}`)
+    ListByEvent(eventId: string, params: any = null) {
+        return axios.get(`${source}/event/${eventId}`, {
+            params
+        })
     },
 
     store(activity: any) {

@@ -19,6 +19,7 @@ import Chip from 'primevue/chip';
 import Avatar from 'primevue/avatar';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
+import Tag from 'primevue/tag';
 
 document.title = 'Evento | Poliinsight';
 
@@ -168,6 +169,9 @@ async function send() {
                                         </span>
                                     </p>
                                 <p><i class="pi pi-map-marker"></i> {{ iEvent.location }}</p>
+                                <div>
+                                    <Tag :severity="iEvent.status?.severity" :value="iEvent.category?.name" class="my-0.5 !font-medium" />
+                                </div>
                             </div>
 
                             <div>
