@@ -78,28 +78,27 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="flex w-full flex-col items-center">
-    <div class="flex flex-col w-full max-w-[1366px]">
+  <main class="flex w-full flex-col items-center px-4 sm:px-6 md:px-8">
+    <div class="flex flex-col w-full max-w-[1366px] px-2 sm:px-4">
       <HomeHero />
 
-      <div class="mb-10 relative px-4 py-6 shadow-md bg-zinc-200">
+      <div class="mb-10 relative px-4 py-6">
         <!-- <CarouselView /> -->
 
         <div v-if="busy" class="w-full flex justify-center items-center h-28">
           <PLoading />
         </div>
 
-        <Carousel :value="events" :numVisible="4" :numScroll="1" :responsiveOptions="responsiveOptions">
+        <Carousel :value="events" :numVisible="3" :numScroll="1" :responsiveOptions="responsiveOptions">
           <template #item="slotProps">
-            <div class="w-[380px] h-[370px]">
-              <div class="w-full h-full bg-slate-50 shadow-md rounded-md">
-                <div class="h-[300px] w-full">
+            <div class="w-full sm:w-[380px] h-auto sm:h-[370px]">
+              <div class="w-full h-full rounded-md">
+                <div class="h-[200px] md:h-[300px] w-full">
                   <img :src="slotProps.data?.imageURL" :alt="slotProps.data.name"
                     class="border-round object-contain w-full h-full" />
                 </div>
-              </div>
 
-              <div class="w-full">
+                <div class="px-4 pt-2">
                   <div class="text-sm font-bold text-surface-900 cursor-pointer">{{ slotProps.data.name }}</div>
 
                   <div class="flex flex-col justify-content-between align-items-center">
@@ -108,6 +107,7 @@ onMounted(() => {
                     </div>
                   </div>
                 </div>
+              </div>
             </div>
           </template>
         </Carousel>
@@ -124,9 +124,8 @@ onMounted(() => {
       <EventList :header="'Ciências da Educação'" :events="filteredEvents['Ciências da Educação']" :busy="busy" />
 
 
-      <div class="flex p-4 py-10 bg-surface-100">
-
-        <div class="basis-1/4">
+      <div id="footer-1" class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 py-10 bg-surface-100">
+        <div class="flex justify-center">
           <ul class="flex gap-2 flex-col text-base">
             <li>Lorem ipsum dolor</li>
             <li>sit amet consectetur</li>
@@ -134,8 +133,7 @@ onMounted(() => {
             <li>Asperiores nisi</li>
           </ul>
         </div>
-
-        <div class="basis-1/4">
+        <div class="flex justify-center">
           <ul class="flex gap-2 flex-col text-base">
             <li>possimus natus</li>
             <li>quibusdam minus</li>
@@ -143,8 +141,7 @@ onMounted(() => {
             <li>beatae et debitis</li>
           </ul>
         </div>
-
-        <div class="basis-1/4">
+        <div class="flex justify-center">
           <ul class="flex gap-2 flex-col text-base">
             <li>Termos e Serviços</li>
             <li>Politicas de Segurança</li>
@@ -152,8 +149,7 @@ onMounted(() => {
             <li class="text-body-tertiary">.</li>
           </ul>
         </div>
-
-        <div class="basis-1/4 flex items-center justify-center">
+        <div class="flex justify-center">
           <Image :src="logo" alt="Responsive image" width="100" height="100" />
         </div>
       </div>

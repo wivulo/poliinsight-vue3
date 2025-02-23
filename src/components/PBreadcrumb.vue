@@ -12,7 +12,7 @@ const home = ref({
 
 <template>
     <div class="flex w-full text-xs">
-            <div class="w-[33%]">
+            <div class="w-full md:w-[33%]">
                 <Breadcrumb :home="home" :model="items">
                     <template #item="{ item, props }">
                         <router-link v-if="item.route" v-slot="{ href, navigate }" :to="{name: item.route, params: item.params}" custom>

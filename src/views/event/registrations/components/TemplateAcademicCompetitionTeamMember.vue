@@ -79,55 +79,44 @@ watch(userHaveAccount, (value) => {
             <small class="text-surface-400">O Participante já tem uma conta?</small>
         </div>
 
-        <div class="flex flex-wrap gap-3">
-            <div class="form-group">
+        <!-- Atualizado: contêiner dos campos em grid responsivo -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="form-group w-full">
                 <label :for="'member-'+index" class="ml-2">
-                    <i class="fas fa-user me-1 "></i> <small> Nome </small> 
+                    <i class="fas fa-user me-1"></i> <small>Nome</small>
                 </label>
-                <InputText :id="'member-'+index" v-model="member.name" 
-                    class="w-full border-zinc-300 h-9" :required="true" 
-                    placeholder="Ex.: João da Silva" 
-                />
+                <InputText :id="'member-'+index" v-model="member.name" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex.: João da Silva" />
             </div>
 
-            <div class="form-group">
+            <div class="form-group w-full">
                 <label :for="'member-'+index" class="ml-2">
-                    <i class="fas fa-envelope me-1 "></i> <small> Email </small> 
+                    <i class="fas fa-envelope me-1"></i> <small>Email</small>
                 </label>
-                <InputText :id="'member-'+index" v-model="member.email" 
-                    class="w-full border-zinc-300 h-9" :required="true"
-                    placeholder="Ex.: joaosilva@gmail.com"
-                    :invalid="member.email && !isValidEmail(member.email)"
-                />
-
+                <InputText :id="'member-'+index" v-model="member.email" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex.: joaosilva@gmail.com" :invalid="member.email && !isValidEmail(member.email)" />
                 <small v-if="member.email && !isValidEmail(member.email)" class="text-red-500">
                     Email inválido
                 </small>
             </div>
 
-            <div class="form-group">
+            <div class="form-group w-full">
                 <label :for="'member-'+index" class="ml-2">
-                    <i class="fas fa-phone me-1 "></i> <small> Telefone </small> 
+                    <i class="fas fa-phone me-1"></i> <small>Telefone</small>
                 </label>
                 <InputText :id="'member-'+index" v-model="member.phone" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex.: (244) 999xxxxxx" />
             </div>
 
-            <div class="form-group">
+            <div class="form-group w-full">
                 <label :for="'member-'+index" class="ml-2">
-                    <i class="fas fa-calendar me-1 "></i> <small> Data de Nascimento </small>
+                    <i class="fas fa-calendar me-1"></i> <small>Data de Nascimento</small>
                 </label>
                 <Calendar :id="'member-'+index" v-model="member.birthdate" class="w-full border-zinc-300 hover:border-zinc-400 h-9" :required="true" placeholder="Ex.: 01/01/2000" />
             </div>
 
-            <div class="form-group">
+            <div class="form-group w-full">
                 <label :for="'member-'+index" class="ml-2">
-                    <i class="fas fa-venus-mars me-1 "></i> <small> Gênero <span class="text-xs text-surface-300">(opcional)</span></small>
+                    <i class="fas fa-venus-mars me-1"></i> <small>Gênero <span class="text-xs text-surface-300">(opcional)</span></small>
                 </label>
-                
-                <Dropdown 
-                    :id="'member-'+index" v-model="member.gender" :options="genders" 
-                    class="w-full border-zinc-300 h-9" placeholder="Ex.: Masculino" 
-                />
+                <Dropdown :id="'member-'+index" v-model="member.gender" :options="genders" class="w-full border-zinc-300 h-9" placeholder="Ex.: Masculino" />
             </div>
         </div>
     </div>

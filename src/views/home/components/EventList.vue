@@ -15,7 +15,7 @@ const { header, events, busy } = defineProps({
 </script>
 
 <template>
-    <div class="mb-3 px-20">
+    <div class="mb-3 px-4 sm:px-10 md:px-20">
         <div class="my-5 border-b border-surface-100">
           <p class="text-xl font-bold text-surface-700">
             {{ header }}
@@ -26,7 +26,7 @@ const { header, events, busy } = defineProps({
 
         <PEmpty v-else-if="!busy && !events" />
 
-        <div v-else class="my-2 flex gap-14 flex-wrap">
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <Card
                 style="max-width: 15rem;"
                 class="mb-2 h-[24rem] overflow-hidden"
@@ -63,7 +63,7 @@ const { header, events, busy } = defineProps({
             </Card>
         </div>
         
-        <div class="flex justify-end">
+        <div class="flex justify-end" v-if="events && events?.length > 0">
             <Button icon="fa fa-plus" label="Ver mais" text size="small" class="h-9" severity="secondary" />
         </div>
     </div>

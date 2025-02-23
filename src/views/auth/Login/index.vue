@@ -87,13 +87,13 @@ export default{
         </Button>
     </div>
     
-    <div class="flex w-[800px] h-[400px] justify-center items-center relative">
+    <div class="flex w-full h-full md:w-[800px] md:h-[400px] justify-center items-center relative">
       <Card class="h-full flex justify-center items-center">
         <template #content>
-          <div class="absolute top-0 left-0 w-[400px] h-[400px] z-40 bg-primary-500"></div>
+          <div class="absolute top-0 left-0 w-[400px] h-[400px] z-40 bg-primary-500 lg:block hidden"></div>
 
           <div class="flex gap-2 w-full justify-center items-center z-50 relative">
-            <div class="flex flex-col basis-1/2 px-4 text-slate-50">
+            <div class="flex-col lg:basis-1/2 px-4 text-slate-50 lg:flex hidden">
                 <p class="text-xl font-semibold mb-2 tracking-wider">Poliinsight</p>
                 <p class="text-justify text-sm">
                   O Poliinsight é um software de gestão de eventos integrada, com ele, é possível gerenciar de forma 
@@ -101,7 +101,7 @@ export default{
                 </p>
             </div>
 
-            <div class="flex flex-col gap-3 px-4 basis-1/2">
+            <div class="flex flex-col gap-3 px-4 w-full lg:basis-1/2">
               <div class="w-full h-auto flex justify-center items-center">
                 <AppLogo :textIsVisible="false" :width="60" :height="60" />
               </div>

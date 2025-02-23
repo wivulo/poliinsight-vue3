@@ -77,15 +77,20 @@ export default {
 
                             <Dropdown :options="links">
                                 <template #value>
-                                    <div class="flex gap-1 items-center h-6 pt-[2px]">
-                                        <div class="h-6 flex items-center">
-                                            <Avatar :label="user.name.charAt(0).toUpperCase()" class="h-5 text-sm" shape="circle"  />
+                                    <!-- Exibe versão completa em telas maiores e somente avatar em smartphones -->
+                                    <div>
+                                        <div class="hidden sm:flex gap-1 items-center h-6 pt-[2px]">
+                                            <div class="h-6 flex items-center">
+                                                <Avatar :label="user.name.charAt(0).toUpperCase()" class="h-5 text-sm" shape="circle" />
+                                            </div>
+                                            <div class="flex items-center h-6">
+                                                <p class="text-sm text-slate-600">
+                                                    {{ user.email }}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div class="flex items-center h-6">
-                                            <!-- <p class="text-md">{{ user.name }}</p> -->
-                                            <p class="text-sm text-slate-600">
-                                                {{ user.email }}
-                                            </p>
+                                        <div class="flex sm:hidden">
+                                            <Avatar :label="user.name.charAt(0).toUpperCase()" class="h-5 text-sm" shape="circle" />
                                         </div>
                                     </div>
                                 </template>

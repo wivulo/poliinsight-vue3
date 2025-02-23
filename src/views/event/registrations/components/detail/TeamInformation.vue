@@ -11,7 +11,7 @@ const { iRegistration } = defineProps(['iRegistration']);
                 <span>{{ iRegistration?.id }}</span>
             </li>
             <li>
-                <b class="mr-2">Data da incrição:</b>
+                <b class="mr-2">Data da inscrição:</b>
                 <span v-formatDate="iRegistration?.createdAt"></span>
             </li>
             <li>
@@ -21,19 +21,20 @@ const { iRegistration } = defineProps(['iRegistration']);
             <li>
                 <b class="mr-2">Integrantes:</b>
                 <div class="py-2">
-                    <ul class="flex flex-wrap gap-5">
+                    <!-- Atualizado: lista de integrantes em grid responsivo -->
+                    <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         <li 
                             v-for="member in (Array.isArray(iRegistration?.team?.participants) ? iRegistration.team.participants : []).concat(Array.isArray(iRegistration?.team?.users) ? iRegistration.team.users : [])" 
                             :key="member.id" 
-                            class="my-1 flex gap-3 w-[350px] h-[100px] bg-surface-100 p-3 items-center rounded-md shadow-sm shadow-surface-400"
+                            class="flex gap-3 bg-surface-100 p-3 items-center rounded-md shadow-sm"
                         >
                             <div class="flex items-center">
                                 <Avatar :label="member.name[0]" shape="circle" size="large" />
                             </div>
-                            <div class="flex flex-col gap-1 justify-center">
-                                <p>Nome: <span class="mx-1">{{ member.name }}</span></p>
-                                <p>Email: <span class="mx-1">{{ member.email }}</span></p>
-                                <p>Contacto: <span class="mx-1"> {{ member.phone }}</span></p>
+                            <div class="flex flex-col gap-1">
+                                <p>Nome: <span>{{ member.name }}</span></p>
+                                <p>Email: <span>{{ member.email }}</span></p>
+                                <p>Contato: <span>{{ member.phone }}</span></p>
                             </div>
                         </li>
                     </ul>

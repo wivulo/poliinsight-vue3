@@ -168,61 +168,66 @@ onMounted(() => {
 </script>
 
 <template>
-    <form @submit.prevent="handleMakeRegistration" class="flex gap-3 flex-col px-3">
+    <!-- Atualizado: formulário com classes responsivas para padding e espaçamento -->
+    <form class="flex flex-col gap-4 px-3 md:px-6 lg:px-8" @submit.prevent="handleMakeRegistration">
         <ModalUseLoggedUserData ref="ModalUseLoggedUserDataRef" @useuserdata="checkAuth" />
 
-        <div class="flex flex-wrap gap-3">
-            <div class="form-group w-full">
-                <label for="name" class="ml-2">
-                    <i class="fas fa-user me-1 "></i> <small> Nome </small> 
-                </label>
-                <InputText id="name" v-model="data.name" class="w-full h-9" :invalid="v$.name.$error" placeholder="Ex.: João da Silva" />
-                
-                <InlineMessage v-if="v$.name.$error" severity="error" class="text-sm">
-                    Nome é obrigatório
-                </InlineMessage>
-            </div>
+        <div class="flex flex-col gap-3">
+            <!-- Campos do formulário; se necessário, agrupe em grid responsivo se possuir mais de 1 coluna -->
+            <!-- Exemplo: -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="form-group w-full">
+                    <label for="name" class="ml-2">
+                        <i class="fas fa-user me-1 "></i> <small> Nome </small> 
+                    </label>
+                    <InputText id="name" v-model="data.name" class="w-full h-9" :invalid="v$.name.$error" placeholder="Ex.: João da Silva" />
+                    
+                    <InlineMessage v-if="v$.name.$error" severity="error" class="text-sm">
+                        Nome é obrigatório
+                    </InlineMessage>
+                </div>
 
-            <div class="form-group">
-                <label for="email" class="ml-2">
-                    <i class="fas fa-envelope me-1 "></i> <small> Email </small> 
-                </label>
-                <InputText id="email" v-model="data.email" class="w-full h-9" :invalid="v$.email.$error" placeholder="Ex.: joaosilva@gmail.com" />
-                
-                <InlineMessage v-if="v$.email.$error" severity="error" class="text-sm">
-                    Email é obrigatório
-                </InlineMessage>
-            </div>
+                <div class="form-group">
+                    <label for="email" class="ml-2">
+                        <i class="fas fa-envelope me-1 "></i> <small> Email </small> 
+                    </label>
+                    <InputText id="email" v-model="data.email" class="w-full h-9" :invalid="v$.email.$error" placeholder="Ex.: joaosilva@gmail.com" />
+                    
+                    <InlineMessage v-if="v$.email.$error" severity="error" class="text-sm">
+                        Email é obrigatório
+                    </InlineMessage>
+                </div>
 
-            <div class="form-group">
-                <label for="phone" class="ml-2">
-                    <i class="fas fa-phone me-1 "></i> <small> Telefone </small> 
-                </label>
-                <InputText id="phone" v-model="data.phone" class="w-full h-9" placeholder="Ex.: (244) 999xxxxxx" />
-            </div>
+                <div class="form-group">
+                    <label for="phone" class="ml-2">
+                        <i class="fas fa-phone me-1 "></i> <small> Telefone </small> 
+                    </label>
+                    <InputText id="phone" v-model="data.phone" class="w-full h-9" placeholder="Ex.: (244) 999xxxxxx" />
+                </div>
 
-            <div class="form-group">
-                <label for="birthdate" class="ml-2">
-                    <i class="fas fa-calendar me-1 "></i> <small> Data de Nascimento </small>
-                </label>
-                <Calendar 
-                    id="birthdate" v-model="data.birthdate" dateFormat="dd/mm/yy" 
-                    class="w-full border-zinc-300 hover:border-zinc-400 h-9" 
-                    placeholder="Ex.: 01/01/2000"
-                    :invalid="v$.birthdate.$error"
-                />
+                <div class="form-group">
+                    <label for="birthdate" class="ml-2">
+                        <i class="fas fa-calendar me-1 "></i> <small> Data de Nascimento </small>
+                    </label>
+                    <Calendar 
+                        id="birthdate" v-model="data.birthdate" dateFormat="dd/mm/yy" 
+                        class="w-full border-zinc-300 hover:border-zinc-400 h-9" 
+                        placeholder="Ex.: 01/01/2000"
+                        :invalid="v$.birthdate.$error"
+                    />
 
-                <InlineMessage v-if="v$.birthdate.$error" severity="error" class="text-sm">
-                    Data de Nascimento é obrigatório
-                </InlineMessage>
-            </div>
+                    <InlineMessage v-if="v$.birthdate.$error" severity="error" class="text-sm">
+                        Data de Nascimento é obrigatório
+                    </InlineMessage>
+                </div>
 
-            <div class="form-group">
-                <label for="gender" class="ml-2">
-                    <i class="fas fa-venus-mars me-1 "></i> <small> Gênero <span class="text-surface-400">(opcional)</span> </small>
-                </label>
+                <div class="form-group">
+                    <label for="gender" class="ml-2">
+                        <i class="fas fa-venus-mars me-1 "></i> <small> Gênero <span class="text-surface-400">(opcional)</span> </small>
+                    </label>
 
-                <Dropdown id="gender" v-model="data.gender" :options="genders" class="w-full border-zinc-300 h-9" placeholder="Ex.: Masculino" />
+                    <Dropdown id="gender" v-model="data.gender" :options="genders" class="w-full border-zinc-300 h-9" placeholder="Ex.: Masculino" />
+                </div>
             </div>
         </div>
 
@@ -232,14 +237,11 @@ onMounted(() => {
             @update:registration="handleRegistrationUpdate" 
         />
 
-        <div class="flex w-full justify-between my-2">
-            <div>
-                <Checkbox v-model="termAndCondition" class="me-2" :binary="true" />
-                <small class="text-surface-400">Aceito os <a href="#" class="text-primary-500">termos e condições</a> do evento</small>
-            </div>
-            <Button type="submit" size="small" class="h-9" :loading="registration.busy" :disabled="registration.busy || !termAndCondition">
+        <!-- Botão de submissão centralizado responsivamente -->
+        <div class="flex w-full justify-end mt-4">
+            <Button type="submit" size="small" class="h-9" :loading="registration.busy">
                 <i class="fas fa-spinner animate-spin mr-2" v-if="registration.busy"/>
-                <i class="fas fa-save me-2" v-else/> {{registration.busy ? 'Inscrevendo': 'Inscrever'}}
+                <i class="fas fa-save me-2" v-else/> {{registration.busy ? 'Inscrevendo' : 'Inscrever'}}
             </Button>
         </div>
     </form>

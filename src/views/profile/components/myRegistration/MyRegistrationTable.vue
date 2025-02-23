@@ -28,8 +28,8 @@ const fetchUserRegistrations = async () => {
         busy.value = true;
         const response = await RegistrationServices.showByUser(user.value.id);
         if (response.status === 200) {
-            registrations.value = response.data;
-            totalRecods.value = registrations.value.length;
+            registrations.value = response.data.data;
+            totalRecods.value = response.data.total;
             return;
         }
 
@@ -48,9 +48,9 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="flex">
+    <div class="flex w-full overflow-x-auto">
         <DataTable :value="registrations" size="small" paginator :rows="5" :totalRecords="totalRecods" dataKey="id"
-            class="ctable w-full" :loading="busy" lazy :rowsPerPageOptions="[5, 10, 20, 50]">
+            class="ctable w-full" :loading="busy" lazy :rowsPerPageOptions="[5, 10, 20, 50]" scrollable>
 
             <Column field="event.name" header="Evento" />
             <Column field="event.location" header="Localização" />

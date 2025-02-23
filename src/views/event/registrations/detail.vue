@@ -74,7 +74,8 @@ const items = ref([
 </script>
 
 <template>
-    <div class="flex flex-col px-14 gap-5 py-5 w-full max-w-[1366px] items-center">
+    <!-- Atualizado: contêiner principal em grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 px-4 py-5 w-full max-w-[1366px] items-center">
         <PLoading v-if="busy" />
         <PEmpty v-else-if="!busy && !iEvent" />
 
@@ -83,50 +84,51 @@ const items = ref([
                 <PBreadcrumb :items="items" />
             </div>
 
-            <div class="flex gap-5 w-full">
-                <CardRoot class="!w-[33%] !h-[500px]">
-                    <Image :src="iEvent?.imageURL" width="100%" image-class="h-[400px] object-cover" />
+            <!-- Primeira coluna: imagem do evento -->
+            <CardRoot class="lg:col-span-1 !h-[400px] !lg:h-[500px]">
+                <Image :src="iEvent?.imageURL" width="100%" image-class="h-[300px] lg:h-[400px] lg:object-cover object-contain" />
+                <div class="flex flex-col gap-5">
+                    <div>
+                        <p class="text-xl">{{ iEvent?.name }}</p>
+                    </div>
+                </div>  
+            </CardRoot>
 
-                    <div class="flex flex-col gap-5">
-                        <div>
-                            <p class="text-xl"> {{ iEvent?.name }}</p>
+            <!-- Segunda parte: detalhes e inscrição ocupando 2 colunas em lg -->
+            <div class="lg:col-span-2 flex flex-col gap-5">
+                <CardRoot>
+                    <div>
+                        <p class="text-2xl">{{ iEvent.name }}</p>
+                    </div>
+                    <div class="flex justify-between">
+                        <div class="flex flex-col gap-1 text-surface-600 text-sm mt-2">
+                            <p class="flex items-center">
+                                <i class="pi pi-calendar mr-1" /> 
+                                <span v-formatDate="iEvent?.startDate" :title="iEvent?.startDate"/>
+                                <span class="mx-1">-</span> 
+                                <i class="pi pi-clock mr-1" /> 
+                                <span v-formatTime="iEvent?.startTime" :title="iEvent?.startTime"/>
+                            </p>
+                            <p>
+                                <i class="pi pi-calendar mr-1" /> 
+                                <span v-formatDate="iEvent?.endDate" :title="iEvent?.endDate"/>
+                                <span class="mx-1">-</span>  
+                                <i class="pi pi-clock mr-1" /> 
+                                <span v-formatTime="iEvent?.endTime" :title="iEvent?.endTime"/>
+                            </p>
                         </div>
-                    </div>  
+                    </div>
                 </CardRoot>
 
-                <div class="w-[65%] flex flex-col gap-5">
-                    <CardRoot>
-                        <div>
-                            <p class="text-2xl"> {{ iEvent.name }}</p>
+                <CardRoot>
+                    <div class="flex flex-col gap-5">
+                        <div class="flex justify-between px-3">
+                            <p class="text-xl font-semibold">Detalhes da incrição</p>
                         </div>
-
-                        <div class="flex justify-between">
-                            <div class="flex flex-col gap-1 text-surface-600 text-sm mt-2">
-                                <p class="flex items-center">
-                                    <i class="pi pi-calendar mr-1" /> <span v-formatDate="iEvent?.startDate" :title="iEvent?.startDate"/>
-                                    <span class="mx-1">-</span> 
-                                    <i class="pi pi-clock mr-1" /> <span v-formatTime="iEvent?.startTime" :title="iEvent?.startTime"/>
-                                </p>
-                                <p>
-                                    <i class="pi pi-calendar mr-1" /> <span v-formatDate="iEvent?.endDate" :title="iEvent?.endDate"/>
-                                    <span class="mx-1">-</span>  
-                                    <i class="pi pi-clock mr-1" /> <span v-formatTime="iEvent?.endTime" :title="iEvent?.endTime"/>
-                                </p>
-                            </div>
-                        </div>
-                    </CardRoot>
-
-                    <CardRoot>
-                        <div class="flex flex-col gap-5">
-                            <div class="flex justify-between px-3">
-                                <p class="text-xl font-semibold">Detalhes da incrição</p>
-                            </div>
-
-                            <TeamInformation v-if="iRegistration?.teamId" :iRegistration="iRegistration" />
-                            <SingleInformation v-else :iRegistration="iRegistration" />
-                        </div>
-                    </CardRoot>
-                </div>  
+                        <TeamInformation v-if="iRegistration?.teamId" :iRegistration="iRegistration" />
+                        <SingleInformation v-else :iRegistration="iRegistration" />
+                    </div>
+                </CardRoot>
             </div>
         </template>
     </div>

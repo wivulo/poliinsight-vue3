@@ -90,7 +90,7 @@ const AsyncComp = (component) => {
 </script>
 
 <template>
-    <div class="flex flex-col px-14 gap-5 py-5 w-full max-w-[1366px] items-center">
+    <div class="flex flex-col px-5 gap-5 py-5 w-full max-w-[1366px] items-center">
         <PLoading v-if="busy" />
         <PEmpty v-else-if="!busy && !iEvent" />
 
@@ -99,51 +99,52 @@ const AsyncComp = (component) => {
                 <PBreadcrumb :items="items" />
             </div>
 
-            <div class="flex gap-5 w-full">
-                <CardRoot class="!w-[33%] !h-[650px]">
-                    <Image :src="iEvent?.imageURL" width="100%" image-class="h-[400px] object-cover" />
-
+            <!-- Alterado: container de CardRoots em grid responsivo -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
+                <!-- Imagem e detalhes do evento -->
+                <CardRoot class="w-full h-[560px] md:h-[650px]">
+                    <Image :src="iEvent?.imageURL" width="100%" image-class="lg:h-[400px] h-[300px] object-contain md:object-cover" />
                     <div class="flex flex-col gap-5">
-                        <!-- <div class="w-full bg-surface-200 p-7"> -->
-                            <div>
-                                <p class="text-xl"> {{ iEvent?.name }}</p>
-                            </div>
-
-                            <div class="flex justify-between">
-                                <div class="flex flex-col gap-2 text-surface-600 text-sm mt-2">
-                                    <p class="flex items-center">
-                                        <i class="pi pi-calendar mr-1" /> <span v-formatDate="iEvent?.startDate" :title="iEvent?.startDate"/>
-                                        <span class="mx-1">-</span> 
-                                        <i class="pi pi-clock mr-1" /> <span v-formatTime="iEvent?.startTime" :title="iEvent?.startTime"/>
-                                    </p>
-                                    <p>
-                                        <i class="pi pi-calendar mr-1" /> <span v-formatDate="iEvent?.endDate" :title="iEvent?.endDate"/>
-                                        <span class="mx-1">-</span>  
-                                        <i class="pi pi-clock mr-1" /> <span v-formatTime="iEvent?.endTime" :title="iEvent?.endTime"/>
-                                    </p>
-                                    <p>
-                                        <i class="pi pi-map-marker"></i> {{ iEvent?.location }}
-                                    </p>
-                                    
-                                    <p>
-                                        <i class="pi pi-users"></i> {{ iEvent?.vacancies }} vagas
-                                    </p>
-                                    <div>
-                                        <Tag :severity="iEvent.status?.severity" :value="iEvent.category?.name" class="my-0.5 !font-medium" />
-                                    </div>
+                        <div>
+                            <p class="text-xl"> {{ iEvent?.name }}</p>
+                        </div>
+                        <div class="flex justify-between">
+                            <div class="flex flex-col gap-2 text-surface-600 text-sm mt-2">
+                                <p class="flex items-center">
+                                    <i class="pi pi-calendar mr-1" /> 
+                                    <span v-formatDate="iEvent?.startDate" :title="iEvent?.startDate"/>
+                                    <span class="mx-1">-</span> 
+                                    <i class="pi pi-clock mr-1" /> 
+                                    <span v-formatTime="iEvent?.startTime" :title="iEvent?.startTime"/>
+                                </p>
+                                <p>
+                                    <i class="pi pi-calendar mr-1" /> 
+                                    <span v-formatDate="iEvent?.endDate" :title="iEvent?.endDate"/>
+                                    <span class="mx-1">-</span>  
+                                    <i class="pi pi-clock mr-1" /> 
+                                    <span v-formatTime="iEvent?.endTime" :title="iEvent?.endTime"/>
+                                </p>
+                                <p>
+                                    <i class="pi pi-map-marker"></i> {{ iEvent?.location }}
+                                </p>
+                                <p>
+                                    <i class="pi pi-users"></i> {{ iEvent?.vacancies }} vagas
+                                </p>
+                                <div>
+                                    <Tag :severity="iEvent.status?.severity" :value="iEvent.category?.name" class="my-0.5 !font-medium" />
                                 </div>
                             </div>
-                        <!-- </div> -->
+                        </div>
                     </div>  
                 </CardRoot>
 
-                <div class="w-[65%] flex flex-col gap-5">
+                <!-- Formulário de inscrição -->
+                <div class="w-full flex flex-col gap-5 lg:col-span-2">
                     <CardRoot>
                         <div class="flex flex-col gap-5">
                             <div class="flex justify-between px-3">
                                 <p class="text-xl font-semibold">Inscrição</p>
                             </div>
-
                             <div v-if="eventConfig.data?.template" class="flex flex-col gap-5">
                                 <component 
                                     :is="AsyncComp(eventConfig.data?.template)" 
@@ -153,7 +154,7 @@ const AsyncComp = (component) => {
                             </div>
                         </div>
                     </CardRoot>
-                </div>  
+                </div>
             </div>
         </template>
     </div>

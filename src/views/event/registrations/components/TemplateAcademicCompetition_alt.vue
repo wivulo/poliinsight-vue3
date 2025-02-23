@@ -130,7 +130,8 @@ const handleRegistrationUpdate = (value) => {
 </script>
 
 <template>
-    <form @submit.prevent="handleMakeRegistration" class="flex gap-4 flex-col px-3">
+    <!-- Atualizado: formulário com padding responsivo -->
+    <form @submit.prevent="handleMakeRegistration" class="flex flex-col gap-4 md:px-4 lg:px-8">
         <div class="flex flex-col gap-3">
             <label for="name" class="ml-2">
                 <i class="fas fa-users me-1 "></i> <small> Nome do Grupo </small>
@@ -138,13 +139,13 @@ const handleRegistrationUpdate = (value) => {
             <InputText id="name" v-model="team.name" class="w-full border-zinc-300 h-9" :required="true" placeholder="Ex.: We Solve Problems" />
         </div>
 
+        <!-- Seção dos integrantes: em telas pequenas exibe em 1 coluna; em telas médias, 2 colunas -->
         <div class="flex flex-col gap-3 my-2">
             <p class="ml-2">
                 <i class="fas fa-users me-1 "></i> <small> Integrantes: </small>
             </p>
-
-            <div class="flex flex-wrap gap-5">
-                <div v-for="i in [0, 1, 2]" :key="i" class="border border-slate-300 rounded-md pl-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div v-for="i in [0, 1, 2]" :key="i" class="border border-slate-300 rounded-md md:pl-2 px-2">
                     <TemplateAcademicCompetitionTeamMember
                         ref="TemplateAcademicCompetitionTeamMemberRef"
                         :index="i" 
@@ -172,8 +173,9 @@ const handleRegistrationUpdate = (value) => {
             </small>
         </div>
 
-        <div class="flex w-full justify-between my-2">
-            <div>
+        <!-- ...existing code, mantendo container responsivo para PaidEvent e botão... -->
+        <div class="flex w-full justify-between my-2 flex-col md:flex-row">
+            <div class="flex items-center">
                 <Checkbox v-model="termAndCondition" class="me-2" :binary="true" />
                 <small class="text-surface-400">Aceito os <a href="#" class="text-primary-500">termos e condições</a> do evento</small>
             </div>
@@ -190,6 +192,6 @@ const handleRegistrationUpdate = (value) => {
 
 <style>
 .form-group {
-    @apply w-[47%]
+    @apply md:w-[47%]
 }
 </style>

@@ -57,7 +57,7 @@ const items = ref([
 
 <template>
     <div class="flex flex-col gap-4 py-3 w-full h-full justify-center items-center">
-        <div class="card flex w-[1200px] text-xs">
+        <div class="card flex w-full lg:w-[1200px] text-xs">
             <Breadcrumb :home="home" :model="items">
                 <template #item="{ item, props }">
                     <router-link v-if="item.route" v-slot="{ href, navigate }" :to="{name: item.route}" custom class="hover:text-primary-500">
@@ -85,8 +85,8 @@ const items = ref([
                 </p>
             </div>
 
-            <div class="flex gap-5 w-full" v-else>
-                <CardRoot class="w-[25%]">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full place-content-center" v-else>
+                <CardRoot class="md:w-[25%] w-[90%] mx-auto md:mx-0">
                     <div class="flex flex-col gap-3">
 
                         <div class="w-full h-[218px] border overflow-hidden flex justify-center items-center group relative">
@@ -145,12 +145,12 @@ const items = ref([
                     </div>
                 </CardRoot>
 
-                <CardRoot class="w-[75%]">
+                <CardRoot class="md:w-[75%] w-full">
                 <div class="flex flex-col gap-5">
-                        <TabView id="custom_tabview" :unstyled="true">
+                        <TabView id="custom_tabview" :unstyled="true" scrollable>
                             <TabPanel v-for="item in tabItems" :key="item.id">
                                 <template #header>
-                                    <div>
+                                    <div class="flex items-center gap-1">
                                         <span :class="'mr-1 fa ' + item.icon" />
                                         <span >{{ item.label }}</span>
                                     </div>
