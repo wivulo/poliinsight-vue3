@@ -98,8 +98,13 @@ onMounted(() => {
                     class="border-round object-contain w-full h-full" />
                 </div>
 
-                <div class="px-4 pt-2">
-                  <div class="text-sm font-bold text-surface-900 cursor-pointer">{{ slotProps.data.name }}</div>
+                <div class="px-10 pt-2">
+                  <div class="text-sm font-bold text-surface-900 cursor-pointer">
+                    <RouterLink 
+                      :to="{ name: 'public.event.show', params: { id: slotProps.data.id } }">
+                      {{ slotProps.data.name }}
+                    </RouterLink>
+                  </div>
 
                   <div class="flex flex-col justify-content-between align-items-center">
                     <div class="flex flex-col gap-1 text-surface-500 text-xs mt-2">

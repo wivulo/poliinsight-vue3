@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';
 import { useNotification } from '@/composables/useNotification';
@@ -10,7 +10,6 @@ import Breadcrumb from 'primevue/breadcrumb';
 import CardRoot from '@/components/PCard/CardRoot.vue';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
-import { event } from '@/store/modules/event';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
@@ -31,6 +30,7 @@ const { notifyError, notifySuccess } = useNotification();
 const events = ref([]);
 const busy = ref(false);
 const iEvent = ref({});
+const eventIsFull = ref(false);
 
 const tabItems = ref([])
 async function fetchEvent() {
@@ -40,6 +40,10 @@ async function fetchEvent() {
 
         if (response.status === 200) {
             iEvent.value = response.data;
+
+            if ((iEvent.value.vacancies - iEvent.value?.statistics[0]?.totalParticipants) < 1) {
+                eventIsFull.value = true;
+            }
 
             const eventStartDay = dayjs.utc(iEvent.value?.startDate).date();
             const eventEndDay = dayjs.utc(iEvent.value?.endDate).date();
@@ -73,9 +77,9 @@ const items = ref([
 
 
 const feedback = ref({
-    name: '',
-    email: '',
-    message: ''
+    name: null,
+    email: null,
+    message: null
 });
 const feedback_busy = ref(false);
 
@@ -96,9 +100,9 @@ async function send() {
         if (response.status === 200) {
             notifySuccess('Feedback enviado com sucesso');
             feedback.value = {
-                name: '',
-                email: '',
-                message: ''
+                name: null,
+                email: null,
+                message: null
             }
             return
         }
@@ -109,11 +113,22 @@ async function send() {
     }
 }
 
+
+onMounted(() => {
+    nextTick(() => {
+        document.getElementById('meuHiddenInput').focus();
+    });
+});
+
 </script>
 
 <template>
     <!-- Atualizado: contêiner principal permite rolagem e altura mínima -->
     <div class="flex flex-col min-h-screen overflow-auto px-6 md:px-14 gap-5 py-5 w-full max-w-[1366px] items-center">
+
+        <!-- Input oculto para focar ao carregar a página -->
+        <input type="text" id="meuHiddenInput" autofocus class="h-0 w-0 opacity-0">
+        
         <div class="flex w-full text-xs">
             <div class="w-full md:w-[33%]">
                 <Breadcrumb :home="home" :model="items">
@@ -142,7 +157,6 @@ async function send() {
 
             <div class="w-full flex flex-col gap-5 lg:col-span-2">
                 <CardRoot>
-                    <!-- <div class="w-full bg-surface-200 p-7"> -->
                     <div>
                         <p class="text-2xl"> {{ iEvent.name }}</p>
                     </div>
@@ -177,12 +191,16 @@ async function send() {
                             </div>
                         </div>
 
-                        <div class="w-full md:w-auto">
+                        <div class="w-full md:w-auto flex flex-col gap-2">
                             <router-link v-slot="{ href, navigate }"
                                 :to="{ name: 'event.registrations.public.show', params: { id: iEvent.id } }" custom>
                                 <Button icon="fa fa-edit" label="Inscrever-se" size="small" class="h-9"
-                                    @click="navigate" />
+                                    @click="navigate" :disabled="eventIsFull" />
                             </router-link>
+                            <small v-if="eventIsFull">
+                                <i class="pi pi-exclamation-triangle text-yellow-300 mr-2" />
+                                <span class="text-danger">Evento lotado</span>
+                            </small>
                         </div>
                     </div>
                     <!-- </div> -->

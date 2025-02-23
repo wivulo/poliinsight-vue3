@@ -60,4 +60,12 @@ export default {
 div.fc-scroller.fc-scroller-liquid-absolute::-webkit-scrollbar{
  width: 0px;
 }
+
+th[role="columnheader"] {
+  @apply bg-primary
+}
+
+th[role="columnheader"] a {
+    @apply text-white font-medium
+}
 </style>

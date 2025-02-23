@@ -2,11 +2,11 @@ interface iEventInput {
     id: string;
     name: string;
     description: string;
-    date: string;
-    endDate?: string;
+    startDate: string;
+    endDate: string;
     localization: string;
-    time: string;
-    timeEnd?: string;
+    startTime: string;
+    endTime?: string;
     departmentId?: string;
     type?: string;
     category?: {
@@ -17,12 +17,12 @@ interface iEventInput {
 
 export const eventsFullCalendarAdapter = (events: iEventInput[]) => {
   return events.map((event) => {
-    const startDate = new Date(event.date);
-    const startDateWithTime = new Date(event.time);
+    const startDate = new Date(event.startDate);
+    const startDateWithTime = new Date(event.startTime);
     startDate.setHours(startDateWithTime.getHours(), startDateWithTime.getMinutes(), 0, 0);
 
     const endDate = event.endDate ? new Date(event.endDate) : startDate;
-    const endDateWithTime = event.timeEnd ? new Date(event.timeEnd) : startDateWithTime;
+    const endDateWithTime = event.endTime ? new Date(event.endTime) : startDateWithTime;
     endDate.setHours(endDateWithTime.getHours(), endDateWithTime.getMinutes(), 0, 0);
 
     return {
