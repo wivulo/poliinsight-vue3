@@ -43,7 +43,7 @@
     "vuex": "^4.0.2"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.0.4",
+    "@vitejs/plugin-vue": "^5.2.1",
     "@vue/test-utils": "^2.4.5",
     "autoprefixer": "^10.4.19",
     "jsdom": "^24.0.0",
