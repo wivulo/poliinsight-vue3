@@ -1,6 +1,6 @@
 // src/composables/useRequest.js
 import { ref } from 'vue';
-import { useToast } from 'primevue/useToast';
+import { useToast } from 'primevue/usetoast';
 
 interface iUseRequest {
     immediate: boolean;

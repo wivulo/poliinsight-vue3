@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import UserServices from '@/services/UserServices';
 import { useRequest } from '@/composables/useRequest';
-import { useToast } from 'primevue/useToast';
+import { useToast } from 'primevue/usetoast';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import { ConfirmSwal } from '@/helpers/fireSwal';

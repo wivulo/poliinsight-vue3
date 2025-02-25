@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, reactive } from 'vue';
-import { useToast } from 'primevue/useToast';
+import { useToast } from 'primevue/usetoast';
 import UserServices from '@/services/UserServices';
 import { useRequest } from '@/composables/useRequest';
 import { usePrimeVue } from 'primevue/config';

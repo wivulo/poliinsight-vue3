@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { useToast } from 'primevue/useToast';
+import { useToast } from 'primevue/usetoast';
 import ImageService from '@/services/ImageService';
 
 export const useUploadImage = () => {

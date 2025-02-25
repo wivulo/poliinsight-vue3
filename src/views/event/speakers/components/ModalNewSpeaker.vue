@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import SpeakerServices from '@/services/SpeakerServices';
 import Swal from 'sweetalert2';
-import { useToast } from 'primevue/useToast';
+import { useToast } from 'primevue/usetoast';
 import { useRoute } from 'vue-router';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';

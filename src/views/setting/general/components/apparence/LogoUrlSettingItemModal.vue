@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, defineModel } from 'vue';
 import { useRequest } from '@/composables/useRequest';
-import { useToast } from 'primevue/useToast';
+import { useToast } from 'primevue/usetoast';
 import SettingService from '@/services/SettingService';
 import { useUploadImage } from '@/composables/useUploadImage';
 import Avatar from 'primevue/avatar';

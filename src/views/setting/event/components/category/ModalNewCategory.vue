@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, reactive } from 'vue';
-import { useToast } from 'primevue/useToast';
+import { useToast } from 'primevue/usetoast';
 import CategoryService from '@/services/CategoryService';
 import { useRequest } from '@/composables/useRequest';
 import { useNotification } from '@/composables/useNotification';
