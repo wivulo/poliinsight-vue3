@@ -23,8 +23,8 @@ async function fetchSetting(){
         busy.value = true;
         const response = await SettingService.showSettingGroupItemByKey('LogoUrl');
 
-        if(response.status === 200){
-            logo.value = response.data.value !== null ? response.data.value : props.src;
+        if(response?.status === 200){
+            logo.value = response.data?.value !== null ? response.data?.value : props.src;
             return
         }
 

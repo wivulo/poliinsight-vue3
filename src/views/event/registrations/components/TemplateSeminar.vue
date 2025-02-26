@@ -273,13 +273,20 @@ function handleRegistrationUpdate(value) {
             </div>
 
                 <div class="flex w-full justify-end my-2">
-                    <Button type="button" size="small" class="h-9" :loading="registration.busy"
-                        @click="async () =>  (await handleSavePersonalInfo()) && nextCallback()">Próximo</Button>
+                    <Button v-if="props.event?.type !== 'Pago'" type="button" size="small" class="h-9" :loading="registration.busy" @click="handleSavePersonalInfo">
+                        <i class="fas fa-save me-2" v-else /> {{ registration.busy ? 'Salvando' : 'Concluir' }}
+                    </Button>
+
+                    <Button v-else type="button" size="small" class="h-9" :loading="registration.busy"
+                        @click="async () =>  (await handleSavePersonalInfo()) && nextCallback()">
+                        <i class="fas fa-chevron-right me-2" v-if="!registration.busy" /> 
+                        {{ registration.busy ? 'Salvando' : 'Proximo' }}
+                    </Button>
                 </div>
             </template>
         </StepperPanel>
 
-        <StepperPanel>
+        <StepperPanel v-if="props.event?.type == 'Pago'">
             <template #header="{ index }">
                 <button class="bg-transparent border-none inline-flex items-center justify-center w-10 h-10 rounded-full">
                     <span :class="['border w-10 h-10 flex justify-center items-center rounded-full', { 'bg-primary': index <= activeStep, 'border-surface-400': index > activeStep }]">

@@ -191,7 +191,9 @@ export default {
                     <label for="category" class="flex-grow pl-3 text-surface-400">
                         <small>Catégoria</small>
                     </label>
-                    <Dropdown id="category" v-model="event.categoryId" optionLabel="name" option-value="id"  :options="categories.data" placeholder="Selecione uma categória" class="h-9 w-[290px]">
+                    <Dropdown id="category" v-model="event.categoryId" optionLabel="name" option-value="id"  :options="categories.data" placeholder="Selecione uma categória" class="h-9 w-[290px]"
+                        :loading="categories.busy"
+                    >
                         <template #value="slotProps">
                             <div v-if="slotProps.value" class="flex items-center text-black">
                                 {{ categories.data.find(cat => cat.id === slotProps.value).name }}
