@@ -155,8 +155,8 @@ export default {
             let female = 0;
 
             if (this.statistic?.genderDistribution) {
-                male = this.statistic.genderDistribution?.male;
-                female = this.statistic.genderDistribution?.female;
+                male = this.statistic.genderDistribution?.Masculino;
+                female = this.statistic.genderDistribution?.Feminino;
             }
 
             return {

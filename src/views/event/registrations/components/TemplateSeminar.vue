@@ -110,6 +110,11 @@ async function handleSavePersonalInfo() {
             notifySuccess('Informações pessoais salvas com sucesso');
             registration.data = { ...registration.data, ...formData };
             goToStep(1);
+
+            if(props.event?.type !== 'Pago') {
+                emit('created:registration');
+                reset();
+            }
             return true
         }
 
@@ -274,7 +279,7 @@ function handleRegistrationUpdate(value) {
 
                 <div class="flex w-full justify-end my-2">
                     <Button v-if="props.event?.type !== 'Pago'" type="button" size="small" class="h-9" :loading="registration.busy" @click="handleSavePersonalInfo">
-                        <i class="fas fa-save me-2" v-if="!registration.busy" /> {{ registration.busy ? 'Salvando' : 'Concluir' }}
+                        <i class="fas fa-save me-2" v-if="!registration.busy" /> {{ registration.busy ? 'Salvando' : 'Salvar' }}
                     </Button>
 
                     <Button v-else type="button" size="small" class="h-9" :loading="registration.busy"
