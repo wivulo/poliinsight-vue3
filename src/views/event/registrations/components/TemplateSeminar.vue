@@ -274,7 +274,7 @@ function handleRegistrationUpdate(value) {
 
                 <div class="flex w-full justify-end my-2">
                     <Button v-if="props.event?.type !== 'Pago'" type="button" size="small" class="h-9" :loading="registration.busy" @click="handleSavePersonalInfo">
-                        <i class="fas fa-save me-2" v-else /> {{ registration.busy ? 'Salvando' : 'Concluir' }}
+                        <i class="fas fa-save me-2" v-if="!registration.busy" /> {{ registration.busy ? 'Salvando' : 'Concluir' }}
                     </Button>
 
                     <Button v-else type="button" size="small" class="h-9" :loading="registration.busy"
