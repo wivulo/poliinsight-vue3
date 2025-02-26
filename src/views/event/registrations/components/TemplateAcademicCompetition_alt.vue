@@ -191,7 +191,5 @@ const handleRegistrationUpdate = (value) => {
 </template>
 
 <style>
-.form-group {
-    @apply md:w-[47%]
-}
+
 </style>

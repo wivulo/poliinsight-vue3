@@ -175,7 +175,7 @@ onMounted(() => {
         <div class="flex flex-col gap-3">
             <!-- Campos do formulário; se necessário, agrupe em grid responsivo se possuir mais de 1 coluna -->
             <!-- Exemplo: -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="form-group w-full">
                     <label for="name" class="ml-2">
                         <i class="fas fa-user me-1 "></i> <small> Nome </small> 
@@ -249,6 +249,6 @@ onMounted(() => {
 
 <style>
 .form-group {
-    @apply my-1 w-[47%]
+    @apply my-1
 }
 </style>
