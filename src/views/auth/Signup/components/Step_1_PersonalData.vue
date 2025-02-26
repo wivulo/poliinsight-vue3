@@ -29,7 +29,6 @@ export default {
 
 <template>
     <div class="flex flex-col gap-5" >
-
         <FloatLabel class="mb-3">
             <InputText id="email" v-model="user.email" class="w-full border-zinc-300 h-9 " :required="true"/>
             <label for="email">
@@ -60,18 +59,20 @@ export default {
             </label>
         </FloatLabel>
 
-        <div class="flex gap-2 items-center mb-3">
+        <div class="flex flex-col md:flex-row gap-2 lg:items-center mb-3 w-full">
             <label for="birthDate" class="flex-grow pl-3">
                 <i class="fas fa-calendar me-1 text-zinc-500" /> <small> Data de nascimento </small>
             </label>
-            <Calendar id="birthDate" v-model="user.birthdate" class="flex-grow border-zinc-300 h-9 focus:outline-zinc-400" inputClass="hover:border-zinc-400" placeholder="ex.: 10/12/1998" dateFormat="dd/mm/yyy" />
+            <Calendar id="birthDate" v-model="user.birthdate" 
+            class="flex-grow border-zinc-300 h-9 focus:outline-zinc-400" inputClass="hover:border-zinc-400" placeholder="ex.: 10/12/1998" dateFormat="dd/mm/yyy" />
         </div>
         
-        <div class="flex gap-2 items-center mb-3">
+        <div class="flex gap-2 lg:items-center mb-3 flex-col md:flex-row w-full">
             <label for="gender" class="flex-grow pl-3">
                 <i class="fas fa-user me-1 text-zinc-500" /> <small> Gênero </small>
             </label>
-            <Dropdown id="gender" v-model="user.gender" :options="options" placeholder="Selecione um genero" class="h-9 flex-grow w-[125px]"  />
+            <Dropdown id="gender" v-model="user.gender" :options="options" placeholder="Selecione um genero" 
+            class="h-9 flex-grow w-full lg:w-[125px]"  />
         </div>
 
     </div>

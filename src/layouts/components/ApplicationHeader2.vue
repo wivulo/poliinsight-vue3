@@ -67,7 +67,7 @@ export default {
             <div class="flex gap-4">
                 <nav class="app-navbar flex items-center">
                     <ul class="flex items-center self-center mb-0">
-                        <li>
+                        <li class="md:visible hidden">
                             <BaseGrayButton>
                                 <i class="fa fa-moon text-slate-900"/>
                             </BaseGrayButton>
@@ -113,7 +113,7 @@ export default {
     
                                 <Button text class="soft-hover h-8 border-slate-200">
                                     <router-link to="/signup">
-                                        Criar conta
+                                        <span class="text-nowrap">Criar conta</span>
                                     </router-link>
                                 </Button>
                             </div>

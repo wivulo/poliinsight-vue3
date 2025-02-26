@@ -19,6 +19,7 @@ import Avatar from 'primevue/avatar';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Tag from 'primevue/tag';
+import PLoading from '@/components/PLoading.vue';
 
 document.title = 'Evento | Poliinsight';
 
@@ -151,15 +152,19 @@ onMounted(() => {
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
             <CardRoot class="!w-full !h-[450px] overflow-hidden">
-                <Image :src="iEvent.imageURL" width="100%"
+                <PLoading v-if="busy" class="w-full h-[400px] flex justify-center items-center" />
+                <Image v-else :src="iEvent.imageURL" width="100%"
                     image-class="h-[400px] object-contain md:object-cover transition-all duration-600 hover:scale-125" />
             </CardRoot>
 
             <div class="w-full flex flex-col gap-5 lg:col-span-2">
-                <CardRoot>
+                <PLoading v-if="busy" />
+
+                <CardRoot v-else>
                     <div>
                         <p class="text-2xl"> {{ iEvent.name }}</p>
                     </div>
+
                     <div class="flex flex-col gap-3 md:flex-row md:justify-between">
                         <div class="flex flex-col gap-1 text-surface-600 text-sm mt-2">
                             <p class="flex items-center">

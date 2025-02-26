@@ -44,6 +44,7 @@ export default {
                 { label: 'Dados Acadêmicos', icon: 'pi pi-book' },
                 { label: 'Finalizar', icon: 'pi pi-check' }
             ],
+            media: window.innerWidth
         }
     },
     methods: {
@@ -111,12 +112,16 @@ export default {
                 </Button>
             </div>
 
-            <div class="flex mx-0 vh-90 basis-1/2 justify-center items-center self-center my-4 gap-2">
+            <div class="flex mx-0 vh-90 w-full md:w-auto basis-full md:basis-1/2 justify-center items-center self-center my-4 gap-2">
 
-                <Card>
-                    <template #title>Criar conta</template>
+                <Card class="w-full">
+                    <template #title>
+                        <p class="text-lg md:text-2xl">Criar conta</p>
+                    </template>
                     <template #content>
-                        <Stepper v-model:activeStep="step">
+                        <Stepper 
+                          v-model:activeStep="step" 
+                          :orientation="media >= 768 ? 'horizontal' : 'vertical'">
                             <StepperPanel :header="items[0].label">
                                 <template #content="{ nextCallback }">
                                     <Step_1_PersonalData :user="user" />
