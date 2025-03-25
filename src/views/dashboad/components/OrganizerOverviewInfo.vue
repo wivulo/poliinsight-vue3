@@ -263,7 +263,7 @@ export default {
                     <p>Evento Popular</p>
                 </CardHeader>
                 <CardValue class="text-sm py-1" v-if="data.popular">
-                    <template v-if="data.popular?.name.length > 16">
+                    <template v-if="data.popular?.name?.length > 16">
                         {{ data.popular?.name.substr(0, 18) +'... - Nº '+ data.popular?.registrations?.length ?? 'Nenhum evento popular' }}
                     </template>
                    <template v-else="data.popular?.name.length <= 16">
@@ -318,7 +318,7 @@ export default {
             </template>
 
             <template v-else>
-                <div v-if="data.last_event.event && data.last_event?.statistic.id" class="flex flex-wrap justify-between">
+                <div v-if="data.last_event.event && data.last_event?.statistic?.id" class="flex flex-wrap justify-between">
                     <div class="w-[30%] text-base text-surface-600 font-medium">
                         <CardRoot class="cardInformation h-[300px] flex flex-col">
                             <CardHeader>
@@ -332,7 +332,7 @@ export default {
                                 <p><b>Data de início</b>: {{ dateFormater(data.last_event?.event?.startDate) }} às {{ time(data.last_event?.event?.startTime) }}</p>
                                 <p><b>Data de fim</b>: {{ dateFormater(data.last_event?.event?.endDate) }}</p> às {{ time(data.last_event?.event?.endTime) }}
                                 <p><b>Categoria</b>: {{ data.last_event?.event?.category?.name }}</p>
-                                <p><b>Departamento</b>: {{ data.last_event?.event?.departament?.name }}</p>
+                                <p><b>Departamento</b>: {{ data.last_event?.event?.department?.name }}</p>
 
                                 <RouterLink :to="{name: 'analise_relatorios.analitics.show', params: {id: data.last_event?.event?.id ?? 1}}" class="text-red-600 absolute left-0 bottom-0">
                                     Ver mais

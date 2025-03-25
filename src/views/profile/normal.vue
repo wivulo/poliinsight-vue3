@@ -34,9 +34,9 @@ const tabItems = ref([
 
 const showMoreDetails = ref(false)
 
-async function fetchUser(){
+async function fetchUser() {
     try {
-        busy.value = true        
+        busy.value = true
         const responde = await UserServices.show(store.getters['auth/user'].id)
         user.value = responde.data
     } catch (error) {
@@ -60,13 +60,14 @@ const items = ref([
         <div class="card flex w-full lg:w-[1200px] text-xs">
             <Breadcrumb :home="home" :model="items">
                 <template #item="{ item, props }">
-                    <router-link v-if="item.route" v-slot="{ href, navigate }" :to="{name: item.route}" custom class="hover:text-primary-500">
+                    <router-link v-if="item.route" v-slot="{ href, navigate }" :to="{ name: item.route }" custom
+                        class="hover:text-primary-500">
                         <a :href="href" v-bind="props.action" @click="navigate">
                             <span :class="[item.icon, 'text-color']" />
                             <span class="ml-1.5 font-semibold" :title="item.title">{{ item.label }}</span>
                         </a>
                     </router-link>
-                    
+
                     <a v-else :href="item.url" :target="item.target" v-bind="props.action">
                         <span class="text-color">{{ item.label }}</span>
                     </a>
@@ -85,17 +86,22 @@ const items = ref([
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full place-content-center" v-else>
-                <CardRoot class="md:w-[25%] w-[90%] mx-auto md:mx-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 w-full place-content-center" v-else>
+                <CardRoot class="mx-auto md:mx-0">
                     <div class="flex flex-col gap-3">
 
-                        <div class="w-full h-[218px] border overflow-hidden flex justify-center items-center group relative">
-                            <Avatar v-if="user.imageURL" :image="user.imageURL" shape="circle" class="object-fill object-center" alt="foto de perfil do usuário"/>
-                            <Avatar v-else icon="pi pi-user" class="text-6xl w-full h-full" alt="foto de perfil do usuário"/>
+                        <div
+                            class="w-full h-[218px] border overflow-hidden flex justify-center items-center group relative">
+                            <Avatar v-if="user.imageURL" :image="user.imageURL" shape="circle"
+                                class="object-fill object-center" alt="foto de perfil do usuário" />
+                            <Avatar v-else icon="pi pi-user" class="text-6xl w-full h-full"
+                                alt="foto de perfil do usuário" />
                             <!-- <Image :src="user.imageURL" class="object-fill object-center" imageClass="h-[218px]" alt="user.name" preview/> -->
 
                             <div class="absolute right-0 bottom-0 m-5">
-                                <Button text severity="secondary" size="small" @click="" class="group-hover:flex justify-center items-center hidden h-8 border border-zinc-300" rounded>
+                                <Button text severity="secondary" size="small" @click=""
+                                    class="group-hover:flex justify-center items-center hidden h-8 border border-zinc-300"
+                                    rounded>
                                     <i class="fa fa-edit" />
                                 </Button>
                             </div>
@@ -130,9 +136,9 @@ const items = ref([
                                 </li>
                             </ul>
                             <div class="flex justify-end my-1">
-                                <Button text severity="secondary" size="small" @click="showMoreDetails = !showMoreDetails"
-                                    class="h-8 bg-gray-400/80 hover:bg-gray-400 border-0"
-                                >
+                                <Button text severity="secondary" size="small"
+                                    @click="showMoreDetails = !showMoreDetails"
+                                    class="h-8 bg-gray-400/80 hover:bg-gray-400 border-0">
                                     <span class="text-slate-700 text-xs" v-if="!showMoreDetails">
                                         <i class="fa fa-plus text-sm " /> Ver mais
                                     </span>
@@ -145,26 +151,23 @@ const items = ref([
                     </div>
                 </CardRoot>
 
-                <CardRoot class="md:w-[75%] w-full">
-                <div class="flex flex-col gap-5">
+                <CardRoot class="w-full lg:col-span-3">
+                    <div class="flex flex-col gap-5">
                         <TabView id="custom_tabview" :unstyled="true" scrollable>
                             <TabPanel v-for="item in tabItems" :key="item.id">
                                 <template #header>
                                     <div class="flex items-center gap-1">
                                         <span :class="'mr-1 fa ' + item.icon" />
-                                        <span >{{ item.label }}</span>
+                                        <span>{{ item.label }}</span>
                                     </div>
                                 </template>
                                 <transition>
-                                    <component 
-                                        :is="item.component" 
-                                        ref="componentTabela"
-                                        :eventType="user.category?.name" 
-                                    />
+                                    <component :is="item.component" ref="componentTabela"
+                                        :eventType="user.category?.name" />
                                 </transition>
                             </TabPanel>
                         </TabView>
-                </div>
+                    </div>
                 </CardRoot>
             </div>
         </div>

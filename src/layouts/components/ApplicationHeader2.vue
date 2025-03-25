@@ -7,6 +7,7 @@ import Dropdown from 'primevue/dropdown';
 import Avatar from 'primevue/avatar';
 import BaseGrayButton from './BaseGrayButton.vue'
 import logo from '@/assets/logo_without_bg.png'
+import Notifications from '@/components/notifications/index.vue'
 
 export default {
     name: 'ApplicationHeader',
@@ -20,7 +21,7 @@ export default {
     components: {
         AppLogo, BaseGrayButton,
         InputText, Avatar,
-        Button, Dropdown
+        Button, Dropdown, Notifications
     },
     computed: {
         ...mapGetters({
@@ -67,10 +68,14 @@ export default {
             <div class="flex gap-4">
                 <nav class="app-navbar flex items-center">
                     <ul class="flex items-center self-center mb-0">
-                        <li class="md:visible hidden">
+                        <li class="md:block hidden">
                             <BaseGrayButton>
                                 <i class="fa fa-moon text-slate-900"/>
                             </BaseGrayButton>
+                        </li>
+
+                        <li class="md:block hidden">
+                           <Notifications />
                         </li>
                         
                         <li v-if="user" class="flex border-x border-slate-200 me-3 px-1 pe-2">

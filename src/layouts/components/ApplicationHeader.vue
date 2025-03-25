@@ -8,6 +8,7 @@ import Dropdown from 'primevue/dropdown';
 import Avatar from 'primevue/avatar';
 import Skeleton from 'primevue/skeleton';
 import BaseGrayButton from './BaseGrayButton.vue'
+import Notifications from '@/components/notifications/index.vue'
 
 const store = useStore()
 const route = useRoute()
@@ -29,9 +30,10 @@ const busy = computed(() => store.getters['auth/busy'])
                         </li>
 
                         <li>
-                            <BaseGrayButton>
+                            <!-- <BaseGrayButton>
                                 <i class="fa fa-bell text-slate-800"/>
-                            </BaseGrayButton>
+                            </BaseGrayButton> -->
+                           <Notifications />
                         </li>
 
                         <li v-if="busy" class="flex gap-2">

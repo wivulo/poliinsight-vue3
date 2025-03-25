@@ -1,7 +1,5 @@
 <script>
 import AuthServices from "@/services/AuthServices"
-
-import loginBanner from "@/assets/login/images/login-banner.png"
 import Step_1_PersonalData from "./components/Step_1_PersonalData.vue"
 import Step_2_academicData from './components/Step_2_academicData.vue'
 import Step_3_finish from './components/Step_3_finish.vue'
